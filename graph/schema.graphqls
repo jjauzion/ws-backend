@@ -4,14 +4,14 @@ type Task {
   id: ID!
   created_by: User!
   created_at: Time!
-  started_at: Time
-  ended_at: Time
-  failed: Boolean
+  started_at: Time!
+  ended_at: Time!
+  failed: Boolean!
   job: Int!
 }
 
 input newTask {
-  user_id: Int!
+  user_id: ID!
   job: Int!
 }
 
