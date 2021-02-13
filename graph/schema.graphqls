@@ -1,0 +1,32 @@
+scalar Time
+
+type Task {
+  id: ID!
+  created_by: User!
+  created_at: Time!
+  started_at: Time
+  ended_at: Time
+  failed: Boolean
+  job: Int!
+}
+
+input newTask {
+  user_id: Int!
+  job: Int!
+}
+
+type User {
+  id: ID!
+  login: String!
+  email: String!
+}
+
+input newUser {
+  login: String!
+  email: String!
+}
+
+type Mutation {
+  createUser(input: newUser!): User!
+  createTask(input: newTask!): Task!
+}
