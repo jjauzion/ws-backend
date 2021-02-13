@@ -6,6 +6,13 @@ import (
 	"time"
 )
 
+type Job struct {
+	ID          string  `json:"id"`
+	CreatedBy   *User   `json:"created_by"`
+	DockerImage string  `json:"docker_image"`
+	Dataset     *string `json:"dataset"`
+}
+
 type Task struct {
 	ID        string    `json:"id"`
 	CreatedBy *User     `json:"created_by"`
@@ -13,18 +20,20 @@ type Task struct {
 	StartedAt time.Time `json:"started_at"`
 	EndedAt   time.Time `json:"ended_at"`
 	Failed    bool      `json:"failed"`
-	Job       int       `json:"job"`
+	Job       *Job      `json:"job"`
 }
 
 type User struct {
-	ID    string `json:"id"`
-	Login string `json:"login"`
-	Email string `json:"email"`
+	ID        string    `json:"id"`
+	Login     string    `json:"login"`
+	Email     string    `json:"email"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type NewTask struct {
-	UserID string `json:"user_id"`
-	Job    int    `json:"job"`
+	UserID      string  `json:"user_id"`
+	DockerImage string  `json:"docker_image"`
+	Dataset     *string `json:"dataset"`
 }
 
 type NewUser struct {

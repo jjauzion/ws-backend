@@ -5,8 +5,12 @@ package graph
 
 import (
 	"context"
+	"go.uber.org/zap"
 	"time"
 
+	"github.com/google/uuid"
+
+	"github.com/jjauzion/ws-backend/pkg"
 	"github.com/jjauzion/ws-backend/graph/generated"
 	"github.com/jjauzion/ws-backend/graph/model"
 )
@@ -21,20 +25,28 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) 
 }
 
 func (r *mutationResolver) CreateTask(ctx context.Context, input model.NewTask) (*model.Task, error) {
+	log := pkg.NewLog()
 	newUser := &model.User{
 		ID:    input.UserID,
 		Login: "toto",
 		Email: "toto@a.com",
+	}
+	newJob := &model.Job{
+		ID:          uuid.New().String(),
+		CreatedBy:   newUser,
+		DockerImage: input.DockerImage,
+		Dataset:     input.Dataset,
 	}
 	newTask := &model.Task{
 		ID:        "1",
 		CreatedBy: newUser,
 		CreatedAt: time.Now(),
 		StartedAt: time.Unix(0, 0),
-		EndedAt:    time.Unix(0, 0),
+		EndedAt:   time.Unix(0, 0),
 		Failed:    false,
-		Job:       input.Job,
+		Job:       newJob,
 	}
+	log.Info("task created", zap.String("id", newTask.ID))
 	return newTask, nil
 }
 

@@ -7,18 +7,27 @@ type Task {
   started_at: Time!
   ended_at: Time!
   failed: Boolean!
-  job: Int!
+  job: Job!
+}
+
+type Job {
+  id: ID!
+  created_by: User!
+  docker_image: String!
+  dataset: String
 }
 
 input newTask {
   user_id: ID!
-  job: Int!
+  docker_image: String!
+  dataset: String
 }
 
 type User {
   id: ID!
   login: String!
   email: String!
+  created_at: Time!
 }
 
 input newUser {
@@ -27,6 +36,6 @@ input newUser {
 }
 
 type Mutation {
-  createUser(input: newUser!): User!
-  createTask(input: newTask!): Task!
+  create_user(input: newUser!): User!
+  create_task(input: newTask!): Task!
 }
