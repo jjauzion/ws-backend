@@ -7,7 +7,7 @@ import (
 
 var logger *zap.Logger
 
-func NewLog() (log *zap.Logger) {
+func GetLogger() (log *zap.Logger) {
 	if logger != nil {
 		return logger
 	}

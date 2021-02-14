@@ -25,7 +25,7 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) 
 }
 
 func (r *mutationResolver) CreateTask(ctx context.Context, input model.NewTask) (*model.Task, error) {
-	log := pkg.NewLog()
+	log := pkg.GetLogger()
 	newUser := &model.User{
 		ID:    input.UserID,
 		Login: "toto",

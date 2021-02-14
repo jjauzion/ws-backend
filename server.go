@@ -22,7 +22,7 @@ func main() {
 		port = defaultPort
 	}
 
-	log := pkg.NewLog()
+	log := pkg.GetLogger()
 
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
 
