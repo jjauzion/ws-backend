@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/jjauzion/ws-backend/db"
 	"net/http"
 	"os"
 
@@ -26,8 +27,12 @@ func main() {
 
 	cf := internal.GetConfig()
 	fmt.Println("host is:", cf.WS_ES_HOST)
+	dbh := db.NewDBHandler()
+	fmt.Println(dbh)
+	dbh.Bootstrap()
 
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
+
 
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", srv)

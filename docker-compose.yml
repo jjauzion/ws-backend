@@ -1,0 +1,30 @@
+version: '3.8'
+services:
+
+  kibana:
+    depends_on:
+      - es01
+    image: docker.elastic.co/kibana/kibana:7.11.0
+    environment:
+      ELASTICSEARCH_HOSTS: http://es01:9200
+    ports:
+      - 5601:5601
+    networks:
+      - ws_network
+
+  es01:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.11.0
+    environment:
+      - node.name=es01
+      - cluster.name=es-docker-cluster
+      - discovery.seed_hosts=es01
+      - cluster.initial_master_nodes=es01
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+    - 9200:9200
+    networks:
+      - ws_network
+
+networks:
+  ws_network:
+    driver: bridge

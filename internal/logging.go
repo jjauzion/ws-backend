@@ -15,6 +15,5 @@ func GetLogger() (log *zap.Logger) {
 	if log, err = zap.NewDevelopment(zap.AddCaller()); err != nil {
 		fmt.Println("couldn't create logger because:", err)
 	}
-	defer logger.Sync()
 	return log
 }
