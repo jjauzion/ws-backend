@@ -10,7 +10,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/jjauzion/ws-backend/pkg"
+	"github.com/jjauzion/ws-backend/internal"
 	"github.com/jjauzion/ws-backend/graph/generated"
 	"github.com/jjauzion/ws-backend/graph/model"
 )
@@ -25,7 +25,7 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) 
 }
 
 func (r *mutationResolver) CreateTask(ctx context.Context, input model.NewTask) (*model.Task, error) {
-	log := pkg.GetLogger()
+	log := internal.GetLogger()
 	newUser := &model.User{
 		ID:    input.UserID,
 		Login: "toto",

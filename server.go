@@ -11,7 +11,7 @@ import (
 
 	"github.com/jjauzion/ws-backend/graph"
 	"github.com/jjauzion/ws-backend/graph/generated"
-	"github.com/jjauzion/ws-backend/pkg"
+	"github.com/jjauzion/ws-backend/internal"
 )
 
 const defaultPort = "8080"
@@ -22,7 +22,10 @@ func main() {
 		port = defaultPort
 	}
 
-	log := pkg.GetLogger()
+	log := internal.GetLogger()
+
+	cf := internal.GetConfig()
+	fmt.Println("host is:", cf.WS_ES_HOST)
 
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
 
