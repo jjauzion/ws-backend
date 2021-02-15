@@ -1,0 +1,58 @@
+{
+  "mappings" : {
+    "properties" : {
+      "created_at" : {
+        "type" : "date",
+        "format" : "yyyy/MM/dd HH:mm:ss||yyyy/MM/dd||epoch_millis"
+      },
+      "created_by" : {
+        "properties" : {
+          "email" : {
+            "type" : "text",
+            "fields" : {
+              "keyword" : {
+                "type" : "keyword",
+                "ignore_above" : 256
+              }
+            }
+          },
+          "login" : {
+            "type" : "keyword",
+            "ignore_above" : 256
+          },
+          "user_id" : {
+            "type" : "keyword",
+            "ignore_above" : 256
+          }
+        }
+      },
+      "ended_at" : {
+        "type" : "date",
+        "format" : "yyyy/MM/dd HH:mm:ss||yyyy/MM/dd||epoch_millis"
+      },
+      "fail" : {
+        "type" : "boolean"
+      },
+      "job" : {
+        "properties" : {
+          "dataset" : {
+            "type" : "keyword",
+            "ignore_above" : 256
+          },
+          "docker_image" : {
+            "type" : "keyword",
+            "ignore_above" : 256
+          },
+          "id" : {
+            "type" : "keyword",
+            "ignore_above" : 256
+          }
+        }
+      },
+      "started_at" : {
+        "type" : "date",
+        "format" : "yyyy/MM/dd HH:mm:ss||yyyy/MM/dd||epoch_millis"
+      }
+    }
+  }
+}
