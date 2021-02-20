@@ -29,6 +29,7 @@ func main() {
 	if err := dbh.Bootstrap(); err != nil {
 		return
 	}
+	dbh.GetUserByEmail("test")
 
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
 
