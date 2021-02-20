@@ -1,0 +1,5 @@
+#es-config:
+#  user-mapping-file: "Elasticsearch/user_mapping.json"
+#  task-mapping-file: "Elasticsearch/task_mapping.json"
+ES_USER_MAPPING: "Elasticsearch/user_mapping.json"
+ES_TASK_MAPPING: "Elasticsearch/task_mapping.json"

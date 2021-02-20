@@ -9,6 +9,8 @@ import (
 type configuration struct {
 	WS_ES_HOST string
 	WS_ES_PORT string
+	ES_USER_MAPPING string
+	ES_TASK_MAPPING string
 }
 
 var cf *configuration
@@ -19,8 +21,12 @@ func GetConfig() *configuration {
 		return cf
 	}
 	cf = &configuration{}
+	viper.AddConfigPath("conf")
+	if err := viper.MergeInConfig(); err != nil {
+		log.Fatal("", zap.Error(err))
+	}
 	viper.SetConfigFile(".env")
-	if err := viper.ReadInConfig(); err != nil {
+	if err := viper.MergeInConfig(); err != nil {
 		log.Fatal("", zap.Error(err))
 	}
 	if err := viper.Unmarshal(cf); err != nil {

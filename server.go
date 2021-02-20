@@ -25,11 +25,10 @@ func main() {
 
 	log := internal.GetLogger()
 
-	cf := internal.GetConfig()
-	fmt.Println("host is:", cf.WS_ES_HOST)
 	dbh := db.NewDBHandler()
-	fmt.Println(dbh)
-	dbh.Bootstrap()
+	if err := dbh.Bootstrap(); err != nil {
+		return
+	}
 
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
 
