@@ -1,5 +1,6 @@
 {
   "mappings" : {
+    "dynamic": "strict",
     "properties" : {
       "created_at" : {
         "type" : "date",

@@ -1,0 +1,4 @@
+{"create": {"_index": "user"}}
+{"email": "admin@gmail.com", "login": "admin", "user_id":  "1", "created_at": "2021/02/20 10:00:00"}
+{"create": {"_index": "user"}}
+{"mail": "test@gmail.com", "login": "test", "user_id":  "2", "created_at": "2021/02/20 11:00:00"}

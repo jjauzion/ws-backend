@@ -6,9 +6,11 @@ import (
 	"fmt"
 	"io/ioutil"
 	"bytes"
+	"strings"
 
 	elasticsearch7 "github.com/elastic/go-elasticsearch/v7"
 	"github.com/elastic/go-elasticsearch/v7/esapi"
+	"github.com/elastic/go-elasticsearch/v7/esutil"
 	"go.uber.org/zap"
 
 	"github.com/jjauzion/ws-backend/internal"
@@ -72,8 +74,50 @@ func (es *esHandler) CreateIndex(name, mappingFile string) (err error) {
 		return
 	}
 	defer res.Body.Close()
-	if res.StatusCode != 200 {
-		err = errors.New(res.Status())
+	if res.IsError() {
+		err = errors.New(res.String())
+		return
+	}
+	return
+}
+
+func (es *esHandler) IndexNewDoc(index, doc string) (err error) {
+	req := esapi.IndexRequest{
+		Index:		index,
+		Body: 		strings.NewReader(doc),
+	}
+	var res *esapi.Response
+	if res, err = req.Do(context.Background(), es.client);  err != nil {
+		return
+	}
+	if res.IsError() {
+		err = errors.New(res.String())
+		return
+	}
+	defer res.Body.Close()
+	return
+}
+
+
+// WARNING: no error return if some doc failed
+// Should use esutil to get a control on the nb of success / fail:
+// https://github.com/elastic/go-elasticsearch/blob/master/_examples/bulk/indexer.go#L199
+func (es *esHandler) BulkIngest(index, file string) (err error) {
+	var bulk []byte
+	if bulk, err = ioutil.ReadFile(file);  err != nil {
+		return
+	}
+	req := esapi.BulkRequest{
+		Index: index,
+		Body: bytes.NewReader(bulk),
+	}
+	var res *esapi.Response
+	if res, err = req.Do(context.Background(), es.client);  err != nil {
+		return
+	}
+	defer res.Body.Close()
+	if res.IsError() {
+		err = errors.New(res.String())
 		return
 	}
 	return
@@ -95,17 +139,10 @@ func (es *esHandler) Bootstrap() (err error) {
 		return
 	}
 	logger.Info("'" + index + "' index created")
-
-	//req := esapi.IndexRequest{
-	//	Index:		"test",
-	//	Body: 		strings.NewReader(`{"title": "Test1"}`),
-	//}
-	//if err != nil {
-	//	logger.Error("failed to index doc:", zap.Error(err))
-	//	return err
-	//}
-	//defer res.Body.Close()
-	//logger.Info("index document", zap.String("status", res.Status()))
+	if err = es.BulkIngest("user", "Elasticsearch/users.bulk"); err != nil {
+		logger.Error("failed to bulk ingest: ", zap.Error(err))
+		return
+	}
 	logger.Info("Elasticsearch successfully initialized !")
 	return
 }
