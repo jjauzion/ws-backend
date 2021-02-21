@@ -79,7 +79,7 @@ func (es *esHandler) Bootstrap() (err error) {
 		return
 	}
 	logger.Info("'" + userIndex + "' index created")
-	if err = es.bulkIngest(userIndex, "Elasticsearch/users.bulk", "true"); err != nil {
+	if err = es.bulkIngest(userIndex, cf.BOOTSTRAP_FILE, "true"); err != nil {
 		logger.Error("failed to bulk ingest: ", zap.Error(err))
 		return
 	}

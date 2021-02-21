@@ -11,6 +11,7 @@ type configuration struct {
 	WS_ES_PORT string
 	ES_USER_MAPPING string
 	ES_TASK_MAPPING string
+	BOOTSTRAP_FILE string
 }
 
 var cf *configuration

@@ -5,10 +5,10 @@ package graph
 
 import (
 	"context"
-	"github.com/jjauzion/ws-backend/db"
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jjauzion/ws-backend/db"
 	"github.com/jjauzion/ws-backend/graph/generated"
 	"github.com/jjauzion/ws-backend/graph/model"
 	"github.com/jjauzion/ws-backend/internal"
@@ -30,25 +30,29 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) 
 
 func (r *mutationResolver) CreateTask(ctx context.Context, input model.NewTask) (*model.Task, error) {
 	log := internal.GetLogger()
-	newUser := &model.User{
-		ID:    input.UserID,
-		Admin: true,
-		Email: "toto@a.com",
+	dbh := db.NewDBHandler()
+	var user *model.User
+	var err error
+	if user, err = dbh.GetUserByID(input.UserID); err != nil {
+		return nil, err
 	}
 	newJob := &model.Job{
 		ID:          uuid.New().String(),
-		CreatedBy:   newUser,
+		CreatedBy:   user.ID,
 		DockerImage: input.DockerImage,
 		Dataset:     input.Dataset,
 	}
 	newTask := &model.Task{
-		ID:        "1",
-		CreatedBy: newUser,
+		ID:        uuid.New().String(),
+		CreatedBy: user.ID,
 		CreatedAt: time.Now(),
 		StartedAt: time.Unix(0, 0),
 		EndedAt:   time.Unix(0, 0),
 		Failed:    false,
 		Job:       newJob,
+	}
+	if err = dbh.CreateTask(*newTask); err != nil {
+		return nil, err
 	}
 	log.Info("task created", zap.String("id", newTask.ID))
 	return newTask, nil

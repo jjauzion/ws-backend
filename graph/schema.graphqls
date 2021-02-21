@@ -2,7 +2,7 @@ scalar Time
 
 type Task {
   id: ID!
-  created_by: User!
+  created_by: String!
   created_at: Time!
   started_at: Time!
   ended_at: Time!
@@ -12,7 +12,7 @@ type Task {
 
 type Job {
   id: ID!
-  created_by: User!
+  created_by: String!
   docker_image: String!
   dataset: String
 }

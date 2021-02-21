@@ -292,7 +292,7 @@ var sources = []*ast.Source{
 
 type Task {
   id: ID!
-  created_by: User!
+  created_by: String!
   created_at: Time!
   started_at: Time!
   ended_at: Time!
@@ -302,7 +302,7 @@ type Task {
 
 type Job {
   id: ID!
-  created_by: User!
+  created_by: String!
   docker_image: String!
   dataset: String
 }
@@ -483,9 +483,9 @@ func (ec *executionContext) _Job_created_by(ctx context.Context, field graphql.C
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.User)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNUser2ᚖgithubᚗcomᚋjjauzionᚋwsᚑbackendᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Job_docker_image(ctx context.Context, field graphql.CollectedField, obj *model.Job) (ret graphql.Marshaler) {
@@ -775,9 +775,9 @@ func (ec *executionContext) _Task_created_by(ctx context.Context, field graphql.
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.User)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNUser2ᚖgithubᚗcomᚋjjauzionᚋwsᚑbackendᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Task_created_at(ctx context.Context, field graphql.CollectedField, obj *model.Task) (ret graphql.Marshaler) {

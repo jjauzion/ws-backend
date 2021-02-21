@@ -8,14 +8,14 @@ import (
 
 type Job struct {
 	ID          string  `json:"id"`
-	CreatedBy   *User   `json:"created_by"`
+	CreatedBy   string  `json:"created_by"`
 	DockerImage string  `json:"docker_image"`
 	Dataset     *string `json:"dataset"`
 }
 
 type Task struct {
 	ID        string    `json:"id"`
-	CreatedBy *User     `json:"created_by"`
+	CreatedBy string    `json:"created_by"`
 	CreatedAt time.Time `json:"created_at"`
 	StartedAt time.Time `json:"started_at"`
 	EndedAt   time.Time `json:"ended_at"`

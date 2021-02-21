@@ -2,41 +2,32 @@
   "mappings" : {
     "dynamic": "strict",
     "properties" : {
+      "id" : {
+        "type" : "keyword",
+        "ignore_above" : 256
+      },
       "created_at" : {
         "type" : "date",
         "format" : "date_optional_time"
       },
       "created_by" : {
-        "properties" : {
-          "email" : {
-            "type" : "text",
-            "fields" : {
-              "keyword" : {
-                "type" : "keyword",
-                "ignore_above" : 256
-              }
-            }
-          },
-          "login" : {
-            "type" : "keyword",
-            "ignore_above" : 256
-          },
-          "user_id" : {
-            "type" : "keyword",
-            "ignore_above" : 256
-          }
-        }
+        "type" : "keyword",
+        "ignore_above" : 256
       },
       "ended_at" : {
         "type" : "date",
         "format" : "date_optional_time"
       },
-      "fail" : {
+      "failed" : {
         "type" : "boolean"
       },
       "job" : {
         "properties" : {
           "dataset" : {
+            "type" : "keyword",
+            "ignore_above" : 256
+          },
+          "created_by": {
             "type" : "keyword",
             "ignore_above" : 256
           },
