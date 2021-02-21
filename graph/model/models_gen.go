@@ -25,7 +25,7 @@ type Task struct {
 
 type User struct {
 	ID        string    `json:"id"`
-	Login     string    `json:"login"`
+	Admin     bool      `json:"admin"`
 	Email     string    `json:"email"`
 	CreatedAt time.Time `json:"created_at"`
 }
@@ -37,6 +37,5 @@ type NewTask struct {
 }
 
 type NewUser struct {
-	Login string `json:"login"`
 	Email string `json:"email"`
 }

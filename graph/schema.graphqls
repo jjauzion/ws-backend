@@ -25,13 +25,12 @@ input newTask {
 
 type User {
   id: ID!
-  login: String!
+  admin: Boolean!
   email: String!
   created_at: Time!
 }
 
 input newUser {
-  login: String!
   email: String!
 }
 

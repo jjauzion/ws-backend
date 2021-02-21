@@ -5,30 +5,34 @@ package graph
 
 import (
 	"context"
-	"go.uber.org/zap"
+	"github.com/jjauzion/ws-backend/db"
 	"time"
 
 	"github.com/google/uuid"
-
-	"github.com/jjauzion/ws-backend/internal"
 	"github.com/jjauzion/ws-backend/graph/generated"
 	"github.com/jjauzion/ws-backend/graph/model"
+	"github.com/jjauzion/ws-backend/internal"
+	"go.uber.org/zap"
 )
 
 func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) (*model.User, error) {
-	newUser := &model.User{
-		ID:    "1",
-		Login: input.Login,
+	dbh := db.NewDBHandler()
+	newUser := model.User{
+		ID:    uuid.New().String(),
+		Admin: true,
 		Email: input.Email,
 	}
-	return newUser, nil
+	if err := dbh.CreateUser(newUser); err != nil {
+		return nil, err
+	}
+	return &newUser, nil
 }
 
 func (r *mutationResolver) CreateTask(ctx context.Context, input model.NewTask) (*model.Task, error) {
 	log := internal.GetLogger()
 	newUser := &model.User{
 		ID:    input.UserID,
-		Login: "toto",
+		Admin: true,
 		Email: "toto@a.com",
 	}
 	newJob := &model.Job{

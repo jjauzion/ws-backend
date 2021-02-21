@@ -14,7 +14,7 @@
       "admin" : {
         "type" : "boolean"
       },
-      "user_id" : {
+      "id" : {
         "type" : "keyword",
         "ignore_above" : 256
       },
