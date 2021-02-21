@@ -8,12 +8,10 @@ import (
 	"fmt"
 	elasticsearch7 "github.com/elastic/go-elasticsearch/v7"
 	"github.com/elastic/go-elasticsearch/v7/esapi"
-	"github.com/jjauzion/ws-backend/graph/model"
 	"github.com/jjauzion/ws-backend/internal"
 	"go.uber.org/zap"
 	"io"
 	"io/ioutil"
-	"log"
 )
 
 const (
@@ -24,6 +22,31 @@ const (
 
 type esHandler struct {
 	client *elasticsearch7.Client
+}
+
+type esSearchResponse struct {
+	Took int						`json:"took"`
+	Time_out bool					`json:"time_out"`
+	Shards struct{
+		Total int					`json:"total"`
+		Successful int				`json:"sucessful"`
+		Skipped int					`json:"skipped"`
+		Failed int					`json:"failed"`
+	}								`json:"_shards"`
+	Hits struct{
+		Total struct{
+			Value int				`json:"value"`
+			Relation string			`json:"relation"`
+		}							`json:"total"`
+		MaxScore float32			`json:"max_score"`
+		Hits []struct{
+			Index string			`json:"_index"`
+			Type string				`json:"_type"`
+			Id string				`json:"_id"`
+			Score float32			`json:"_score"`
+			Source interface{}		`json:"_source"`
+		}							`json:"hits"`
+	}								`json:"hits"`
 }
 
 func NewDBHandler() DatabaseHandler {
@@ -95,11 +118,13 @@ func (es *esHandler) parseError(res *esapi.Response) (err error) {
 	return
 }
 
-func (es *esHandler) search(index []string, request io.Reader) (res *esapi.Response, err error) {
+func (es *esHandler) search(index []string, request io.Reader) (data []interface{}, err error) {
+	logger := internal.GetLogger()
 	req := esapi.SearchRequest{
 		Index: index,
 		Body: request,
 	}
+	var res *esapi.Response
 	if res, err = req.Do(context.Background(), es.client);  err != nil {
 		return
 	}
@@ -108,46 +133,16 @@ func (es *esHandler) search(index []string, request io.Reader) (res *esapi.Respo
 		return
 	}
 
-	if res.IsError() {
-		err = es.parseError(res)
-		return
-	}
-
-	//body, err := ioutil.ReadAll(res.Body)
-	//if err != nil {
-	//	return
-	//}
-	//fmt.Println("--------------------------------")
-	//var data map[string]interface{}
-	//if err = json.Unmarshal(body, &data); err != nil {
-	//	return
-	//}
-	//fmt.Println("Here:", data)
-
-	var r map[string]interface{}
+	var r esSearchResponse
 	if err = json.NewDecoder(res.Body).Decode(&r); err != nil {
 		err = errors.New(fmt.Sprintf("Error parsing the response body: %s", err))
 		return
 	}
-	// Print the response status, number of results, and request duration.
-	log.Printf(
-		"[%s] %d hits; took: %dms",
-		res.Status(),
-		int(r["hits"].(map[string]interface{})["total"].(map[string]interface{})["value"].(float64)),
-		int(r["took"].(float64)),
-	)
-	// Print the ID and document source for each hit.
-	for _, hit := range r["hits"].(map[string]interface{})["hits"].([]interface{}) {
-		data := hit.(map[string]interface{})["_source"]
-		fmt.Println("----->", data)
-		b, _ := json.Marshal(data)
-		user := model.User{}
-		err = json.Unmarshal(b, &user)
-		if err != nil {
-			return
-		}
-		fmt.Println("+++++", user)
-		log.Printf(" * ID=%s, %s", hit.(map[string]interface{})["_id"], hit.(map[string]interface{})["_source"])
+	if r.Shards.Failed > 0 {
+		logger.Info("some shards failed during the search", zap.Int("number", r.Shards.Failed))
+	}
+	for i := 0; i < len(r.Hits.Hits); i++ {
+		data = append(data, r.Hits.Hits[i].Source)
 	}
 	return
 }

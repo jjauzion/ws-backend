@@ -4,7 +4,7 @@
     "properties" : {
       "created_at" : {
         "type" : "date",
-        "format" : "yyyy/MM/dd HH:mm:ss||yyyy/MM/dd||epoch_millis"
+        "format" : "date_optional_time"
       },
       "created_by" : {
         "properties" : {
@@ -29,7 +29,7 @@
       },
       "ended_at" : {
         "type" : "date",
-        "format" : "yyyy/MM/dd HH:mm:ss||yyyy/MM/dd||epoch_millis"
+        "format" : "date_optional_time"
       },
       "fail" : {
         "type" : "boolean"
@@ -52,7 +52,7 @@
       },
       "started_at" : {
         "type" : "date",
-        "format" : "yyyy/MM/dd HH:mm:ss||yyyy/MM/dd||epoch_millis"
+        "format" : "date_optional_time"
       }
     }
   }

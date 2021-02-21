@@ -11,9 +11,8 @@
           }
         }
       },
-      "login" : {
-        "type" : "keyword",
-        "ignore_above" : 256
+      "admin" : {
+        "type" : "boolean"
       },
       "user_id" : {
         "type" : "keyword",

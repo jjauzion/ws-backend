@@ -1,4 +1,6 @@
 {"create": {"_index": "user"}}
-{"email": "admin@gmail.com", "login": "admin", "user_id":  "1", "created_at": "2020-02-20T20:00:00.00Z"}
+{"email": "admin@gmail.com", "user_id":  "1", "created_at": "2020-02-20T20:00:00.00Z", "admin": "true"}
 {"create": {"_index": "user"}}
-{"email": "test@gmail.com", "login": "test", "user_id":  "2", "created_at": "2020-02-20T21:00:00.00Z"}
+{"email": "test@gmail.com", "user_id":  "2", "created_at": "2020-02-20T21:00:00.00Z", "admin": "false"}
+{"create": {"_index": "task"}}
+{ "created_by": { "user_id": "1", "login": "toto", "email": "toto@gmail.com" }, "created_at": "2020-02-20T21:00:00.00Z", "started_at": "2020-02-20T21:00:00.00Z", "ended_at": "2020-02-20T21:00:00.00Z", "fail": false, "job": { "id": "1", "docker_image": "test-img", "dataset": "s3://path" } }
