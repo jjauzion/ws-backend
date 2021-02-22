@@ -11,7 +11,6 @@ import (
 	"github.com/jjauzion/ws-backend/db"
 	"github.com/jjauzion/ws-backend/graph/generated"
 	"github.com/jjauzion/ws-backend/graph/model"
-	"github.com/jjauzion/ws-backend/internal"
 	"go.uber.org/zap"
 )
 
@@ -29,8 +28,9 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) 
 }
 
 func (r *mutationResolver) CreateTask(ctx context.Context, input model.NewTask) (*model.Task, error) {
-	log := internal.GetLogger()
-	dbh := db.NewDBHandler()
+	log := r.Log
+	dbh := r.DB
+
 	var user *model.User
 	var err error
 	if user, err = dbh.GetUserByID(input.UserID); err != nil {
