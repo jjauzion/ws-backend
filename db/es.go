@@ -19,34 +19,33 @@ const (
 	taskIndex = "task"
 )
 
-
 type esHandler struct {
 	client *elasticsearch7.Client
 }
 
 type esSearchResponse struct {
-	Took int						`json:"took"`
-	Time_out bool					`json:"time_out"`
-	Shards struct{
-		Total int					`json:"total"`
-		Successful int				`json:"sucessful"`
-		Skipped int					`json:"skipped"`
-		Failed int					`json:"failed"`
-	}								`json:"_shards"`
-	Hits struct{
-		Total struct{
-			Value int				`json:"value"`
-			Relation string			`json:"relation"`
-		}							`json:"total"`
-		MaxScore float32			`json:"max_score"`
-		Hits []struct{
-			Index string			`json:"_index"`
-			Type string				`json:"_type"`
-			Id string				`json:"_id"`
-			Score float32			`json:"_score"`
-			Source interface{}		`json:"_source"`
-		}							`json:"hits"`
-	}								`json:"hits"`
+	Took     int  `json:"took"`
+	Time_out bool `json:"time_out"`
+	Shards   struct {
+		Total      int `json:"total"`
+		Successful int `json:"successful"`
+		Skipped    int `json:"skipped"`
+		Failed     int `json:"failed"`
+	} `json:"_shards"`
+	Hits struct {
+		Total struct {
+			Value    int    `json:"value"`
+			Relation string `json:"relation"`
+		} `json:"total"`
+		MaxScore float32 `json:"max_score"`
+		Hits     []struct {
+			Index  string      `json:"_index"`
+			Type   string      `json:"_type"`
+			Id     string      `json:"_id"`
+			Score  float32     `json:"_score"`
+			Source interface{} `json:"_source"`
+		} `json:"hits"`
+	} `json:"hits"`
 }
 
 func NewDBHandler() DatabaseHandler {
@@ -70,12 +69,12 @@ func (es *esHandler) Bootstrap() (err error) {
 	cf := internal.GetConfig()
 	logger.Info("Initializing Elasticsearch...")
 	if err = es.createIndex(taskIndex, cf.ES_TASK_MAPPING); err != nil {
-		logger.Error("failed to create '" + taskIndex + "' index: ", zap.Error(err))
+		logger.Error("failed to create '"+taskIndex+"' index: ", zap.Error(err))
 		return
 	}
 	logger.Info("'" + taskIndex + "' index created")
 	if err = es.createIndex(userIndex, cf.ES_USER_MAPPING); err != nil {
-		logger.Error("failed to create '" + userIndex + "' index: ", zap.Error(err))
+		logger.Error("failed to create '"+userIndex+"' index: ", zap.Error(err))
 		return
 	}
 	logger.Info("'" + userIndex + "' index created")
@@ -122,10 +121,10 @@ func (es *esHandler) search(index []string, request io.Reader) (data []interface
 	logger := internal.GetLogger()
 	req := esapi.SearchRequest{
 		Index: index,
-		Body: request,
+		Body:  request,
 	}
 	var res *esapi.Response
-	if res, err = req.Do(context.Background(), es.client);  err != nil {
+	if res, err = req.Do(context.Background(), es.client); err != nil {
 		return
 	}
 	if res.IsError() {
@@ -149,15 +148,15 @@ func (es *esHandler) search(index []string, request io.Reader) (data []interface
 
 func (es *esHandler) createIndex(name, mappingFile string) (err error) {
 	var mapping []byte
-	if mapping, err = ioutil.ReadFile(mappingFile);  err != nil {
+	if mapping, err = ioutil.ReadFile(mappingFile); err != nil {
 		return
 	}
 	req := esapi.IndicesCreateRequest{
 		Index: name,
-		Body: bytes.NewReader(mapping),
+		Body:  bytes.NewReader(mapping),
 	}
 	var res *esapi.Response
-	if res, err = req.Do(context.Background(), es.client);  err != nil {
+	if res, err = req.Do(context.Background(), es.client); err != nil {
 		return
 	}
 	defer res.Body.Close()
@@ -170,11 +169,11 @@ func (es *esHandler) createIndex(name, mappingFile string) (err error) {
 
 func (es *esHandler) indexNewDoc(index string, reader io.Reader) (err error) {
 	req := esapi.IndexRequest{
-		Index:		index,
-		Body: 		reader,
+		Index: index,
+		Body:  reader,
 	}
 	var res *esapi.Response
-	if res, err = req.Do(context.Background(), es.client);  err != nil {
+	if res, err = req.Do(context.Background(), es.client); err != nil {
 		return
 	}
 	if res.IsError() {
@@ -184,23 +183,22 @@ func (es *esHandler) indexNewDoc(index string, reader io.Reader) (err error) {
 	defer res.Body.Close()
 	return
 }
-
 
 // WARNING: no error return if some doc failed
 // Should use esutil to get a control on the nb of success / fail:
 // https://github.com/elastic/go-elasticsearch/blob/master/_examples/bulk/indexer.go#L199
 func (es *esHandler) bulkIngest(index, file, refresh string) (err error) {
 	var bulk []byte
-	if bulk, err = ioutil.ReadFile(file);  err != nil {
+	if bulk, err = ioutil.ReadFile(file); err != nil {
 		return
 	}
 	req := esapi.BulkRequest{
-		Index: index,
-		Body: bytes.NewReader(bulk),
+		Index:   index,
+		Body:    bytes.NewReader(bulk),
 		Refresh: refresh,
 	}
 	var res *esapi.Response
-	if res, err = req.Do(context.Background(), es.client);  err != nil {
+	if res, err = req.Do(context.Background(), es.client); err != nil {
 		return
 	}
 	defer res.Body.Close()
@@ -210,4 +208,3 @@ func (es *esHandler) bulkIngest(index, file, refresh string) (err error) {
 	}
 	return
 }
-
