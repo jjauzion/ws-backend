@@ -6,37 +6,39 @@ import (
 	"errors"
 	"fmt"
 	"github.com/jjauzion/ws-backend/graph/model"
-	"github.com/jjauzion/ws-backend/internal"
 	"github.com/mitchellh/mapstructure"
 	"go.uber.org/zap"
 	"strings"
 )
 
-func (es *esHandler) searchUser(query, param string) (user *model.User, err error) {
-	logger := internal.GetLogger()
+var (
+	ErrNotFound    = fmt.Errorf("user not found")
+	ErrTooManyRows = fmt.Errorf("found too many rows")
+)
+
+func (es *esHandler) searchUser(query, param string) (model.User, error) {
+	user := model.User{}
 	res, err := es.search([]string{userIndex}, strings.NewReader(query))
 	if err != nil {
-		logger.Error("", zap.Error(err))
+		es.log.Error("", zap.Error(err))
 	}
 	if len(res) == 0 {
-		logger.Info("user not found", zap.String("not found", param))
-		return
+		es.log.Info("user not found", zap.String("not found", param))
+		return user, ErrNotFound
 	}
 	if len(res) > 1 {
-		logger.Info("more than one user found", zap.String("not unique", param))
-		return
+		es.log.Info("more than one user found", zap.String("not unique", param))
+		return user, ErrTooManyRows
 	}
-	user = &model.User{}
 	if err = mapstructure.Decode(res[0], user); err != nil {
-		logger.Error("can't decode user", zap.Error(err))
-		return nil, err
+		es.log.Error("can't decode user", zap.Error(err))
+		return user, err
 	}
-	return
+	return user, nil
 }
 
-func (es *esHandler) GetUserByID(id string) (user *model.User, err error) {
-	logger := internal.GetLogger()
-	logger.Debug("searching user by id...")
+func (es *esHandler) GetUserByID(id string) (user model.User, err error) {
+	es.log.Debug("searching user by id...")
 	search := fmt.Sprintf(`{
 		"query": {
 			"match": {
@@ -49,13 +51,12 @@ func (es *esHandler) GetUserByID(id string) (user *model.User, err error) {
 	if user, err = es.searchUser(search, id); err != nil {
 		return
 	}
-	logger.Info("search successfully completed")
+	es.log.Info("search successfully completed")
 	return
 }
 
-func (es *esHandler) GetUserByEmail(email string) (user *model.User, err error) {
-	logger := internal.GetLogger()
-	logger.Debug("searching user by email...")
+func (es *esHandler) GetUserByEmail(email string) (user model.User, err error) {
+	es.log.Debug("searching user by email...")
 	search := fmt.Sprintf(`{
 		"query": {
 			"match": {
@@ -68,29 +69,30 @@ func (es *esHandler) GetUserByEmail(email string) (user *model.User, err error) 
 	if user, err = es.searchUser(search, email); err != nil {
 		return
 	}
-	logger.Info("search successfully completed")
+	es.log.Info("search successfully completed")
 	return
 }
 
 func (es *esHandler) CreateUser(user model.User) (err error) {
-	logger := internal.GetLogger()
-	logger.Debug("creating new user...")
-	if tmp, err := es.GetUserByEmail(user.Email); err !=  nil {
-		return err
-	} else if tmp != nil {
-		logger.Info("can't create user, user already exists", zap.String("email", user.Email))
+	es.log.Debug("creating new user...")
+	_, err = es.GetUserByEmail(user.Email)
+	if err != nil && err != ErrNotFound {
+		es.log.Error("cannot check if user exist", zap.Error(err))
+		return fmt.Errorf("cannot create user")
+	} else if err == nil {
+		es.log.Info("can't create user, user already exists", zap.String("email", user.Email))
 		err = errors.New("user already exists")
-		return err
+		return
 	}
 	var b []byte
 	if b, err = json.Marshal(user); err != nil {
-		logger.Error("failed to create user", zap.Error(err))
+		es.log.Error("failed to create user", zap.Error(err))
 		return
 	}
 	if err = es.indexNewDoc(userIndex, bytes.NewReader(b)); err != nil {
-		logger.Error("failed to create user", zap.Error(err))
+		es.log.Error("failed to create user", zap.Error(err))
 		return
 	}
-	logger.Info("new user successfully created", zap.String("email", user.Email))
+	es.log.Info("new user successfully created", zap.String("email", user.Email))
 	return
 }

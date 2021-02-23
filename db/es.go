@@ -8,7 +8,8 @@ import (
 	"fmt"
 	elasticsearch7 "github.com/elastic/go-elasticsearch/v7"
 	"github.com/elastic/go-elasticsearch/v7/esapi"
-	"github.com/jjauzion/ws-backend/internal"
+	"github.com/jjauzion/ws-backend/conf"
+	logger "github.com/jjauzion/ws-backend/internal/logger"
 	"go.uber.org/zap"
 	"io"
 	"io/ioutil"
@@ -21,6 +22,8 @@ const (
 
 type esHandler struct {
 	client *elasticsearch7.Client
+	log    *logger.Logger
+	cf     conf.Configuration
 }
 
 type esSearchResponse struct {
@@ -48,12 +51,14 @@ type esSearchResponse struct {
 	} `json:"hits"`
 }
 
-func NewDBHandler() DatabaseHandler {
-	logger := internal.GetLogger()
+func NewDBHandler(log *logger.Logger, cf conf.Configuration) DatabaseHandler {
 	var dbh DatabaseHandler
-	dbh = &esHandler{}
+	dbh = &esHandler{
+		log: log,
+		cf:  cf,
+	}
 	if err := dbh.new(); err != nil {
-		logger.Fatal("", zap.Error(err))
+		log.Fatal("", zap.Error(err))
 	}
 	return dbh
 }
@@ -65,42 +70,41 @@ func (es *esHandler) Info() string {
 }
 
 func (es *esHandler) Bootstrap() (err error) {
-	logger := internal.GetLogger()
-	cf := internal.GetConfig()
-	logger.Info("Initializing Elasticsearch...")
-	if err = es.createIndex(taskIndex, cf.ES_TASK_MAPPING); err != nil {
-		logger.Error("failed to create '"+taskIndex+"' index: ", zap.Error(err))
+	es.log.Info("Initializing Elasticsearch...")
+	if err = es.createIndex(taskIndex, es.cf.ES_TASK_MAPPING); err != nil {
+		es.log.Error("failed to create '"+taskIndex+"' index: ", zap.Error(err))
 		return
 	}
-	logger.Info("'" + taskIndex + "' index created")
-	if err = es.createIndex(userIndex, cf.ES_USER_MAPPING); err != nil {
-		logger.Error("failed to create '"+userIndex+"' index: ", zap.Error(err))
+	es.log.Info("'" + taskIndex + "' index created")
+	if err = es.createIndex(userIndex, es.cf.ES_USER_MAPPING); err != nil {
+		es.log.Error("failed to create '"+userIndex+"' index: ", zap.Error(err))
 		return
 	}
-	logger.Info("'" + userIndex + "' index created")
-	if err = es.bulkIngest(userIndex, cf.BOOTSTRAP_FILE, "true"); err != nil {
-		logger.Error("failed to bulk ingest: ", zap.Error(err))
+	es.log.Info("'" + userIndex + "' index created")
+	if err = es.bulkIngest(userIndex, es.cf.BOOTSTRAP_FILE, "true"); err != nil {
+		es.log.Error("failed to bulk ingest: ", zap.Error(err))
 		return
 	}
-	logger.Info("Elasticsearch successfully initialized !")
+	es.log.Info("Elasticsearch successfully initialized !")
 	return
 }
 
-func (es *esHandler) new() (err error) {
-	logger := internal.GetLogger()
-	cfg := internal.GetConfig()
-	logger.Info("connexion to ES cluster...")
+func (es *esHandler) new() error {
+	cfg, err := conf.GetConfig(es.log)
+	if err != nil {
+		return err
+	}
+	es.log.Info("connexion to ES cluster...")
 	address := cfg.WS_ES_HOST + ":" + cfg.WS_ES_PORT
 	esConfig := elasticsearch7.Config{
 		Addresses: []string{address},
 	}
 	es.client, err = elasticsearch7.NewClient(esConfig)
 	if err != nil {
-		logger.Error("couldn't connect to ES:", zap.Error(err))
-		return
+		return err
 	}
-	logger.Info("successfully connected to ES", zap.String("host", address))
-	return
+	es.log.Info("successfully connected to ES", zap.String("host", address))
+	return err
 }
 
 func (es *esHandler) parseError(res *esapi.Response) (err error) {
@@ -118,7 +122,6 @@ func (es *esHandler) parseError(res *esapi.Response) (err error) {
 }
 
 func (es *esHandler) search(index []string, request io.Reader) (data []interface{}, err error) {
-	logger := internal.GetLogger()
 	req := esapi.SearchRequest{
 		Index: index,
 		Body:  request,
@@ -138,7 +141,7 @@ func (es *esHandler) search(index []string, request io.Reader) (data []interface
 		return
 	}
 	if r.Shards.Failed > 0 {
-		logger.Info("some shards failed during the search", zap.Int("number", r.Shards.Failed))
+		es.log.Info("some shards failed during the search", zap.Int("number", r.Shards.Failed))
 	}
 	for i := 0; i < len(r.Hits.Hits); i++ {
 		data = append(data, r.Hits.Hits[i].Source)

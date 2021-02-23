@@ -5,6 +5,7 @@ package graph
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -15,25 +16,25 @@ import (
 )
 
 func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) (*model.User, error) {
-	dbh := db.NewDBHandler()
 	newUser := model.User{
 		ID:    uuid.New().String(),
 		Admin: true,
 		Email: input.Email,
 	}
-	if err := dbh.CreateUser(newUser); err != nil {
+	if err := r.DB.CreateUser(newUser); err != nil {
+		if err == db.ErrTooManyRows {
+			return nil, fmt.Errorf("user already exist")
+		}
 		return nil, err
 	}
+
 	return &newUser, nil
 }
 
 func (r *mutationResolver) CreateTask(ctx context.Context, input model.NewTask) (*model.Task, error) {
-	log := r.Log
-	dbh := r.DB
-
-	var user *model.User
+	var user model.User
 	var err error
-	if user, err = dbh.GetUserByID(input.UserID); err != nil {
+	if user, err = r.DB.GetUserByID(input.UserID); err != nil {
 		return nil, err
 	}
 	newJob := &model.Job{
@@ -51,14 +52,22 @@ func (r *mutationResolver) CreateTask(ctx context.Context, input model.NewTask) 
 		Failed:    false,
 		Job:       newJob,
 	}
-	if err = dbh.CreateTask(*newTask); err != nil {
+	if err = r.DB.CreateTask(*newTask); err != nil {
 		return nil, err
 	}
-	log.Info("task created", zap.String("id", newTask.ID))
+	r.Log.Info("task created", zap.String("id", newTask.ID))
 	return newTask, nil
+}
+
+func (r *queryResolver) ListTasks(ctx context.Context, userID string) ([]*model.Task, error) {
+	panic(fmt.Errorf("not implemented"))
 }
 
 // Mutation returns generated.MutationResolver implementation.
 func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
 
+// Query returns generated.QueryResolver implementation.
+func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
+
 type mutationResolver struct{ *Resolver }
+type queryResolver struct{ *Resolver }
