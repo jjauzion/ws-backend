@@ -40,7 +40,7 @@ input newUser {
 }
 
 type Query {
-    listTasks(userId: String!): [Task]
+    list_tasks(userId: String!): [Task]
 }
 
 type Mutation {

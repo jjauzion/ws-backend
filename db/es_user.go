@@ -23,15 +23,14 @@ func (es *esHandler) searchUser(query, param string) (model.User, error) {
 		es.log.Error("", zap.Error(err))
 	}
 	if len(res) == 0 {
-		es.log.Info("user not found", zap.String("not found", param))
 		return user, ErrNotFound
 	}
 	if len(res) > 1 {
 		es.log.Info("more than one user found", zap.String("not unique", param))
 		return user, ErrTooManyRows
 	}
-	if err = mapstructure.Decode(res[0], user); err != nil {
-		es.log.Error("can't decode user", zap.Error(err))
+	if err = mapstructure.Decode(res[0], &user); err != nil {
+		es.log.Error("can't decode user")
 		return user, err
 	}
 	return user, nil
@@ -77,12 +76,11 @@ func (es *esHandler) CreateUser(user model.User) (err error) {
 	es.log.Debug("creating new user...")
 	_, err = es.GetUserByEmail(user.Email)
 	if err != nil && err != ErrNotFound {
-		es.log.Error("cannot check if user exist", zap.Error(err))
-		return fmt.Errorf("cannot create user")
+		//es.log.Error("cannot check if user exist", zap.Error(err))
+		return fmt.Errorf("cannot create user: %w", err)
 	} else if err == nil {
 		es.log.Info("can't create user, user already exists", zap.String("email", user.Email))
-		err = errors.New("user already exists")
-		return
+		return errors.New("user already exists")
 	}
 	var b []byte
 	if b, err = json.Marshal(user); err != nil {

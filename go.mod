@@ -8,6 +8,8 @@ require (
 	github.com/google/uuid v1.2.0
 	github.com/mitchellh/mapstructure v1.4.1
 	github.com/spf13/viper v1.7.1
+	github.com/stretchr/testify v1.4.0
 	github.com/vektah/gqlparser/v2 v2.1.0
+	go.uber.org/multierr v1.5.0
 	go.uber.org/zap v1.16.0
 )

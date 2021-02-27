@@ -17,14 +17,16 @@ import (
 
 func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) (*model.User, error) {
 	newUser := model.User{
-		ID:    uuid.New().String(),
-		Admin: true,
-		Email: input.Email,
+		ID:        uuid.New().String(),
+		Admin:     true,
+		Email:     input.Email,
+		CreatedAt: time.Now(),
 	}
 	if err := r.DB.CreateUser(newUser); err != nil {
 		if err == db.ErrTooManyRows {
 			return nil, fmt.Errorf("user already exist")
 		}
+		r.Log.Warn("create user: ", zap.Error(err))
 		return nil, err
 	}
 
@@ -60,7 +62,20 @@ func (r *mutationResolver) CreateTask(ctx context.Context, input model.NewTask) 
 }
 
 func (r *queryResolver) ListTasks(ctx context.Context, userID string) ([]*model.Task, error) {
-	panic(fmt.Errorf("not implemented"))
+	res, err := r.DB.GetTasksByUserID(ctx, userID)
+	if err != nil {
+		r.Log.Warn("cannot get tasks", zap.String("user_id", userID), zap.Error(err))
+		return nil, err
+	}
+
+	tasks := model.Tasks{}
+	for _, re := range res {
+		tasks = append(tasks, &re)
+	}
+
+	r.Log.Debug("list tasks success", zap.Array("tasks", tasks))
+
+	return tasks, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.
