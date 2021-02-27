@@ -24,13 +24,10 @@ import (
 // bootstrapCmd represents the bootstrap command
 var bootstrapCmd = &cobra.Command{
 	Use:   "bootstrap",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "bootstrap database",
+	Long: `bootstrap the database: 
+- create all the index/table
+- load some initial data`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("bootstrap called")
 	},
@@ -49,3 +46,5 @@ func init() {
 	// is called directly, e.g.:
 	// bootstrapCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
+
+

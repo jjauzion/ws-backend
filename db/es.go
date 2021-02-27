@@ -99,6 +99,10 @@ func (es *esHandler) new() error {
 	if err != nil {
 		return err
 	}
+	_, err = es.client.Info()
+	if err != nil {
+		return err
+	}
 	es.log.Info("successfully connected to ES", zap.String("host", address))
 	return err
 }
