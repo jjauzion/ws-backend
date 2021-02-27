@@ -59,6 +59,7 @@ func Dependencies() (*graph.Resolver, error) {
 	ret := &graph.Resolver{
 		Log:     lg,
 		DB:      dbh,
+		Config:	 cf,
 		ApiPort: port,
 	}
 
