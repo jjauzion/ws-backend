@@ -26,9 +26,9 @@ func main() {
 		return
 	}
 
-	//if err := resolver.DB.Bootstrap(); err != nil {
-	//	return
-	//}
+	if err := resolver.DB.Bootstrap(); err != nil {
+		return
+	}
 
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: resolver}))
 
