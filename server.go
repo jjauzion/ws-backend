@@ -20,14 +20,15 @@ import (
 const defaultPort = "8080"
 
 func main() {
-	//if err := dbh.Bootstrap(); err != nil {
-	//	return
-	//}
 
 	resolver, err := Dependencies()
 	if err != nil {
 		return
 	}
+
+	//if err := resolver.DB.Bootstrap(); err != nil {
+	//	return
+	//}
 
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: resolver}))
 
