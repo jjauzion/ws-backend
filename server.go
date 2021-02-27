@@ -2,22 +2,18 @@ package main
 
 import (
 	"fmt"
-	"github.com/jjauzion/ws-backend/conf"
-	"log"
-	"net/http"
-	"os"
-
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/jjauzion/ws-backend/conf"
 	"go.uber.org/zap"
+	"log"
+	"net/http"
 
 	"github.com/jjauzion/ws-backend/db"
 	"github.com/jjauzion/ws-backend/graph"
 	"github.com/jjauzion/ws-backend/graph/generated"
 	"github.com/jjauzion/ws-backend/internal/logger"
 )
-
-const defaultPort = "8080"
 
 func main() {
 
@@ -40,11 +36,6 @@ func main() {
 }
 
 func Dependencies() (*graph.Resolver, error) {
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = defaultPort
-	}
-
 	lg, err := logger.ProvideLogger()
 	if err != nil {
 		log.Fatalf("cannot create logger %v", err)
@@ -60,7 +51,7 @@ func Dependencies() (*graph.Resolver, error) {
 		Log:     lg,
 		DB:      dbh,
 		Config:	 cf,
-		ApiPort: port,
+		ApiPort: cf.WS_API_PORT,
 	}
 
 	return ret, nil

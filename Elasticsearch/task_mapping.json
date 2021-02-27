@@ -18,8 +18,9 @@
         "type" : "date",
         "format" : "date_optional_time"
       },
-      "failed" : {
-        "type" : "boolean"
+      "status" : {
+        "type" : "keyword",
+        "ignore_above" : 256
       },
       "job" : {
         "properties" : {

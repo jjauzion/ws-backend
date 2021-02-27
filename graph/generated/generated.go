@@ -63,10 +63,10 @@ type ComplexityRoot struct {
 		CreatedAt func(childComplexity int) int
 		CreatedBy func(childComplexity int) int
 		EndedAt   func(childComplexity int) int
-		Failed    func(childComplexity int) int
 		ID        func(childComplexity int) int
 		Job       func(childComplexity int) int
 		StartedAt func(childComplexity int) int
+		Status    func(childComplexity int) int
 	}
 
 	User struct {
@@ -185,13 +185,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Task.EndedAt(childComplexity), true
 
-	case "Task.failed":
-		if e.complexity.Task.Failed == nil {
-			break
-		}
-
-		return e.complexity.Task.Failed(childComplexity), true
-
 	case "Task.id":
 		if e.complexity.Task.ID == nil {
 			break
@@ -212,6 +205,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Task.StartedAt(childComplexity), true
+
+	case "Task.status":
+		if e.complexity.Task.Status == nil {
+			break
+		}
+
+		return e.complexity.Task.Status(childComplexity), true
 
 	case "User.admin":
 		if e.complexity.User.Admin == nil {
@@ -318,8 +318,17 @@ type Task {
   created_at: Time!
   started_at: Time!
   ended_at: Time!
-  failed: Boolean!
+  status: Status!
   job: Job!
+}
+
+enum Status {
+  STATUSLESS
+  FAILED
+  NOT_STARTED
+  RUNNING
+  ENDED
+  CANCELED
 }
 
 type Job {
@@ -965,7 +974,7 @@ func (ec *executionContext) _Task_ended_at(ctx context.Context, field graphql.Co
 	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Task_failed(ctx context.Context, field graphql.CollectedField, obj *model.Task) (ret graphql.Marshaler) {
+func (ec *executionContext) _Task_status(ctx context.Context, field graphql.CollectedField, obj *model.Task) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -983,7 +992,7 @@ func (ec *executionContext) _Task_failed(ctx context.Context, field graphql.Coll
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Failed, nil
+		return obj.Status, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -995,9 +1004,9 @@ func (ec *executionContext) _Task_failed(ctx context.Context, field graphql.Coll
 		}
 		return graphql.Null
 	}
-	res := resTmp.(bool)
+	res := resTmp.(model.Status)
 	fc.Result = res
-	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+	return ec.marshalNStatus2githubᚗcomᚋjjauzionᚋwsᚑbackendᚋgraphᚋmodelᚐStatus(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Task_job(ctx context.Context, field graphql.CollectedField, obj *model.Task) (ret graphql.Marshaler) {
@@ -2478,8 +2487,8 @@ func (ec *executionContext) _Task(ctx context.Context, sel ast.SelectionSet, obj
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "failed":
-			out.Values[i] = ec._Task_failed(ctx, field, obj)
+		case "status":
+			out.Values[i] = ec._Task_status(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -2824,6 +2833,16 @@ func (ec *executionContext) marshalNJob2ᚖgithubᚗcomᚋjjauzionᚋwsᚑbacken
 		return graphql.Null
 	}
 	return ec._Job(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNStatus2githubᚗcomᚋjjauzionᚋwsᚑbackendᚋgraphᚋmodelᚐStatus(ctx context.Context, v interface{}) (model.Status, error) {
+	var res model.Status
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNStatus2githubᚗcomᚋjjauzionᚋwsᚑbackendᚋgraphᚋmodelᚐStatus(ctx context.Context, sel ast.SelectionSet, v model.Status) graphql.Marshaler {
+	return v
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
