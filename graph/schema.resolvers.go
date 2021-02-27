@@ -51,7 +51,7 @@ func (r *mutationResolver) CreateTask(ctx context.Context, input model.NewTask) 
 		CreatedAt: time.Now(),
 		StartedAt: time.Unix(0, 0),
 		EndedAt:   time.Unix(0, 0),
-		Failed:    false,
+		Status:    model.StatusNotStarted,
 		Job:       newJob,
 	}
 	if err = r.DB.CreateTask(*newTask); err != nil {
