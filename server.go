@@ -5,11 +5,11 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/jjauzion/ws-backend/conf"
+	"github.com/jjauzion/ws-backend/db"
 	"go.uber.org/zap"
 	"log"
 	"net/http"
 
-	"github.com/jjauzion/ws-backend/db"
 	"github.com/jjauzion/ws-backend/graph"
 	"github.com/jjauzion/ws-backend/graph/generated"
 	"github.com/jjauzion/ws-backend/internal/logger"
@@ -22,7 +22,7 @@ func main() {
 		return
 	}
 
-	if err := resolver.DB.Bootstrap(); err != nil {
+	if err := db.Bootstrap(resolver.DB, resolver.Log); err != nil {
 		return
 	}
 

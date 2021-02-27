@@ -81,10 +81,6 @@ func (es *esHandler) Bootstrap() (err error) {
 		return
 	}
 	es.log.Info("'" + userIndex + "' index created")
-	if err = es.bulkIngest(userIndex, es.cf.BOOTSTRAP_FILE, "true"); err != nil {
-		es.log.Error("failed to bulk ingest: ", zap.Error(err))
-		return
-	}
 	es.log.Info("Elasticsearch successfully initialized !")
 	return
 }
