@@ -53,7 +53,7 @@ var task1 = model.Task{
 	ID:        "id1",
 	CreatedBy: "user1",
 	CreatedAt: now,
-	Failed:    false,
+	Status:    model.StatusNotStarted,
 	Job: &model.Job{
 		ID:          "id1",
 		CreatedBy:   "user1",
@@ -67,7 +67,7 @@ var tasks = []model.Task{
 		ID:        "id3",
 		CreatedBy: "user3",
 		CreatedAt: now,
-		Failed:    false,
+		Status:    model.StatusNotStarted,
 		Job: &model.Job{
 			ID:          "id3",
 			CreatedBy:   "user3",
@@ -79,7 +79,7 @@ var tasks = []model.Task{
 		ID:        "id2",
 		CreatedBy: "user2",
 		CreatedAt: now,
-		Failed:    false,
+		Status:    model.StatusNotStarted,
 		Job: &model.Job{
 			ID:          "id2",
 			CreatedBy:   "user2",
@@ -106,7 +106,7 @@ func assertTask(t *testing.T, expected, got model.Task) {
 	if expected.ID != got.ID {
 		t.Errorf("expected %v, got %v", expected.ID, got.ID)
 	}
-	if expected.Failed != got.Failed {
-		t.Errorf("expected %v, got %v", expected.Failed, got.Failed)
+	if expected.Status != got.Status {
+		t.Errorf("expected %v, got %v", expected.Status, got.Status)
 	}
 }
