@@ -19,32 +19,32 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
+
+	"github.com/jjauzion/ws-backend/server"
 )
 
-// bootstrapCmd represents the bootstrap command
-var bootstrapCmd = &cobra.Command{
-	Use:   "bootstrap",
-	Short: "bootstrap database",
-	Long: `bootstrap the database: 
-- create all the index/table
-- load some initial data`,
+// runCmd represents the run command
+var runCmd = &cobra.Command{
+	Use:   "run",
+	Short: "start a new API server",
+	Long: `start a new API server`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("bootstrap called")
+		bootstrap, _ := cmd.Flags().GetBool("bootstrap")
+		fmt.Println("run called")
+		server.Run(bootstrap)
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(bootstrapCmd)
+	rootCmd.AddCommand(runCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// bootstrapCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// runCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// bootstrapCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	runCmd.Flags().BoolP("bootstrap", "b", false, "Initialized DB")
 }
-
-

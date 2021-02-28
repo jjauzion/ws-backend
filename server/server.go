@@ -1,10 +1,9 @@
-package main
+package server
 
 import (
 	"fmt"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/jjauzion/ws-backend/cmd"
 	"github.com/jjauzion/ws-backend/conf"
 	"github.com/jjauzion/ws-backend/db"
 	"go.uber.org/zap"
@@ -16,16 +15,16 @@ import (
 	"github.com/jjauzion/ws-backend/internal/logger"
 )
 
-func main() {
-
-	cmd.Execute()
+func Run(bootstrap bool) {
 	resolver, err := Dependencies()
 	if err != nil {
 		return
 	}
 
-	if err := db.Bootstrap(resolver.DB, resolver.Log); err != nil {
-		return
+	if bootstrap {
+		if err := db.Bootstrap(resolver.DB, resolver.Log); err != nil {
+			return
+		}
 	}
 
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: resolver}))
