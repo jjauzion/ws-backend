@@ -6,9 +6,9 @@ services:
       - es01
     image: docker.elastic.co/kibana/kibana:7.11.0
     environment:
-      ELASTICSEARCH_HOSTS: http://es01:9200
+      ELASTICSEARCH_HOSTS: "http://es01:${WS_ES_PORT:?err}"
     ports:
-      - 5601:5601
+      - "${WS_KIBANA_PORT:?err}:${WS_KIBANA_PORT:?err}"
     networks:
       - ws_network
 
@@ -21,7 +21,7 @@ services:
       - cluster.initial_master_nodes=es01
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     ports:
-    - 9200:9200
+      - "${WS_ES_PORT:?err}:${WS_ES_PORT:?err}"
     networks:
       - ws_network
 

@@ -1,29 +1,31 @@
-package main
+package server
 
 import (
 	"fmt"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/jjauzion/ws-backend/conf"
+	"github.com/jjauzion/ws-backend/db"
 	"go.uber.org/zap"
 	"log"
 	"net/http"
 
-	"github.com/jjauzion/ws-backend/db"
 	"github.com/jjauzion/ws-backend/graph"
 	"github.com/jjauzion/ws-backend/graph/generated"
 	"github.com/jjauzion/ws-backend/internal/logger"
 )
 
-func main() {
-
+func Run(bootstrap bool) {
 	resolver, err := Dependencies()
 	if err != nil {
 		return
 	}
 
-	if err := resolver.DB.Bootstrap(); err != nil {
-		return
+	if bootstrap {
+		if err := db.Bootstrap(resolver.DB, resolver.Log); err != nil {
+			resolver.Log.Error("bootstrap failed", zap.Error(err))
+			return
+		}
 	}
 
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: resolver}))
@@ -50,7 +52,7 @@ func Dependencies() (*graph.Resolver, error) {
 	ret := &graph.Resolver{
 		Log:     lg,
 		DB:      dbh,
-		Config:	 cf,
+		Config:  cf,
 		ApiPort: cf.WS_API_PORT,
 	}
 

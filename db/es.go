@@ -81,25 +81,22 @@ func (es *esHandler) Bootstrap() (err error) {
 		return
 	}
 	es.log.Info("'" + userIndex + "' index created")
-	if err = es.bulkIngest(userIndex, es.cf.BOOTSTRAP_FILE, "true"); err != nil {
-		es.log.Error("failed to bulk ingest: ", zap.Error(err))
-		return
-	}
 	es.log.Info("Elasticsearch successfully initialized !")
 	return
 }
 
 func (es *esHandler) new() error {
-	cfg, err := conf.GetConfig(es.log)
-	if err != nil {
-		return err
-	}
 	es.log.Info("connexion to ES cluster...")
-	address := cfg.WS_ES_HOST + ":" + cfg.WS_ES_PORT
+	address := es.cf.WS_ES_HOST + ":" + es.cf.WS_ES_PORT
 	esConfig := elasticsearch7.Config{
 		Addresses: []string{address},
 	}
+	var err error
 	es.client, err = elasticsearch7.NewClient(esConfig)
+	if err != nil {
+		return err
+	}
+	_, err = es.client.Info()
 	if err != nil {
 		return err
 	}
