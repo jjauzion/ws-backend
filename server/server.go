@@ -22,7 +22,7 @@ func Run(bootstrap bool) {
 	}
 
 	if bootstrap {
-		if err := db.Bootstrap(resolver.DB, resolver.Log); err != nil {
+		if err := db.Bootstrap(resolver.DB); err != nil {
 			resolver.Log.Error("bootstrap failed", zap.Error(err))
 			return
 		}

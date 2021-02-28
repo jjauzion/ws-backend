@@ -1,0 +1,96 @@
+{
+  "definitions": [
+    {
+      "protopath": "proto:/:api.proto",
+      "def": {
+        "messages": [
+          {
+            "name": "StartTaskReq",
+            "fields": [
+              {
+                "id": 1,
+                "name": "withGPU",
+                "type": "bool"
+              }
+            ]
+          },
+          {
+            "name": "StartTaskRep",
+            "fields": [
+              {
+                "id": 1,
+                "name": "taskId",
+                "type": "string"
+              },
+              {
+                "id": 2,
+                "name": "job",
+                "type": "Job"
+              }
+            ]
+          },
+          {
+            "name": "EndTaskReq",
+            "fields": [
+              {
+                "id": 1,
+                "name": "taskId",
+                "type": "string"
+              },
+              {
+                "id": 2,
+                "name": "error",
+                "type": "string",
+                "is_repeated": true
+              }
+            ]
+          },
+          {
+            "name": "EndTaskRep"
+          },
+          {
+            "name": "Job",
+            "fields": [
+              {
+                "id": 1,
+                "name": "dockerImage",
+                "type": "string"
+              },
+              {
+                "id": 2,
+                "name": "dataset",
+                "type": "string"
+              }
+            ]
+          }
+        ],
+        "services": [
+          {
+            "name": "Api",
+            "rpcs": [
+              {
+                "name": "StartTask",
+                "in_type": "StartTaskReq",
+                "out_type": "StartTaskRep"
+              },
+              {
+                "name": "EndTask",
+                "in_type": "EndTaskReq",
+                "out_type": "EndTaskRep"
+              }
+            ]
+          }
+        ],
+        "package": {
+          "name": "ws_backend"
+        },
+        "options": [
+          {
+            "name": "go_package",
+            "value": ".;proto"
+          }
+        ]
+      }
+    }
+  ]
+}

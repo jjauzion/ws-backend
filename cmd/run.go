@@ -27,8 +27,9 @@ var runCmd = &cobra.Command{
 	Short: "start a new API server",
 	Long:  `start a new API server`,
 	Run: func(cmd *cobra.Command, args []string) {
-		bootstrap, _ := cmd.Flags().GetBool("bootstrap")
-		server.Run(bootstrap)
+		//bootstrap, _ := cmd.Flags().GetBool("bootstrap")
+		// server.Run(bootstrap)
+		server.RunGRPC()
 	},
 }
 
