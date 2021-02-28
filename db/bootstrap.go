@@ -15,10 +15,10 @@ func Bootstrap(dbh DatabaseHandler, log *logger.Logger) error {
 		return err
 	}
 	userSimple := model.User{
-		ID: uuid.New().String(),
+		ID:        uuid.New().String(),
 		CreatedAt: time.Now(),
-		Email: "simple-user@email.com",
-		Admin: false,
+		Email:     "simple-user@email.com",
+		Admin:     false,
 	}
 	err = dbh.CreateUser(userSimple)
 	if err != nil {
@@ -26,10 +26,10 @@ func Bootstrap(dbh DatabaseHandler, log *logger.Logger) error {
 		return err
 	}
 	userAdmin := model.User{
-		ID: uuid.New().String(),
+		ID:        uuid.New().String(),
 		CreatedAt: time.Now(),
-		Email: "admin-user@email.com",
-		Admin: true,
+		Email:     "admin-user@email.com",
+		Admin:     true,
 	}
 	err = dbh.CreateUser(userAdmin)
 	if err != nil {
@@ -38,13 +38,13 @@ func Bootstrap(dbh DatabaseHandler, log *logger.Logger) error {
 	}
 	dataset := "s3://task1"
 	task1 := model.Task{
-		ID: uuid.New().String(),
+		ID:        uuid.New().String(),
 		CreatedAt: time.Now(),
-		StartedAt: time.Unix(0,0),
-		EndedAt: time.Unix(0,0),
-		Status: model.StatusNotStarted,
+		StartedAt: time.Unix(0, 0),
+		EndedAt:   time.Unix(0, 0),
+		Status:    model.StatusNotStarted,
 		CreatedBy: userAdmin.ID,
-		Job: &model.Job{ID: uuid.New().String(), CreatedBy: userAdmin.ID, Dataset: &dataset},
+		Job:       &model.Job{ID: uuid.New().String(), CreatedBy: userAdmin.ID, Dataset: &dataset},
 	}
 	err = dbh.CreateTask(task1)
 	if err != nil {

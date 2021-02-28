@@ -13,6 +13,6 @@ import (
 type Resolver struct {
 	Log     *logger.Logger
 	DB      db.DatabaseHandler
-	Config	conf.Configuration
+	Config  conf.Configuration
 	ApiPort string
 }

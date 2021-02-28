@@ -16,7 +16,6 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -27,7 +26,7 @@ var cfgFile string
 var rootCmd = &cobra.Command{
 	Use:   "ws-backend",
 	Short: "Backend API",
-	Long: `Backend API to manage User, Jobs and task lists`,
+	Long:  `Backend API to manage User, Jobs and task lists`,
 
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
@@ -51,7 +50,7 @@ func init() {
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	//rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -63,12 +62,10 @@ func initConfig() {
 	}
 
 	if err := viper.MergeInConfig(); err != nil {
-		fmt.Println("error:", err)
-		return
+		panic(err)
 	}
 	viper.SetConfigFile(".env")
 	if err := viper.MergeInConfig(); err != nil {
-		fmt.Println("error:", err)
-		return
+		panic(err)
 	}
 }

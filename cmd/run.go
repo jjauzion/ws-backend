@@ -16,8 +16,6 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 
 	"github.com/jjauzion/ws-backend/server"
@@ -27,10 +25,9 @@ import (
 var runCmd = &cobra.Command{
 	Use:   "run",
 	Short: "start a new API server",
-	Long: `start a new API server`,
+	Long:  `start a new API server`,
 	Run: func(cmd *cobra.Command, args []string) {
 		bootstrap, _ := cmd.Flags().GetBool("bootstrap")
-		fmt.Println("run called")
 		server.Run(bootstrap)
 	},
 }
