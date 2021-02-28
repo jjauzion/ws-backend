@@ -1,18 +1,20 @@
-EXE = ws-backend
+EXE = ./ws-backend
+GRAPHQL_FILES = graph/schema.resolvers.go
+SRC_FILES = $(wildcard *.go) \
+            $(wildcard */*.go)
 
-all: lint graphql build
+all: lint $(GRAPHQL_FILES) $(EXE)
 
-graph/schema.resolvers.go: graph/schema.graphqls
+$(EXE): $(SRC_FILES)
+	go build -o $(EXE)
+
+$(GRAPHQL_FILES): graph/schema.graphqls
 	go run github.com/99designs/gqlgen generate
 
 .PHONY: lint
 lint:
 	go fmt ./...
 	go vet ./...
-
-.PHONY: build
-build:
-	go build -o $(EXE)
 
 .PHONY: run
 run: all
