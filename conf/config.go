@@ -16,15 +16,8 @@ type Configuration struct {
 
 func GetConfig(log *logger.Logger) (Configuration, error) {
 	cf := Configuration{}
-	//viper.SetConfigFile("conf/config.yaml")
-	//if err := viper.MergeInConfig(); err != nil {
-	//	return cf, err
-	//}
-	//viper.SetConfigFile(".env")
-	//if err := viper.MergeInConfig(); err != nil {
-	//	return cf, err
-	//}
-	if err := viper.Unmarshal(&cf); err != nil {
+	err := viper.Unmarshal(&cf)
+	if err != nil {
 		return cf, err
 	}
 	log.Info("configuration loaded")

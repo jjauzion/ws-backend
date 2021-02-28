@@ -61,11 +61,13 @@ func initConfig() {
 		viper.SetConfigFile("conf/config.yaml")
 	}
 
-	if err := viper.MergeInConfig(); err != nil {
+	err := viper.MergeInConfig()
+	if err != nil {
 		panic(err)
 	}
 	viper.SetConfigFile(".env")
-	if err := viper.MergeInConfig(); err != nil {
+	err = viper.MergeInConfig()
+	if err != nil {
 		panic(err)
 	}
 }
