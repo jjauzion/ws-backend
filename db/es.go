@@ -10,6 +10,7 @@ import (
 	"github.com/elastic/go-elasticsearch/v7/esapi"
 	"github.com/jjauzion/ws-backend/conf"
 	logger "github.com/jjauzion/ws-backend/internal/logger"
+	"github.com/olivere/elastic/v7"
 	"go.uber.org/zap"
 	"io"
 	"io/ioutil"
@@ -21,9 +22,10 @@ const (
 )
 
 type esHandler struct {
-	client *elasticsearch7.Client
-	log    *logger.Logger
-	cf     conf.Configuration
+	client  *elasticsearch7.Client
+	log     *logger.Logger
+	cf      conf.Configuration
+	elastic *elastic.Client
 }
 
 type esSearchResponse struct {
@@ -51,15 +53,17 @@ type esSearchResponse struct {
 	} `json:"hits"`
 }
 
-func NewDBHandler(log *logger.Logger, cf conf.Configuration) DatabaseHandler {
+func NewDBHandler(log *logger.Logger, cf conf.Configuration, elastic *elastic.Client) DatabaseHandler {
 	var dbh DatabaseHandler
 	dbh = &esHandler{
-		log: log,
-		cf:  cf,
+		log:     log,
+		cf:      cf,
+		elastic: elastic,
 	}
 	if err := dbh.new(); err != nil {
 		log.Fatal("", zap.Error(err))
 	}
+
 	return dbh
 }
 
@@ -207,4 +211,25 @@ func (es *esHandler) bulkIngest(index, file, refresh string) (err error) {
 		return
 	}
 	return
+}
+
+type Itr func(*elastic.SearchHit) error
+
+func (es *esHandler) elasticSearch(ctx context.Context, index string, query *elastic.MatchQuery, itr Itr) (*elastic.SearchResult, error) {
+	searchSource := elastic.NewSearchSource()
+	searchSource.Query(query)
+	searchService := es.elastic.Search().Index(index).SearchSource(searchSource)
+	searchResult, err := searchService.Do(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, hit := range searchResult.Hits.Hits {
+		err = itr(hit)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return searchResult, nil
 }

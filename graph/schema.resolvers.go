@@ -10,19 +10,18 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jjauzion/ws-backend/db"
-	"github.com/jjauzion/ws-backend/graph/generated"
-	"github.com/jjauzion/ws-backend/graph/model"
 	"go.uber.org/zap"
 )
 
-func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) (*model.User, error) {
-	newUser := model.User{
+func (r *mutationResolver) CreateUser(ctx context.Context, input NewUser) (*User, error) {
+	newUser := db.User{
 		ID:        uuid.New().String(),
 		Admin:     true,
 		Email:     input.Email,
 		CreatedAt: time.Now(),
 	}
-	if err := r.DB.CreateUser(newUser); err != nil {
+	err := r.DB.CreateUser(newUser)
+	if err != nil {
 		if err == db.ErrTooManyRows {
 			return nil, fmt.Errorf("user already exist")
 		}
@@ -30,47 +29,46 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) 
 		return nil, err
 	}
 
-	return &newUser, nil
+	return UserFromDBModel(newUser).Ptr(), nil
 }
 
-func (r *mutationResolver) CreateTask(ctx context.Context, input model.NewTask) (*model.Task, error) {
-	var user model.User
-	var err error
-	if user, err = r.DB.GetUserByID(input.UserID); err != nil {
+func (r *mutationResolver) CreateTask(ctx context.Context, input NewTask) (*Task, error) {
+	mu, err := r.DB.GetUserByID(input.UserID)
+	if err != nil {
 		return nil, err
 	}
-	newJob := &model.Job{
-		ID:          uuid.New().String(),
-		CreatedBy:   user.ID,
+
+	user := UserFromDBModel(mu)
+	newJob := db.Job{
 		DockerImage: input.DockerImage,
-		Dataset:     input.Dataset,
+		Dataset:     *input.Dataset,
 	}
-	newTask := &model.Task{
+	newTask := db.Task{
 		ID:        uuid.New().String(),
-		CreatedBy: user.ID,
+		UserId:    user.ID,
 		CreatedAt: time.Now(),
 		StartedAt: time.Unix(0, 0),
 		EndedAt:   time.Unix(0, 0),
-		Status:    model.StatusNotStarted,
+		Status:    db.StatusNotStarted,
 		Job:       newJob,
 	}
-	if err = r.DB.CreateTask(*newTask); err != nil {
+	if err = r.DB.CreateTask(newTask); err != nil {
 		return nil, err
 	}
 	r.Log.Info("task created", zap.String("id", newTask.ID))
-	return newTask, nil
+	return TaskFromDBModel(newTask).Ptr(), nil
 }
 
-func (r *queryResolver) ListTasks(ctx context.Context, userID string) ([]*model.Task, error) {
+func (r *queryResolver) ListTasks(ctx context.Context, userID string) ([]*Task, error) {
 	res, err := r.DB.GetTasksByUserID(ctx, userID)
 	if err != nil {
 		r.Log.Warn("cannot get tasks", zap.String("user_id", userID), zap.Error(err))
 		return nil, err
 	}
 
-	tasks := model.Tasks{}
+	tasks := Tasks{}
 	for _, re := range res {
-		tasks = append(tasks, &re)
+		tasks = append(tasks, TaskFromDBModel(re).Ptr())
 	}
 
 	r.Log.Debug("list tasks success", zap.Array("tasks", tasks))
@@ -78,11 +76,11 @@ func (r *queryResolver) ListTasks(ctx context.Context, userID string) ([]*model.
 	return tasks, nil
 }
 
-// Mutation returns generated.MutationResolver implementation.
-func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
+// Mutation returns MutationResolver implementation.
+func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 
-// Query returns generated.QueryResolver implementation.
-func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
+// Query returns QueryResolver implementation.
+func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }

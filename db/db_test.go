@@ -5,6 +5,7 @@ import (
 	elasticsearch7 "github.com/elastic/go-elasticsearch/v7"
 	"github.com/jjauzion/ws-backend/conf"
 	"github.com/jjauzion/ws-backend/internal/logger"
+	"github.com/olivere/elastic/v7"
 	"go.uber.org/zap"
 	"os"
 	"testing"
@@ -26,10 +27,15 @@ func TestMain(m *testing.M) {
 	}
 	lg := zap.NewNop()
 
+	elst, err := elastic.NewClient(elastic.SetURL(address),
+		elastic.SetSniff(false),
+		elastic.SetHealthcheck(false))
+
 	dbh = &esHandler{
-		client: client,
-		cf:     conf.Configuration{},
-		log:    &logger.Logger{Logger: lg},
+		client:  client,
+		cf:      conf.Configuration{},
+		log:     &logger.Logger{Logger: lg},
+		elastic: elst,
 	}
 	code := m.Run()
 	if code != 0 {

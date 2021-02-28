@@ -5,14 +5,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/jjauzion/ws-backend/graph/model"
-	"github.com/mitchellh/mapstructure"
-	"go.uber.org/multierr"
+	"github.com/olivere/elastic/v7"
 	"go.uber.org/zap"
 	"strings"
 )
 
-func (es *esHandler) CreateTask(task model.Task) (err error) {
+func (es *esHandler) CreateTask(task Task) (err error) {
 	es.log.Debug("creating new task...")
 	var b []byte
 	if b, err = json.Marshal(task); err != nil {
@@ -26,18 +24,10 @@ func (es *esHandler) CreateTask(task model.Task) (err error) {
 	return
 }
 
-func (es *esHandler) GetTasksByUserID(ctx context.Context, id string) ([]model.Task, error) {
+func (es *esHandler) GetTasksByUserID(ctx context.Context, id string) ([]Task, error) {
 	es.log.Debug("get tasks for user", zap.String("user_id", id))
-	search := fmt.Sprintf(`{
-		"query": {
-			"match": {
-			  "created_by": {
-				"query": "%s"
-			  }
-			}
-		}
-    }`, id)
-	tasks, err := es.searchTasks(nil, search)
+	query := elastic.NewMatchQuery("user_id", id)
+	tasks, err := es.searchTasks(ctx, query)
 	if err != nil {
 		return nil, err
 	}
@@ -84,25 +74,22 @@ func (es *esHandler) DeleteUserTasks(ctx context.Context, userID string) error {
 	return nil
 }
 
-func (es *esHandler) searchTasks(ctx context.Context, query string) ([]model.Task, error) {
-	tasks := []model.Task{}
-	res, err := es.search([]string{taskIndex}, strings.NewReader(query))
-	if err != nil {
-		es.log.Error("es search", zap.Error(err))
-		return nil, err
-	}
+func (es *esHandler) searchTasks(ctx context.Context, query *elastic.MatchQuery) ([]Task, error) {
+	var tasks []Task
 
-	for _, re := range res {
-		t := model.Task{}
-		es.log.Debug("decode res", zap.Any("json", re))
-		e := mapstructure.Decode(re, &t)
-		if e != nil {
-			err = multierr.Append(err, e)
-		} else {
-			tasks = append(tasks, t)
+	_, err := es.elasticSearch(ctx, taskIndex, query, func(hit *elastic.SearchHit) error {
+		var task Task
+		err := json.Unmarshal(hit.Source, &task)
+		if err != nil {
+			es.log.Warn("json failed", zap.Error(err))
+			return err
 		}
-		es.log.Debug("after decode", zap.Any("task", t))
-	}
+
+		es.log.Debug("task found", zap.String(task.UserId, "ok"))
+
+		tasks = append(tasks, task)
+		return nil
+	})
 
 	return tasks, err
 }

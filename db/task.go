@@ -1,4 +1,4 @@
-package model
+package db
 
 import (
 	"go.uber.org/zap/zapcore"
@@ -8,7 +8,7 @@ type Tasks []*Task
 
 func (t *Task) MarshalLogObject(encoder zapcore.ObjectEncoder) error {
 	encoder.AddString("id", t.ID)
-	encoder.AddString("user_id", t.CreatedBy)
+	encoder.AddString("user_id", t.UserId)
 	return nil
 }
 

@@ -4,12 +4,15 @@ import (
 	"fmt"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/jjauzion/ws-backend/conf"
 	"github.com/jjauzion/ws-backend/db"
+	"github.com/olivere/elastic/v7"
 	"go.uber.org/zap"
+	"log"
 	"net/http"
 
 	"github.com/jjauzion/ws-backend/graph"
-	"github.com/jjauzion/ws-backend/graph/generated"
+	"github.com/jjauzion/ws-backend/internal/logger"
 )
 
 func RunGraphQL(bootstrap bool) {
