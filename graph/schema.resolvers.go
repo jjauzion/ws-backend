@@ -20,7 +20,7 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input NewUser) (*User
 		Email:     input.Email,
 		CreatedAt: time.Now(),
 	}
-	err := r.DB.CreateUser(newUser)
+	err := r.DB.CreateUser(nil, newUser)
 	if err != nil {
 		if err == db.ErrTooManyRows {
 			return nil, fmt.Errorf("user already exist")
@@ -33,7 +33,7 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input NewUser) (*User
 }
 
 func (r *mutationResolver) CreateTask(ctx context.Context, input NewTask) (*Task, error) {
-	mu, err := r.DB.GetUserByID(input.UserID)
+	mu, err := r.DB.GetUserByID(nil, input.UserID)
 	if err != nil {
 		return nil, err
 	}

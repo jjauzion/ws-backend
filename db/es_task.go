@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"encoding/json"
+
 	"github.com/olivere/elastic/v7"
 	"go.uber.org/zap"
 )

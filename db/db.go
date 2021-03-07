@@ -9,9 +9,10 @@ type DatabaseHandler interface {
 	Info() string
 	Bootstrap(ctx context.Context) error
 
-	GetUserByEmail(email string) (User, error)
-	GetUserByID(id string) (User, error)
-	CreateUser(user User) error
+	GetUserByEmail(ctx context.Context, email string) (User, error)
+	GetUserByID(ctx context.Context, id string) (User, error)
+	CreateUser(ctx context.Context, user User) error
+	DeleteUser(ctx context.Context, id string) error
 
 	GetTasksByUserID(ctx context.Context, id string) ([]Task, error)
 	DeleteTask(ctx context.Context, id string) error

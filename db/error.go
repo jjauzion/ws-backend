@@ -1,0 +1,8 @@
+package db
+
+import "fmt"
+
+var (
+	ErrNotFound    = fmt.Errorf("user not found")
+	ErrTooManyRows = fmt.Errorf("found too many rows")
+)

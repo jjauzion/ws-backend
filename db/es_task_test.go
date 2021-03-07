@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func TestScene1(t *testing.T) {
+func TestTask(t *testing.T) {
 	wait := time.Millisecond * 1100
 	t.Run("remove all user1 tasks", func(t *testing.T) {
 		err := dbh.DeleteUserTasks(ctx, task1.UserId)

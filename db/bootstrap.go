@@ -17,7 +17,7 @@ func Bootstrap(ctx context.Context, dbh DatabaseHandler) error {
 		Email:     "simple-user@email.com",
 		Admin:     false,
 	}
-	err = dbh.CreateUser(userSimple)
+	err = dbh.CreateUser(nil, userSimple)
 	if err != nil {
 		return err
 	}
@@ -27,7 +27,7 @@ func Bootstrap(ctx context.Context, dbh DatabaseHandler) error {
 		Email:     "admin-user@email.com",
 		Admin:     true,
 	}
-	err = dbh.CreateUser(userAdmin)
+	err = dbh.CreateUser(nil, userAdmin)
 	if err != nil {
 		return err
 	}

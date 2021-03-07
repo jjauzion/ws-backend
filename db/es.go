@@ -219,6 +219,26 @@ func (es *esHandler) bulkIngest(index, file, refresh string) (err error) {
 
 type Itr func(*elastic.SearchHit) error
 
+func (es *esHandler) elasticSearchOne(ctx context.Context, index string, query *elastic.MatchQuery) (*elastic.SearchHit, error) {
+	searchSource := elastic.NewSearchSource()
+	searchSource.Query(query)
+	searchService := es.elastic.Search().Index(index).SearchSource(searchSource)
+	searchResult, err := searchService.Do(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if searchResult.TotalHits() == 0 {
+		return nil, ErrNotFound
+	}
+	if searchResult.TotalHits() > 1 {
+		return nil, ErrTooManyRows
+	}
+	if searchResult.TotalHits() == 1 {
+		return searchResult.Hits.Hits[0], nil
+	}
+	return nil, fmt.Errorf("something wrong happened")
+}
+
 func (es *esHandler) elasticSearch(ctx context.Context, index string, query *elastic.MatchQuery, itr Itr) (*elastic.SearchResult, error) {
 	searchSource := elastic.NewSearchSource()
 	searchSource.Query(query)
