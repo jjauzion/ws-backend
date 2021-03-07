@@ -17,12 +17,18 @@ type grpcServer struct {
 	pb.UnimplementedApiServer
 }
 
-func (s *grpcServer) StartTask(context.Context, *pb.StartTaskReq) (*pb.StartTaskRep, error) {
-	rep := &pb.StartTaskRep{
-		Job:    &pb.Job{Dataset: "s3://test-dataset", DockerImage: "ghcr.io/pathtoimage"},
-		TaskId: uuid.New().String(),
+func (s *grpcServer) StartTask(ctx context.Context, req *pb.StartTaskReq) (*pb.StartTaskRep, error) {
+	var err error
+	var rep *pb.StartTaskRep
+	if req.WithGPU {
+		rep = &pb.StartTaskRep{
+			Job:    &pb.Job{Dataset: "s3://test-dataset", DockerImage: "ghcr.io/pathtoimage"},
+			TaskId: uuid.New().String(),
+		}
+	} else {
+		err = errNoTasksInQueue
 	}
-	return rep, nil
+	return rep, err
 }
 
 func (s *grpcServer) EndTask(context.Context, *pb.EndTaskReq) (*pb.EndTaskRep, error) {

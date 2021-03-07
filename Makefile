@@ -38,3 +38,14 @@ gql: all
 .PHONY: grpc
 grpc: all
 	$(EXE) run grpc $(FLAG)
+
+.PHONY: elastic
+elastic:
+	docker-compose config -q
+	docker-compose rm -svf
+	docker-compose up -d
+
+.PHONY: down
+down:
+	docker-compose down
+	docker-compose rm -svf
