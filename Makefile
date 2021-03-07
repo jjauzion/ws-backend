@@ -9,6 +9,8 @@ SRC_FILES = $(wildcard *.go) \
 # PROTO_FILES = $(wildcard proto/*.proto)
 PB_FILES = $(patsubst proto/%.proto,proto/%.pb.go,$(wildcard proto/*.proto))
 
+FLAG ?= ""
+
 all: $(GRAPHQL_FILES) $(PB_FILES) lint $(EXE)
 
 $(EXE): $(SRC_FILES)
@@ -29,10 +31,10 @@ lint:
 	go fmt ./...
 	go vet ./...
 
-.PHONY: run
-run: all
-	$(EXE) run
+.PHONY: gq
+gq: all
+	$(EXE) run gq $(FLAG)
 
-.PHONY: bootstrap
-bootstrap: all
-	$(EXE) run --bootstrap
+.PHONY: grpc
+grpc: all
+	$(EXE) run grpc $(FLAG)
