@@ -16,8 +16,6 @@ limitations under the License.
 
 package main
 
-//go:generate go run github.com/99designs/gqlgen generate
-
 import "github.com/jjauzion/ws-backend/cmd"
 
 func main() {

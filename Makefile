@@ -38,7 +38,3 @@ gql: all
 .PHONY: grpc
 grpc: all
 	$(EXE) run grpc $(FLAG)
-
-.PHONY:  gen
-gen:
-	go generate ./...
