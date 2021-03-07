@@ -2,8 +2,7 @@ package server
 
 import (
 	"context"
-	"github.com/jjauzion/ws-backend/conf"
-	"github.com/jjauzion/ws-backend/internal/logger"
+	"github.com/jjauzion/ws-backend/db"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -25,16 +24,19 @@ func (s *grpcServer) EndTask(context.Context, *pb.EndTaskReq) (*pb.EndTaskRep, e
 	return nil, errors.New("NOT IMPLEMENTED")
 }
 
-func RunGRPC() {
-	lg, err := logger.ProvideLogger()
+func RunGRPC(bootstrap bool) {
+	lg, cf, dbh, err := dependencies()
 	if err != nil {
-		log.Fatalf("cannot create logger %v", err)
+		return
 	}
 
-	cf, err := conf.GetConfig(lg)
-	if err != nil {
-		log.Fatalf("cannot get config %v", err)
+	if bootstrap {
+		if err := db.Bootstrap(dbh); err != nil {
+			lg.Error("bootstrap failed", zap.Error(err))
+			return
+		}
 	}
+
 	port := ":" + cf.WS_GRPC_PORT
 	lis, err := net.Listen("tcp", port)
 	if err != nil {
