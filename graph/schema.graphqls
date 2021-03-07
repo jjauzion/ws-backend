@@ -7,7 +7,7 @@ scalar Time
 
 type Task {
   id: ID!
-  created_by: String!
+  user_id: String!
   created_at: Time!
   started_at: Time!
   ended_at: Time!

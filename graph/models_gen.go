@@ -16,7 +16,7 @@ type Job struct {
 
 type Task struct {
 	ID        string    `json:"id"`
-	CreatedBy string    `json:"created_by"`
+	UserID    string    `json:"user_id"`
 	CreatedAt time.Time `json:"created_at"`
 	StartedAt time.Time `json:"started_at"`
 	EndedAt   time.Time `json:"ended_at"`

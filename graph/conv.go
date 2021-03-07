@@ -7,7 +7,7 @@ import (
 func TaskFromDBModel(m db.Task) Task {
 	return Task{
 		ID:        m.ID,
-		CreatedBy: m.UserId,
+		UserID:    m.UserId,
 		CreatedAt: m.CreatedAt,
 		StartedAt: m.StartedAt,
 		EndedAt:   m.EndedAt,
@@ -35,7 +35,7 @@ func UserFromDBModel(u db.User) User {
 func TaskToDBModel(m Task) db.Task {
 	return db.Task{
 		ID:        m.ID,
-		UserId:    m.CreatedBy,
+		UserId:    m.UserID,
 		CreatedAt: m.CreatedAt,
 		StartedAt: m.StartedAt,
 		EndedAt:   m.EndedAt,

@@ -58,12 +58,12 @@ type ComplexityRoot struct {
 
 	Task struct {
 		CreatedAt func(childComplexity int) int
-		CreatedBy func(childComplexity int) int
 		EndedAt   func(childComplexity int) int
 		ID        func(childComplexity int) int
 		Job       func(childComplexity int) int
 		StartedAt func(childComplexity int) int
 		Status    func(childComplexity int) int
+		UserID    func(childComplexity int) int
 	}
 
 	User struct {
@@ -154,13 +154,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Task.CreatedAt(childComplexity), true
 
-	case "Task.created_by":
-		if e.complexity.Task.CreatedBy == nil {
-			break
-		}
-
-		return e.complexity.Task.CreatedBy(childComplexity), true
-
 	case "Task.ended_at":
 		if e.complexity.Task.EndedAt == nil {
 			break
@@ -195,6 +188,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Task.Status(childComplexity), true
+
+	case "Task.user_id":
+		if e.complexity.Task.UserID == nil {
+			break
+		}
+
+		return e.complexity.Task.UserID(childComplexity), true
 
 	case "User.admin":
 		if e.complexity.User.Admin == nil {
@@ -297,7 +297,7 @@ scalar Time
 
 type Task {
   id: ID!
-  created_by: String!
+  user_id: String!
   created_at: Time!
   started_at: Time!
   ended_at: Time!
@@ -745,7 +745,7 @@ func (ec *executionContext) _Task_id(ctx context.Context, field graphql.Collecte
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Task_created_by(ctx context.Context, field graphql.CollectedField, obj *Task) (ret graphql.Marshaler) {
+func (ec *executionContext) _Task_user_id(ctx context.Context, field graphql.CollectedField, obj *Task) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -763,7 +763,7 @@ func (ec *executionContext) _Task_created_by(ctx context.Context, field graphql.
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.CreatedBy, nil
+		return obj.UserID, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2368,8 +2368,8 @@ func (ec *executionContext) _Task(ctx context.Context, sel ast.SelectionSet, obj
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "created_by":
-			out.Values[i] = ec._Task_created_by(ctx, field, obj)
+		case "user_id":
+			out.Values[i] = ec._Task_user_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
