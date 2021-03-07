@@ -2,17 +2,14 @@ package server
 
 import (
 	"fmt"
-	"github.com/99designs/gqlgen/graphql/handler"
-	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/jjauzion/ws-backend/conf"
-	"github.com/jjauzion/ws-backend/db"
-	"github.com/olivere/elastic/v7"
-	"go.uber.org/zap"
-	"log"
 	"net/http"
 
+	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/jjauzion/ws-backend/db"
+	"go.uber.org/zap"
+
 	"github.com/jjauzion/ws-backend/graph"
-	"github.com/jjauzion/ws-backend/internal/logger"
 )
 
 func RunGraphQL(bootstrap bool) {
@@ -34,7 +31,7 @@ func RunGraphQL(bootstrap bool) {
 		}
 	}
 
-	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: resolver}))
+	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: resolver}))
 
 	http.Handle("/playground", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", srv)
