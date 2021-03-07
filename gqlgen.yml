@@ -4,8 +4,8 @@ schema:
 
 # Where should the generated server code go?
 exec:
-  filename: graph/generated/generated.go
-  package: generated
+  filename: graph/gql_gen.go
+  package: graph
 
 # Uncomment to enable federation
 # federation:
@@ -14,8 +14,8 @@ exec:
 
 # Where should any generated models go?
 model:
-  filename: graph/model/models_gen.go
-  package: model
+  filename: graph/models_gen.go
+  package: graph
 
 # Where should the resolver implementations go?
 resolver:
@@ -35,7 +35,7 @@ resolver:
 # gqlgen will search for any type names in the schema in these go packages
 # if they match it will use them, otherwise it will generate them.
 autobind:
-  - "github.com/jjauzion/ws-backend/graph/model"
+  - "github.com/jjauzion/ws-backend/graph"
 
 # This section declares type mapping between the GraphQL and go type systems
 #

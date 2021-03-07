@@ -2,7 +2,6 @@ package db
 
 import (
 	"github.com/google/uuid"
-	"github.com/jjauzion/ws-backend/graph/model"
 	"time"
 )
 
@@ -11,7 +10,7 @@ func Bootstrap(dbh DatabaseHandler) error {
 	if err != nil {
 		return err
 	}
-	userSimple := model.User{
+	userSimple := User{
 		ID:        uuid.New().String(),
 		CreatedAt: time.Now(),
 		Email:     "simple-user@email.com",
@@ -21,7 +20,7 @@ func Bootstrap(dbh DatabaseHandler) error {
 	if err != nil {
 		return err
 	}
-	userAdmin := model.User{
+	userAdmin := User{
 		ID:        uuid.New().String(),
 		CreatedAt: time.Now(),
 		Email:     "admin-user@email.com",
@@ -32,14 +31,15 @@ func Bootstrap(dbh DatabaseHandler) error {
 		return err
 	}
 	dataset := "s3://task1"
-	task1 := model.Task{
+	dockerImage := "ghcr.io/my-image"
+	task1 := Task{
 		ID:        uuid.New().String(),
 		CreatedAt: time.Now(),
 		StartedAt: time.Unix(0, 0),
 		EndedAt:   time.Unix(0, 0),
-		Status:    model.StatusNotStarted,
-		CreatedBy: userAdmin.ID,
-		Job:       &model.Job{ID: uuid.New().String(), CreatedBy: userAdmin.ID, Dataset: &dataset},
+		Status:    StatusNotStarted,
+		UserId:    userAdmin.ID,
+		Job:       Job{DockerImage: dockerImage, Dataset: dataset},
 	}
 	err = dbh.CreateTask(task1)
 	if err != nil {

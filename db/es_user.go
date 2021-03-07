@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/jjauzion/ws-backend/graph/model"
 	"github.com/mitchellh/mapstructure"
 	"go.uber.org/zap"
 	"strings"
@@ -16,8 +15,8 @@ var (
 	ErrTooManyRows = fmt.Errorf("found too many rows")
 )
 
-func (es *esHandler) searchUser(query, param string) (model.User, error) {
-	user := model.User{}
+func (es *esHandler) searchUser(query, param string) (User, error) {
+	user := User{}
 	res, err := es.search([]string{userIndex}, strings.NewReader(query))
 	if err != nil {
 		es.log.Error("", zap.Error(err))
@@ -36,7 +35,7 @@ func (es *esHandler) searchUser(query, param string) (model.User, error) {
 	return user, nil
 }
 
-func (es *esHandler) GetUserByID(id string) (user model.User, err error) {
+func (es *esHandler) GetUserByID(id string) (user User, err error) {
 	es.log.Debug("searching user by id...")
 	search := fmt.Sprintf(`{
 		"query": {
@@ -54,7 +53,7 @@ func (es *esHandler) GetUserByID(id string) (user model.User, err error) {
 	return
 }
 
-func (es *esHandler) GetUserByEmail(email string) (user model.User, err error) {
+func (es *esHandler) GetUserByEmail(email string) (user User, err error) {
 	es.log.Debug("searching user by email...")
 	search := fmt.Sprintf(`{
 		"query": {
@@ -72,7 +71,7 @@ func (es *esHandler) GetUserByEmail(email string) (user model.User, err error) {
 	return
 }
 
-func (es *esHandler) CreateUser(user model.User) (err error) {
+func (es *esHandler) CreateUser(user User) (err error) {
 	es.log.Debug("creating new user...")
 	_, err = es.GetUserByEmail(user.Email)
 	if err != nil && err != ErrNotFound {

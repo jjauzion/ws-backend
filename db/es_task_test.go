@@ -1,16 +1,15 @@
 package db
 
 import (
-	"github.com/jjauzion/ws-backend/graph/model"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
 )
 
 func TestScene1(t *testing.T) {
-	wait := time.Millisecond * 900
+	wait := time.Millisecond * 1100
 	t.Run("remove all user1 tasks", func(t *testing.T) {
-		err := dbh.DeleteUserTasks(ctx, task1.CreatedBy)
+		err := dbh.DeleteUserTasks(ctx, task1.UserId)
 		assert.NoError(t, err)
 	})
 
@@ -23,7 +22,7 @@ func TestScene1(t *testing.T) {
 	id := ""
 	<-time.After(wait)
 	t.Run("get one by user id", func(t *testing.T) {
-		res, err := dbh.GetTasksByUserID(ctx, task1.CreatedBy)
+		res, err := dbh.GetTasksByUserID(ctx, task1.UserId)
 		assert.Len(t, res, 1)
 		assert.NoError(t, err)
 		if len(res) > 0 {
@@ -43,65 +42,49 @@ func TestScene1(t *testing.T) {
 
 	<-time.After(wait)
 	t.Run("get one by user id zero", func(t *testing.T) {
-		res, err := dbh.GetTasksByUserID(ctx, task1.CreatedBy)
+		res, err := dbh.GetTasksByUserID(ctx, task1.UserId)
 		assert.Len(t, res, 0)
 		assert.NoError(t, err)
 	})
 }
 
-var task1 = model.Task{
+var task1 = Task{
 	ID:        "id1",
-	CreatedBy: "user1",
+	UserId:    "user1",
 	CreatedAt: now,
-	Status:    model.StatusNotStarted,
-	Job: &model.Job{
-		ID:          "id1",
-		CreatedBy:   "user1",
+	Status:    StatusNotStarted,
+	Job: Job{
 		DockerImage: "docker-img1",
-		Dataset:     toStringPtr("data_set"),
+		Dataset:     "data_set",
 	},
 }
 
-var tasks = []model.Task{
+var tasks = []Task{
 	{
 		ID:        "id3",
-		CreatedBy: "user3",
+		UserId:    "user3",
 		CreatedAt: now,
-		Status:    model.StatusNotStarted,
-		Job: &model.Job{
-			ID:          "id3",
-			CreatedBy:   "user3",
+		Status:    StatusNotStarted,
+		Job: Job{
 			DockerImage: "docker-img3",
-			Dataset:     toStringPtr("data_set3"),
+			Dataset:     "data_set3",
 		},
 	},
 	{
 		ID:        "id2",
-		CreatedBy: "user2",
+		UserId:    "user2",
 		CreatedAt: now,
-		Status:    model.StatusNotStarted,
-		Job: &model.Job{
-			ID:          "id2",
-			CreatedBy:   "user2",
+		Status:    StatusNotStarted,
+		Job: Job{
 			DockerImage: "docker-img2",
-			Dataset:     toStringPtr("data_set"),
+			Dataset:     "data_set",
 		},
 	},
 }
 
-func toStringPtr(s string) *string {
-	if s == "" {
-		return nil
-	}
-	return &s
-}
-
-func assertTask(t *testing.T, expected, got model.Task) {
-	if expected.CreatedBy != got.CreatedBy {
-		t.Errorf("expected %v, got %v", expected.CreatedBy, got.CreatedBy)
-	}
-	if expected.CreatedAt != got.CreatedAt {
-		t.Errorf("expected %v, got %v", expected.CreatedAt, got.CreatedAt)
+func assertTask(t *testing.T, expected, got Task) {
+	if expected.UserId != got.UserId {
+		t.Errorf("expected %v, got %v", expected.UserId, got.UserId)
 	}
 	if expected.ID != got.ID {
 		t.Errorf("expected %v, got %v", expected.ID, got.ID)

@@ -2,7 +2,6 @@ package db
 
 import (
 	"context"
-	"github.com/jjauzion/ws-backend/graph/model"
 )
 
 type DatabaseHandler interface {
@@ -10,12 +9,12 @@ type DatabaseHandler interface {
 	Info() string
 	Bootstrap() error
 
-	GetUserByEmail(email string) (model.User, error)
-	GetUserByID(id string) (model.User, error)
-	CreateUser(user model.User) error
+	GetUserByEmail(email string) (User, error)
+	GetUserByID(id string) (User, error)
+	CreateUser(user User) error
 
-	GetTasksByUserID(ctx context.Context, id string) ([]model.Task, error)
+	GetTasksByUserID(ctx context.Context, id string) ([]Task, error)
 	DeleteTask(ctx context.Context, id string) error
 	DeleteUserTasks(ctx context.Context, userId string) error
-	CreateTask(task model.Task) error
+	CreateTask(task Task) error
 }

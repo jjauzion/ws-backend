@@ -4,6 +4,7 @@ import (
 	"github.com/jjauzion/ws-backend/conf"
 	"github.com/jjauzion/ws-backend/db"
 	"github.com/jjauzion/ws-backend/internal/logger"
+	"github.com/olivere/elastic/v7"
 	"log"
 )
 
@@ -18,7 +19,14 @@ func dependencies() (*logger.Logger, conf.Configuration, db.DatabaseHandler, err
 		log.Fatalf("cannot get config %v", err)
 	}
 
-	dbh := db.NewDBHandler(lg, cf)
+	elst, err := elastic.NewClient(elastic.SetURL(cf.WS_ES_HOST+":"+cf.WS_ES_PORT),
+		elastic.SetSniff(false),
+		elastic.SetHealthcheck(false))
+	if err != nil {
+		log.Fatalf("cannot create elastic client %v", err)
+	}
+
+	dbh := db.NewDBHandler(lg, cf, elst)
 
 	return lg, cf, dbh, nil
 }
