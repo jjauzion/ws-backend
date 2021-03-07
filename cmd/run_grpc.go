@@ -21,11 +21,10 @@ import (
 	"github.com/jjauzion/ws-backend/server"
 )
 
-// runCmd represents the run command
-var runCmd = &cobra.Command{
-	Use:   "run",
-	Short: "start a new API server",
-	Long:  `start a new API server`,
+var runGRPCCmd = &cobra.Command{
+	Use:   "grpc",
+	Short: "start a new GRPC API server",
+	Long:  `start a new GRPC API server`,
 	Run: func(cmd *cobra.Command, args []string) {
 		bootstrap, _ := cmd.Flags().GetBool("bootstrap")
 		server.RunGRPC(bootstrap)
@@ -33,15 +32,5 @@ var runCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(runCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// runCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	runCmd.Flags().BoolP("bootstrap", "b", false, "Initialized DB")
+	runCmd.AddCommand(runGRPCCmd)
 }
