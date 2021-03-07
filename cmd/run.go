@@ -17,8 +17,6 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-
-	"github.com/jjauzion/ws-backend/server"
 )
 
 // runCmd represents the run command
@@ -26,10 +24,6 @@ var runCmd = &cobra.Command{
 	Use:   "run",
 	Short: "start a new API server",
 	Long:  `start a new API server`,
-	Run: func(cmd *cobra.Command, args []string) {
-		bootstrap, _ := cmd.Flags().GetBool("bootstrap")
-		server.Run(bootstrap)
-	},
 }
 
 func init() {
@@ -43,5 +37,6 @@ func init() {
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	runCmd.Flags().BoolP("bootstrap", "b", false, "Initialized DB")
+	//runCmd.Flags().BoolP("bootstrap", "b", false, "Initialized DB")
+	runCmd.PersistentFlags().BoolP("bootstrap", "b", false, "Initialized DB")
 }

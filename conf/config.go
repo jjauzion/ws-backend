@@ -12,6 +12,8 @@ type Configuration struct {
 	ES_TASK_MAPPING string
 	BOOTSTRAP_FILE  string
 	WS_API_PORT     string
+	WS_GRPC_HOST    string
+	WS_GRPC_PORT    string
 }
 
 func GetConfig(log *logger.Logger) (Configuration, error) {
