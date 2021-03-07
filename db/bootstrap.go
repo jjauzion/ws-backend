@@ -31,6 +31,7 @@ func Bootstrap(dbh DatabaseHandler) error {
 		return err
 	}
 	dataset := "s3://task1"
+	dockerImage := "ghcr.io/my-image"
 	task1 := Task{
 		ID:        uuid.New().String(),
 		CreatedAt: time.Now(),
@@ -38,7 +39,7 @@ func Bootstrap(dbh DatabaseHandler) error {
 		EndedAt:   time.Unix(0, 0),
 		Status:    StatusNotStarted,
 		UserId:    userAdmin.ID,
-		Job:       Job{Dataset: dataset},
+		Job:       Job{DockerImage: dockerImage, Dataset: dataset},
 	}
 	err = dbh.CreateTask(task1)
 	if err != nil {
