@@ -22,7 +22,7 @@ import (
 )
 
 var runGQCmd = &cobra.Command{
-	Use:   "gq",
+	Use:   "gql",
 	Short: "start a new GraphQL API server",
 	Long:  `start a new GraphQL API server`,
 	Run: func(cmd *cobra.Command, args []string) {

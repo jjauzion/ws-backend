@@ -31,9 +31,9 @@ lint:
 	go fmt ./...
 	go vet ./...
 
-.PHONY: gq
-gq: all
-	$(EXE) run gq $(FLAG)
+.PHONY: gql
+gql: all
+	$(EXE) run gql $(FLAG)
 
 .PHONY: grpc
 grpc: all
