@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"github.com/google/uuid"
 	"github.com/jjauzion/ws-backend/db"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
@@ -17,7 +18,11 @@ type grpcServer struct {
 }
 
 func (s *grpcServer) StartTask(context.Context, *pb.StartTaskReq) (*pb.StartTaskRep, error) {
-	return nil, errors.New("NOT IMPLEMENTED")
+	rep := &pb.StartTaskRep{
+		Job:    &pb.Job{Dataset: "s3://test-dataset", DockerImage: "ghcr.io/pathtoimage"},
+		TaskId: uuid.New().String(),
+	}
+	return rep, nil
 }
 
 func (s *grpcServer) EndTask(context.Context, *pb.EndTaskReq) (*pb.EndTaskRep, error) {
