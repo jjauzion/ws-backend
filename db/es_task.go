@@ -81,7 +81,7 @@ func (es *esHandler) searchTasks(ctx context.Context, query *elastic.MatchQuery)
 		var task Task
 		err := json.Unmarshal(hit.Source, &task)
 		if err != nil {
-			es.log.Warn("json failed", zap.Error(err))
+			es.log.Error("json failed", zap.Error(err))
 			return err
 		}
 
