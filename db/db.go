@@ -16,5 +16,5 @@ type DatabaseHandler interface {
 	GetTasksByUserID(ctx context.Context, id string) ([]Task, error)
 	DeleteTask(ctx context.Context, id string) error
 	DeleteUserTasks(ctx context.Context, userId string) error
-	CreateTask(task Task) error
+	CreateTask(ctx context.Context, task Task) error
 }

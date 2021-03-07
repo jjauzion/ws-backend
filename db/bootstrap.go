@@ -42,7 +42,7 @@ func Bootstrap(ctx context.Context, dbh DatabaseHandler) error {
 		UserId:    userAdmin.ID,
 		Job:       Job{DockerImage: dockerImage, Dataset: dataset},
 	}
-	err = dbh.CreateTask(task1)
+	err = dbh.CreateTask(nil, task1)
 	if err != nil {
 		return err
 	}

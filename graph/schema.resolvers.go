@@ -52,7 +52,7 @@ func (r *mutationResolver) CreateTask(ctx context.Context, input NewTask) (*Task
 		Status:    db.StatusNotStarted,
 		Job:       newJob,
 	}
-	if err = r.DB.CreateTask(newTask); err != nil {
+	if err = r.DB.CreateTask(nil, newTask); err != nil {
 		return nil, err
 	}
 	r.Log.Info("task created", zap.String("id", newTask.ID))

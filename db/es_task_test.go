@@ -15,7 +15,7 @@ func TestScene1(t *testing.T) {
 
 	<-time.After(wait)
 	t.Run("create one", func(t *testing.T) {
-		err := dbh.CreateTask(task1)
+		err := dbh.CreateTask(ctx, task1)
 		assert.NoError(t, err)
 	})
 
