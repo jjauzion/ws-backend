@@ -22,6 +22,9 @@ func dependencies() (*logger.Logger, conf.Configuration, db.DatabaseHandler, err
 	elst, err := elastic.NewClient(elastic.SetURL(cf.WS_ES_HOST+":"+cf.WS_ES_PORT),
 		elastic.SetSniff(false),
 		elastic.SetHealthcheck(false))
+	if err != nil {
+		log.Fatalf("cannot create elastic client %v", err)
+	}
 
 	dbh := db.NewDBHandler(lg, cf, elst)
 

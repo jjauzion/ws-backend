@@ -14,14 +14,15 @@ import (
 
 func RunGraphQL(bootstrap bool) {
 	lg, cf, dbh, err := dependencies()
+	if err != nil {
+		return
+	}
+
 	resolver := &graph.Resolver{
 		Log:     lg,
 		DB:      dbh,
 		Config:  cf,
 		ApiPort: cf.WS_API_PORT,
-	}
-	if err != nil {
-		return
 	}
 
 	if bootstrap {
