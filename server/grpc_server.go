@@ -36,13 +36,14 @@ func (s *grpcServer) EndTask(context.Context, *pb.EndTaskReq) (*pb.EndTaskRep, e
 }
 
 func RunGRPC(bootstrap bool) {
+	ctx := context.Background()
 	lg, cf, dbh, err := dependencies()
 	if err != nil {
 		return
 	}
 
 	if bootstrap {
-		if err := db.Bootstrap(dbh); err != nil {
+		if err := db.Bootstrap(ctx, dbh); err != nil {
 			lg.Error("bootstrap failed", zap.Error(err))
 			return
 		}

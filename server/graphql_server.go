@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 
@@ -13,6 +14,7 @@ import (
 )
 
 func RunGraphQL(bootstrap bool) {
+	ctx := context.Background()
 	lg, cf, dbh, err := dependencies()
 	if err != nil {
 		return
@@ -26,7 +28,7 @@ func RunGraphQL(bootstrap bool) {
 	}
 
 	if bootstrap {
-		if err := db.Bootstrap(resolver.DB); err != nil {
+		if err := db.Bootstrap(ctx, resolver.DB); err != nil {
 			resolver.Log.Error("bootstrap failed", zap.Error(err))
 			return
 		}

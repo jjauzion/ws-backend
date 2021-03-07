@@ -73,20 +73,24 @@ func (es *esHandler) Info() string {
 	return s
 }
 
-func (es *esHandler) Bootstrap() (err error) {
+func (es *esHandler) Bootstrap(ctx context.Context) error {
 	es.log.Info("Initializing Elasticsearch...")
-	if err = es.createIndex(taskIndex, es.cf.ES_TASK_MAPPING); err != nil {
-		es.log.Error("failed to create '"+taskIndex+"' index: ", zap.Error(err))
-		return
+	_, err := es.elastic.CreateIndex(taskIndex).Body(es.getMapping(es.cf.ES_TASK_MAPPING)).Do(ctx)
+	if err != nil {
+		es.log.Error("failed to create '"+taskIndex+"' index", zap.Error(err))
+		return err
 	}
+
 	es.log.Info("'" + taskIndex + "' index created")
-	if err = es.createIndex(userIndex, es.cf.ES_USER_MAPPING); err != nil {
-		es.log.Error("failed to create '"+userIndex+"' index: ", zap.Error(err))
-		return
+	_, err = es.elastic.CreateIndex(userIndex).Body(es.getMapping(es.cf.ES_USER_MAPPING)).Do(ctx)
+	if err != nil {
+		es.log.Error("failed to create '"+userIndex+" index", zap.Error(err))
+		return err
 	}
+
 	es.log.Info("'" + userIndex + "' index created")
 	es.log.Info("Elasticsearch successfully initialized !")
-	return
+	return nil
 }
 
 func (es *esHandler) new() error {
@@ -232,4 +236,14 @@ func (es *esHandler) elasticSearch(ctx context.Context, index string, query *ela
 	}
 
 	return searchResult, nil
+}
+
+func (es *esHandler) getMapping(file string) string {
+	content, err := ioutil.ReadFile(file)
+	if err != nil {
+		es.log.Fatal("cannot read mapping", zap.String("file", file), zap.Error(err))
+		return ""
+	}
+
+	return string(content)
 }

@@ -7,7 +7,7 @@ import (
 type DatabaseHandler interface {
 	new() error
 	Info() string
-	Bootstrap() error
+	Bootstrap(ctx context.Context) error
 
 	GetUserByEmail(email string) (User, error)
 	GetUserByID(id string) (User, error)

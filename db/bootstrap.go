@@ -1,12 +1,13 @@
 package db
 
 import (
+	"context"
 	"github.com/google/uuid"
 	"time"
 )
 
-func Bootstrap(dbh DatabaseHandler) error {
-	err := dbh.Bootstrap()
+func Bootstrap(ctx context.Context, dbh DatabaseHandler) error {
+	err := dbh.Bootstrap(ctx)
 	if err != nil {
 		return err
 	}
