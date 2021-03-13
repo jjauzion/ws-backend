@@ -22,7 +22,7 @@ func (s *grpcServer) StartTask(ctx context.Context, req *pb.StartTaskReq) (*pb.S
 	var rep *pb.StartTaskRep
 	if req.WithGPU {
 		rep = &pb.StartTaskRep{
-			Job:    &pb.Job{Dataset: "s3://test-dataset", DockerImage: "ghcr.io/pathtoimage"},
+			Job:    &pb.Job{Dataset: "s3://test-dataset", DockerImage: "docker.io/jjauzion/ws-mock-container"},
 			TaskId: uuid.New().String(),
 		}
 	} else {
