@@ -7,7 +7,6 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/jjauzion/ws-backend/db"
 	"go.uber.org/zap"
 
 	"github.com/jjauzion/ws-backend/graph"
@@ -15,20 +14,20 @@ import (
 
 func RunGraphQL(bootstrap bool) {
 	ctx := context.Background()
-	lg, cf, dbh, err := dependencies()
+	log, conf, dbal, err := buildDependencies()
 	if err != nil {
 		return
 	}
 
 	resolver := &graph.Resolver{
-		Log:     lg,
-		DB:      dbh,
-		Config:  cf,
-		ApiPort: cf.WS_API_PORT,
+		Log:     log,
+		Dbal:    dbal,
+		Config:  conf,
+		ApiPort: conf.WS_API_PORT,
 	}
 
 	if bootstrap {
-		if err := db.Bootstrap(ctx, resolver.DB); err != nil {
+		if err := dbal.Bootstrap(ctx); err != nil {
 			resolver.Log.Error("bootstrap failed", zap.Error(err))
 			return
 		}

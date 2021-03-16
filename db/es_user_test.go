@@ -10,13 +10,13 @@ func TestUser(t *testing.T) {
 	wait := time.Millisecond * 1100
 	id := ""
 	t.Run("create user1", func(t *testing.T) {
-		err := dbh.CreateUser(ctx, user1)
+		err := dbal.CreateUser(ctx, user1)
 		assert.NoError(t, err)
 	})
 
 	<-time.After(wait)
 	t.Run("get user1 by email", func(t *testing.T) {
-		res, err := dbh.GetUserByEmail(ctx, user1.Email)
+		res, err := dbal.GetUserByEmail(ctx, user1.Email)
 		assert.NoError(t, err)
 		assertUser(t, user1, res)
 		id = res.ID
@@ -24,20 +24,20 @@ func TestUser(t *testing.T) {
 
 	<-time.After(wait)
 	t.Run("get user1 by id", func(t *testing.T) {
-		res, err := dbh.GetUserByID(ctx, id)
+		res, err := dbal.GetUserByID(ctx, id)
 		assert.NoError(t, err)
 		assertUser(t, user1, res)
 	})
 
 	<-time.After(wait)
 	t.Run("delete user1", func(t *testing.T) {
-		err := dbh.DeleteUser(ctx, id)
+		err := dbal.DeleteUser(ctx, id)
 		assert.NoError(t, err)
 	})
 
 	<-time.After(wait)
 	t.Run("get user1 by id error", func(t *testing.T) {
-		_, err := dbh.GetUserByID(ctx, id)
+		_, err := dbal.GetUserByID(ctx, id)
 		assert.Error(t, err)
 	})
 }

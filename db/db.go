@@ -4,7 +4,8 @@ import (
 	"context"
 )
 
-type DatabaseHandler interface {
+// Dbal for DataBase Abstracted Layer
+type Dbal interface {
 	new() error
 	Info() string
 	Bootstrap(ctx context.Context) error

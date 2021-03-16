@@ -20,7 +20,7 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input NewUser) (*User
 		Email:     input.Email,
 		CreatedAt: time.Now(),
 	}
-	err := r.DB.CreateUser(ctx, newUser)
+	err := r.Dbal.CreateUser(ctx, newUser)
 	if err != nil {
 		if err == db.ErrTooManyRows {
 			return nil, fmt.Errorf("user already exist")
@@ -33,7 +33,7 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input NewUser) (*User
 }
 
 func (r *mutationResolver) CreateTask(ctx context.Context, input NewTask) (*Task, error) {
-	mu, err := r.DB.GetUserByID(ctx, input.UserID)
+	mu, err := r.Dbal.GetUserByID(ctx, input.UserID)
 	if err != nil {
 		return nil, err
 	}
@@ -52,7 +52,7 @@ func (r *mutationResolver) CreateTask(ctx context.Context, input NewTask) (*Task
 		Status:    db.StatusNotStarted,
 		Job:       newJob,
 	}
-	if err = r.DB.CreateTask(ctx, newTask); err != nil {
+	if err = r.Dbal.CreateTask(ctx, newTask); err != nil {
 		return nil, err
 	}
 	r.Log.Info("task created", zap.String("id", newTask.ID))
@@ -60,7 +60,7 @@ func (r *mutationResolver) CreateTask(ctx context.Context, input NewTask) (*Task
 }
 
 func (r *queryResolver) ListTasks(ctx context.Context, userID string) ([]*Task, error) {
-	res, err := r.DB.GetTasksByUserID(ctx, userID)
+	res, err := r.Dbal.GetTasksByUserID(ctx, userID)
 	if err != nil {
 		r.Log.Warn("cannot get tasks", zap.String("user_id", userID), zap.Error(err))
 		return nil, err

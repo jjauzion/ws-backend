@@ -9,20 +9,20 @@ import (
 func TestTask(t *testing.T) {
 	wait := time.Millisecond * 1100
 	t.Run("remove all user1 tasks", func(t *testing.T) {
-		err := dbh.DeleteUserTasks(ctx, task1.UserId)
+		err := dbal.DeleteUserTasks(ctx, task1.UserId)
 		assert.NoError(t, err)
 	})
 
 	<-time.After(wait)
 	t.Run("create one", func(t *testing.T) {
-		err := dbh.CreateTask(ctx, task1)
+		err := dbal.CreateTask(ctx, task1)
 		assert.NoError(t, err)
 	})
 
 	id := ""
 	<-time.After(wait)
 	t.Run("get one by user id", func(t *testing.T) {
-		res, err := dbh.GetTasksByUserID(ctx, task1.UserId)
+		res, err := dbal.GetTasksByUserID(ctx, task1.UserId)
 		assert.Len(t, res, 1)
 		assert.NoError(t, err)
 		if len(res) > 0 {
@@ -35,14 +35,14 @@ func TestTask(t *testing.T) {
 	if id != "" {
 		t.Run("remove it", func(t *testing.T) {
 			t.Log("try to remove ", id)
-			err := dbh.DeleteTask(ctx, id)
+			err := dbal.DeleteTask(ctx, id)
 			assert.NoError(t, err)
 		})
 	}
 
 	<-time.After(wait)
 	t.Run("get one by user id zero", func(t *testing.T) {
-		res, err := dbh.GetTasksByUserID(ctx, task1.UserId)
+		res, err := dbal.GetTasksByUserID(ctx, task1.UserId)
 		assert.Len(t, res, 0)
 		assert.NoError(t, err)
 	})

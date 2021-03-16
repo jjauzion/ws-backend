@@ -16,24 +16,23 @@ const (
 )
 
 type esHandler struct {
-	//client  *elasticsearch7.Client
 	log     *logger.Logger
-	cf      conf.Configuration
+	conf    conf.Configuration
 	elastic *elastic.Client
 }
 
-func NewDBHandler(log *logger.Logger, cf conf.Configuration, elastic *elastic.Client) DatabaseHandler {
-	var dbh DatabaseHandler
-	dbh = &esHandler{
+func NewDatabaseAbstractedLayerImplemented(log *logger.Logger, cf conf.Configuration, elastic *elastic.Client) Dbal {
+	var dbal Dbal
+	dbal = &esHandler{
 		log:     log,
-		cf:      cf,
+		conf:    cf,
 		elastic: elastic,
 	}
-	if err := dbh.new(); err != nil {
+	if err := dbal.new(); err != nil {
 		log.Fatal("", zap.Error(err))
 	}
 
-	return dbh
+	return dbal
 }
 
 func (es *esHandler) Info() string {
@@ -42,14 +41,14 @@ func (es *esHandler) Info() string {
 
 func (es *esHandler) Bootstrap(ctx context.Context) error {
 	es.log.Info("Initializing Elasticsearch...")
-	_, err := es.elastic.CreateIndex(taskIndex).Body(es.getMapping(es.cf.ES_TASK_MAPPING)).Do(ctx)
+	_, err := es.elastic.CreateIndex(taskIndex).Body(es.getMapping(es.conf.ES_TASK_MAPPING)).Do(ctx)
 	if err != nil {
 		es.log.Error("failed to create '"+taskIndex+"' index", zap.Error(err))
 		return err
 	}
 
 	es.log.Info("'" + taskIndex + "' index created")
-	_, err = es.elastic.CreateIndex(userIndex).Body(es.getMapping(es.cf.ES_USER_MAPPING)).Do(ctx)
+	_, err = es.elastic.CreateIndex(userIndex).Body(es.getMapping(es.conf.ES_USER_MAPPING)).Do(ctx)
 	if err != nil {
 		es.log.Error("failed to create '"+userIndex+" index", zap.Error(err))
 		return err

@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-var dbh DatabaseHandler
+var dbal Dbal
 var ctx = context.Background()
 var now = time.Now()
 
@@ -26,8 +26,8 @@ func TestMain(m *testing.M) {
 		panic(err)
 	}
 
-	dbh = &esHandler{
-		cf:      conf.Configuration{},
+	dbal = &esHandler{
+		conf:    conf.Configuration{},
 		log:     &logger.Logger{Logger: lg},
 		elastic: elst,
 	}

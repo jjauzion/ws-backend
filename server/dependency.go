@@ -8,7 +8,7 @@ import (
 	"log"
 )
 
-func dependencies() (*logger.Logger, conf.Configuration, db.DatabaseHandler, error) {
+func buildDependencies() (*logger.Logger, conf.Configuration, db.Dbal, error) {
 	lg, err := logger.ProvideLogger()
 	if err != nil {
 		log.Fatalf("cannot create logger %v", err)
@@ -19,14 +19,14 @@ func dependencies() (*logger.Logger, conf.Configuration, db.DatabaseHandler, err
 		log.Fatalf("cannot get config %v", err)
 	}
 
-	elst, err := elastic.NewClient(elastic.SetURL(cf.WS_ES_HOST+":"+cf.WS_ES_PORT),
+	elasticClient, err := elastic.NewClient(elastic.SetURL(cf.WS_ES_HOST+":"+cf.WS_ES_PORT),
 		elastic.SetSniff(false),
 		elastic.SetHealthcheck(false))
 	if err != nil {
 		log.Fatalf("cannot create elastic client %v", err)
 	}
 
-	dbh := db.NewDBHandler(lg, cf, elst)
+	dbal := db.NewDatabaseAbstractedLayerImplemented(lg, cf, elasticClient)
 
-	return lg, cf, dbh, nil
+	return lg, cf, dbal, nil
 }

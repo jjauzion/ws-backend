@@ -6,8 +6,8 @@ import (
 	"time"
 )
 
-func Bootstrap(ctx context.Context, dbh DatabaseHandler) error {
-	err := dbh.Bootstrap(ctx)
+func Bootstrap(ctx context.Context, dbal Dbal) error {
+	err := dbal.Bootstrap(ctx)
 	if err != nil {
 		return err
 	}
@@ -17,7 +17,7 @@ func Bootstrap(ctx context.Context, dbh DatabaseHandler) error {
 		Email:     "simple-user@email.com",
 		Admin:     false,
 	}
-	err = dbh.CreateUser(ctx, userSimple)
+	err = dbal.CreateUser(ctx, userSimple)
 	if err != nil {
 		return err
 	}
@@ -27,7 +27,7 @@ func Bootstrap(ctx context.Context, dbh DatabaseHandler) error {
 		Email:     "admin-user@email.com",
 		Admin:     true,
 	}
-	err = dbh.CreateUser(ctx, userAdmin)
+	err = dbal.CreateUser(ctx, userAdmin)
 	if err != nil {
 		return err
 	}
@@ -42,7 +42,7 @@ func Bootstrap(ctx context.Context, dbh DatabaseHandler) error {
 		UserId:    userAdmin.ID,
 		Job:       Job{DockerImage: dockerImage, Dataset: dataset},
 	}
-	err = dbh.CreateTask(ctx, task1)
+	err = dbal.CreateTask(ctx, task1)
 	if err != nil {
 		return err
 	}
