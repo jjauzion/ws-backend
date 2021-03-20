@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"github.com/google/uuid"
 	"github.com/jjauzion/ws-backend/db"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
@@ -16,8 +17,18 @@ type grpcServer struct {
 	pb.UnimplementedApiServer
 }
 
-func (s *grpcServer) StartTask(context.Context, *pb.StartTaskReq) (*pb.StartTaskRep, error) {
-	return nil, errors.New("NOT IMPLEMENTED")
+func (s *grpcServer) StartTask(ctx context.Context, req *pb.StartTaskReq) (*pb.StartTaskRep, error) {
+	var err error
+	var rep *pb.StartTaskRep
+	if req.WithGPU {
+		rep = &pb.StartTaskRep{
+			Job:    &pb.Job{Dataset: "s3://test-dataset", DockerImage: "docker.io/jjauzion/ws-mock-container"},
+			TaskId: uuid.New().String(),
+		}
+	} else {
+		err = errNoTasksInQueue
+	}
+	return rep, err
 }
 
 func (s *grpcServer) EndTask(context.Context, *pb.EndTaskReq) (*pb.EndTaskRep, error) {
