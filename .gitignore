@@ -16,3 +16,6 @@ ws-backend
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
+/ws-backend.iml
+
+_build/*

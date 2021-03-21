@@ -1,12 +1,13 @@
 package db
 
 import (
+	"context"
 	"github.com/google/uuid"
 	"time"
 )
 
-func Bootstrap(dbh DatabaseHandler) error {
-	err := dbh.Bootstrap()
+func Bootstrap(ctx context.Context, dbal Dbal) error {
+	err := dbal.CreateIndexes(ctx)
 	if err != nil {
 		return err
 	}
@@ -16,7 +17,7 @@ func Bootstrap(dbh DatabaseHandler) error {
 		Email:     "simple-user@email.com",
 		Admin:     false,
 	}
-	err = dbh.CreateUser(userSimple)
+	err = dbal.CreateUser(ctx, userSimple)
 	if err != nil {
 		return err
 	}
@@ -26,7 +27,7 @@ func Bootstrap(dbh DatabaseHandler) error {
 		Email:     "admin-user@email.com",
 		Admin:     true,
 	}
-	err = dbh.CreateUser(userAdmin)
+	err = dbal.CreateUser(ctx, userAdmin)
 	if err != nil {
 		return err
 	}
@@ -41,7 +42,7 @@ func Bootstrap(dbh DatabaseHandler) error {
 		UserId:    userAdmin.ID,
 		Job:       Job{DockerImage: dockerImage, Dataset: dataset},
 	}
-	err = dbh.CreateTask(task1)
+	err = dbal.CreateTask(ctx, task1)
 	if err != nil {
 		return err
 	}

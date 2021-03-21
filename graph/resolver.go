@@ -11,8 +11,8 @@ import (
 // It serves as dependency injection for your app, add any dependencies you require here.
 
 type Resolver struct {
-	Log     *logger.Logger
-	DB      db.DatabaseHandler
+	Log     logger.Logger
+	Dbal    db.Dbal
 	Config  conf.Configuration
 	ApiPort string
 }

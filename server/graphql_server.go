@@ -1,32 +1,36 @@
 package server
 
 import (
+	"context"
 	"fmt"
+	"github.com/jjauzion/ws-backend/db"
+	"log"
 	"net/http"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/jjauzion/ws-backend/db"
 	"go.uber.org/zap"
 
 	"github.com/jjauzion/ws-backend/graph"
 )
 
 func RunGraphQL(bootstrap bool) {
-	lg, cf, dbh, err := dependencies()
+	ctx := context.Background()
+	lg, conf, dbal, err := buildDependencies()
 	if err != nil {
-		return
+		log.Fatal(err)
 	}
 
 	resolver := &graph.Resolver{
 		Log:     lg,
-		DB:      dbh,
-		Config:  cf,
-		ApiPort: cf.WS_API_PORT,
+		Dbal:    dbal,
+		Config:  conf,
+		ApiPort: conf.WS_API_PORT,
 	}
 
 	if bootstrap {
-		if err := db.Bootstrap(resolver.DB); err != nil {
+		err := db.Bootstrap(ctx, dbal)
+		if err != nil {
 			resolver.Log.Error("bootstrap failed", zap.Error(err))
 			return
 		}

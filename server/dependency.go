@@ -1,32 +1,29 @@
 package server
 
 import (
+	"fmt"
 	"github.com/jjauzion/ws-backend/conf"
 	"github.com/jjauzion/ws-backend/db"
 	"github.com/jjauzion/ws-backend/internal/logger"
-	"github.com/olivere/elastic/v7"
-	"log"
 )
 
-func dependencies() (*logger.Logger, conf.Configuration, db.DatabaseHandler, error) {
+func buildDependencies() (logger.Logger, conf.Configuration, db.Dbal, error) {
 	lg, err := logger.ProvideLogger()
 	if err != nil {
-		log.Fatalf("cannot create logger %v", err)
+		return logger.Logger{}, conf.Configuration{}, nil, fmt.Errorf("cannot create logger: %w", err)
 	}
 
 	cf, err := conf.GetConfig(lg)
 	if err != nil {
-		log.Fatalf("cannot get config %v", err)
+		return logger.Logger{}, conf.Configuration{}, nil, fmt.Errorf("cannot get config: %w", err)
 	}
 
-	elst, err := elastic.NewClient(elastic.SetURL(cf.WS_ES_HOST+":"+cf.WS_ES_PORT),
-		elastic.SetSniff(false),
-		elastic.SetHealthcheck(false))
+	dbal, err := db.NewDatabaseAbstractedLayerImplemented(lg, cf)
 	if err != nil {
-		log.Fatalf("cannot create elastic client %v", err)
+		return logger.Logger{}, conf.Configuration{}, nil, fmt.Errorf("cannot create dbal: %w", err)
 	}
 
-	dbh := db.NewDBHandler(lg, cf, elst)
+	lg.Info("successfully connected to ES")
 
-	return lg, cf, dbh, nil
+	return lg, cf, dbal, nil
 }

@@ -1,33 +1,30 @@
 package db
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
-	"fmt"
+
 	"github.com/olivere/elastic/v7"
 	"go.uber.org/zap"
-	"strings"
 )
 
-func (es *esHandler) CreateTask(task Task) (err error) {
+func (es *esHandler) CreateTask(ctx context.Context, task Task) error {
 	es.log.Debug("creating new task...")
-	var b []byte
-	if b, err = json.Marshal(task); err != nil {
-		return
-	}
-	if err = es.indexNewDoc(taskIndex, bytes.NewReader(b)); err != nil {
+	_, err := es.client.Index().Index(taskIndex).BodyJson(task).Do(ctx)
+	if err != nil {
 		es.log.Error("failed to create task", zap.Error(err))
-		return
+		return err
 	}
+
 	es.log.Info("new task successfully created", zap.String("id", task.ID))
-	return
+	return nil
 }
 
 func (es *esHandler) GetTasksByUserID(ctx context.Context, id string) ([]Task, error) {
 	es.log.Debug("get tasks for user", zap.String("user_id", id))
 	query := elastic.NewMatchQuery("user_id", id)
-	tasks, err := es.searchTasks(ctx, query)
+	s := elastic.NewSearchSource().Query(query)
+	tasks, err := es.searchTasks(ctx, s)
 	if err != nil {
 		return nil, err
 	}
@@ -35,49 +32,32 @@ func (es *esHandler) GetTasksByUserID(ctx context.Context, id string) ([]Task, e
 	return tasks, nil
 }
 
-func (es *esHandler) DeleteTask(ctx context.Context, id string) error {
-	q := fmt.Sprintf(`{
-		"query": {
-			"match": {
-			  "id": {
-				"query": "%s"
-			  }
-			}
-		}
-    }`, id)
+func (es *esHandler) DeleteTaskByID(ctx context.Context, id string) error {
+	es.log.Debug("delete task", zap.String("id", id))
+	q := elastic.NewMatchQuery("id", id)
+	_, err := es.client.DeleteByQuery().Index(taskIndex).Query(q).Do(ctx)
 
-	res, err := es.client.DeleteByQuery([]string{taskIndex}, strings.NewReader(q))
 	if err != nil {
-		return err
+		es.log.Error("cannot delete task", zap.String("id", id), zap.Error(err))
 	}
-	if res.StatusCode != 200 {
-		return fmt.Errorf("%v", res)
-	}
+
 	return nil
 }
 
-func (es *esHandler) DeleteUserTasks(ctx context.Context, userID string) error {
-	q := fmt.Sprintf(`{
-		"query": {
-			"match": {
-			  "created_by": {
-				"query": "%s"
-			  }
-			}
-		}
-    }`, userID)
-
-	_, err := es.client.DeleteByQuery([]string{taskIndex}, strings.NewReader(q))
+func (es *esHandler) DeleteTasksBysUserID(ctx context.Context, userID string) error {
+	q := elastic.NewMatchQuery("user_id", userID)
+	_, err := es.client.DeleteByQuery().Index(taskIndex).Query(q).Do(ctx)
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
-func (es *esHandler) searchTasks(ctx context.Context, query *elastic.MatchQuery) ([]Task, error) {
+func (es *esHandler) searchTasks(ctx context.Context, source *elastic.SearchSource) ([]Task, error) {
 	var tasks []Task
 
-	_, err := es.elasticSearch(ctx, taskIndex, query, func(hit *elastic.SearchHit) error {
+	_, err := es.elasticSearch(ctx, taskIndex, source, func(hit *elastic.SearchHit) error {
 		var task Task
 		err := json.Unmarshal(hit.Source, &task)
 		if err != nil {

@@ -8,11 +8,11 @@ type Logger struct {
 	*zap.Logger
 }
 
-func ProvideLogger() (*Logger, error) {
+func ProvideLogger() (Logger, error) {
 	lg, err := zap.NewDevelopment(zap.AddCaller())
 	if err != nil {
-		return nil, err
+		return Logger{}, err
 	}
 
-	return &Logger{lg}, nil
+	return Logger{lg}, nil
 }
