@@ -32,7 +32,8 @@ func (es *esHandler) GetTasksByUserID(ctx context.Context, id string) ([]Task, e
 	return tasks, nil
 }
 
-func (es *esHandler) DeleteTask(ctx context.Context, id string) error {
+// Delete a task by its id
+func (es *esHandler) DeleteTaskByID(ctx context.Context, id string) error {
 	es.log.Debug("delete task", zap.String("id", id))
 	q := elastic.NewMatchQuery("id", id)
 	_, err := es.elastic.DeleteByQuery().Index(taskIndex).Query(q).Do(ctx)
