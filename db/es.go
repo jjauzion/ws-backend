@@ -16,9 +16,9 @@ const (
 )
 
 type esHandler struct {
-	log     logger.Logger
-	conf    conf.Configuration
-	elastic *elastic.Client
+	log    logger.Logger
+	conf   conf.Configuration
+	client *elastic.Client
 }
 
 func NewDatabaseAbstractedLayerImplemented(log logger.Logger, cf conf.Configuration) (Dbal, error) {
@@ -44,32 +44,31 @@ func NewDatabaseAbstractedLayerImplemented(log logger.Logger, cf conf.Configurat
 func (es *esHandler) newConnection(url string) error {
 	es.log.Info("connexion to ES cluster...")
 	var err error
-	es.elastic, err = elastic.NewClient(elastic.SetURL(url),
+	es.client, err = elastic.NewClient(elastic.SetURL(url),
 		elastic.SetSniff(false),
 		elastic.SetHealthcheck(false))
 	if err != nil {
 		return err
 	}
 
-	es.log.Info("successfully connected to ES")
 	return nil
 }
 
 func (es *esHandler) Ping() error {
-	_, err := es.elastic.NodesInfo().Do(context.Background())
+	_, err := es.client.NodesInfo().Do(context.Background())
 	return err
 }
 
 func (es *esHandler) CreateIndexes(ctx context.Context) error {
 	es.log.Info("Initializing Elasticsearch...")
-	_, err := es.elastic.CreateIndex(taskIndex).Body(es.readMappingFile(es.conf.ES_TASK_MAPPING)).Do(ctx)
+	_, err := es.client.CreateIndex(taskIndex).Body(es.readMappingFile(es.conf.ES_TASK_MAPPING)).Do(ctx)
 	if err != nil {
 		es.log.Error("failed to create '"+taskIndex+"' index", zap.Error(err))
 		return err
 	}
 
 	es.log.Info("'" + taskIndex + "' index created")
-	_, err = es.elastic.CreateIndex(userIndex).Body(es.readMappingFile(es.conf.ES_USER_MAPPING)).Do(ctx)
+	_, err = es.client.CreateIndex(userIndex).Body(es.readMappingFile(es.conf.ES_USER_MAPPING)).Do(ctx)
 	if err != nil {
 		es.log.Error("failed to create '"+userIndex+" index", zap.Error(err))
 		return err
@@ -83,7 +82,7 @@ func (es *esHandler) CreateIndexes(ctx context.Context) error {
 type Itr func(*elastic.SearchHit) error
 
 func (es *esHandler) elasticSearchOne(ctx context.Context, index string, source *elastic.SearchSource) (*elastic.SearchHit, error) {
-	searchService := es.elastic.Search().Index(index).SearchSource(source)
+	searchService := es.client.Search().Index(index).SearchSource(source)
 	searchResult, err := searchService.Do(ctx)
 	if err != nil {
 		return nil, err
@@ -93,13 +92,13 @@ func (es *esHandler) elasticSearchOne(ctx context.Context, index string, source 
 		return nil, ErrNotFound
 	}
 	if searchResult.TotalHits() > 1 {
-		return nil, ErrTooManyRows
+		return nil, ErrTooManyHits
 	}
 	return searchResult.Hits.Hits[0], nil
 }
 
 func (es *esHandler) elasticSearch(ctx context.Context, index string, source *elastic.SearchSource, itr Itr) (*elastic.SearchResult, error) {
-	searchService := es.elastic.Search().Index(index).SearchSource(source)
+	searchService := es.client.Search().Index(index).SearchSource(source)
 	searchResult, err := searchService.Do(ctx)
 	if err != nil {
 		return nil, err

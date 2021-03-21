@@ -10,7 +10,7 @@ import (
 
 func (es *esHandler) CreateTask(ctx context.Context, task Task) error {
 	es.log.Debug("creating new task...")
-	_, err := es.elastic.Index().Index(taskIndex).BodyJson(task).Do(ctx)
+	_, err := es.client.Index().Index(taskIndex).BodyJson(task).Do(ctx)
 	if err != nil {
 		es.log.Error("failed to create task", zap.Error(err))
 		return err
@@ -35,7 +35,7 @@ func (es *esHandler) GetTasksByUserID(ctx context.Context, id string) ([]Task, e
 func (es *esHandler) DeleteTaskByID(ctx context.Context, id string) error {
 	es.log.Debug("delete task", zap.String("id", id))
 	q := elastic.NewMatchQuery("id", id)
-	_, err := es.elastic.DeleteByQuery().Index(taskIndex).Query(q).Do(ctx)
+	_, err := es.client.DeleteByQuery().Index(taskIndex).Query(q).Do(ctx)
 
 	if err != nil {
 		es.log.Error("cannot delete task", zap.String("id", id), zap.Error(err))
@@ -46,7 +46,7 @@ func (es *esHandler) DeleteTaskByID(ctx context.Context, id string) error {
 
 func (es *esHandler) DeleteTasksBysUserID(ctx context.Context, userID string) error {
 	q := elastic.NewMatchQuery("user_id", userID)
-	_, err := es.elastic.DeleteByQuery().Index(taskIndex).Query(q).Do(ctx)
+	_, err := es.client.DeleteByQuery().Index(taskIndex).Query(q).Do(ctx)
 	if err != nil {
 		return err
 	}

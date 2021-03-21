@@ -20,7 +20,7 @@ func (es *esHandler) CreateUser(ctx context.Context, user User) (err error) {
 		es.log.Info("can't create user, user already exists", zap.String("email", user.Email))
 		return errors.New("user already exists")
 	}
-	_, err = es.elastic.Index().Index(userIndex).BodyJson(user).Do(ctx)
+	_, err = es.client.Index().Index(userIndex).BodyJson(user).Do(ctx)
 	if err != nil {
 		es.log.Error("cannot create user, db failure", zap.Error(err))
 		return err
@@ -76,7 +76,7 @@ func (es *esHandler) DeleteUser(ctx context.Context, id string) error {
 	es.log.Debug("delete user", zap.String("id", id))
 
 	q := elastic.NewMatchQuery("id", id)
-	_, err := es.elastic.DeleteByQuery().Index(userIndex).Query(q).Do(ctx)
+	_, err := es.client.DeleteByQuery().Index(userIndex).Query(q).Do(ctx)
 	if err != nil {
 		return err
 	}

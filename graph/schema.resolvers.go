@@ -22,7 +22,7 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input NewUser) (*User
 	}
 	err := r.Dbal.CreateUser(ctx, newUser)
 	if err != nil {
-		if err == db.ErrTooManyRows {
+		if err == db.ErrTooManyHits {
 			return nil, fmt.Errorf("user already exist")
 		}
 		r.Log.Warn("create user: ", zap.Error(err))

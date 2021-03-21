@@ -23,5 +23,7 @@ func buildDependencies() (logger.Logger, conf.Configuration, db.Dbal, error) {
 		return logger.Logger{}, conf.Configuration{}, nil, fmt.Errorf("cannot create dbal: %w", err)
 	}
 
+	lg.Info("successfully connected to ES")
+
 	return lg, cf, dbal, nil
 }
