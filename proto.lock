@@ -87,7 +87,7 @@
         "options": [
           {
             "name": "go_package",
-            "value": ".;proto"
+            "value": "./proto"
           }
         ]
       }
