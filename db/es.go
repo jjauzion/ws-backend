@@ -68,10 +68,8 @@ func (es *esHandler) new() error {
 
 type Itr func(*elastic.SearchHit) error
 
-func (es *esHandler) elasticSearchOne(ctx context.Context, index string, query *elastic.MatchQuery) (*elastic.SearchHit, error) {
-	searchSource := elastic.NewSearchSource()
-	searchSource.Query(query)
-	searchService := es.elastic.Search().Index(index).SearchSource(searchSource)
+func (es *esHandler) elasticSearchOne(ctx context.Context, index string, source *elastic.SearchSource) (*elastic.SearchHit, error) {
+	searchService := es.elastic.Search().Index(index).SearchSource(source)
 	searchResult, err := searchService.Do(ctx)
 	if err != nil {
 		return nil, err
@@ -88,10 +86,8 @@ func (es *esHandler) elasticSearchOne(ctx context.Context, index string, query *
 	return nil, fmt.Errorf("something wrong happened")
 }
 
-func (es *esHandler) elasticSearch(ctx context.Context, index string, query *elastic.MatchQuery, itr Itr) (*elastic.SearchResult, error) {
-	searchSource := elastic.NewSearchSource()
-	searchSource.Query(query)
-	searchService := es.elastic.Search().Index(index).SearchSource(searchSource)
+func (es *esHandler) elasticSearch(ctx context.Context, index string, source *elastic.SearchSource, itr Itr) (*elastic.SearchResult, error) {
+	searchService := es.elastic.Search().Index(index).SearchSource(source)
 	searchResult, err := searchService.Do(ctx)
 	if err != nil {
 		return nil, err
