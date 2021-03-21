@@ -8,10 +8,7 @@ import (
 )
 
 func buildDependencies() (logger.Logger, conf.Configuration, db.Dbal, error) {
-	lg, err := logger.ProvideLogger()
-	if err != nil {
-		return logger.Logger{}, conf.Configuration{}, nil, fmt.Errorf("cannot create logger: %w", err)
-	}
+	lg := logger.ProvideLogger()
 
 	cf, err := conf.GetConfig(lg)
 	if err != nil {

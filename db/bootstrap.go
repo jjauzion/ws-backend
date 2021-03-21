@@ -33,7 +33,7 @@ func Bootstrap(ctx context.Context, dbal Dbal) error {
 	}
 	dataset := "s3://task1"
 	dockerImage := "ghcr.io/my-image"
-	task1 := Task{
+	task := Task{
 		ID:        uuid.New().String(),
 		CreatedAt: time.Now(),
 		StartedAt: time.Unix(0, 0),
@@ -42,7 +42,22 @@ func Bootstrap(ctx context.Context, dbal Dbal) error {
 		UserId:    userAdmin.ID,
 		Job:       Job{DockerImage: dockerImage, Dataset: dataset},
 	}
-	err = dbal.CreateTask(ctx, task1)
+	err = dbal.CreateTask(ctx, task)
+	if err != nil {
+		return err
+	}
+	dataset = "s3://task2"
+	dockerImage = "ghcr.io/my-image-2"
+	task = Task{
+		ID:        uuid.New().String(),
+		CreatedAt: time.Now(),
+		StartedAt: time.Unix(0, 0),
+		EndedAt:   time.Unix(0, 0),
+		Status:    StatusNotStarted,
+		UserId:    userAdmin.ID,
+		Job:       Job{DockerImage: dockerImage, Dataset: dataset},
+	}
+	err = dbal.CreateTask(ctx, task)
 	if err != nil {
 		return err
 	}
