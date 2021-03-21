@@ -3,6 +3,8 @@ package server
 import (
 	"context"
 	"fmt"
+	"github.com/jjauzion/ws-backend/db"
+	"log"
 	"net/http"
 
 	"github.com/99designs/gqlgen/graphql/handler"
@@ -14,20 +16,21 @@ import (
 
 func RunGraphQL(bootstrap bool) {
 	ctx := context.Background()
-	log, conf, dbal, err := buildDependencies()
+	lg, conf, dbal, err := buildDependencies()
 	if err != nil {
-		return
+		log.Fatal(err)
 	}
 
 	resolver := &graph.Resolver{
-		Log:     log,
+		Log:     lg,
 		Dbal:    dbal,
 		Config:  conf,
 		ApiPort: conf.WS_API_PORT,
 	}
 
 	if bootstrap {
-		if err := dbal.Bootstrap(ctx); err != nil {
+		err := db.Bootstrap(ctx, dbal)
+		if err != nil {
 			resolver.Log.Error("bootstrap failed", zap.Error(err))
 			return
 		}

@@ -7,7 +7,7 @@ import (
 )
 
 func Bootstrap(ctx context.Context, dbal Dbal) error {
-	err := dbal.Bootstrap(ctx)
+	err := dbal.CreateIndexes(ctx)
 	if err != nil {
 		return err
 	}

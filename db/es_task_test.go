@@ -9,7 +9,7 @@ import (
 func TestTask(t *testing.T) {
 	wait := time.Millisecond * 1100
 	t.Run("remove all user1 tasks", func(t *testing.T) {
-		err := dbal.DeleteUserTasks(ctx, task1.UserId)
+		err := dbal.DeleteTasksBysUserID(ctx, task1.UserId)
 		assert.NoError(t, err)
 	})
 
@@ -35,7 +35,7 @@ func TestTask(t *testing.T) {
 	if id != "" {
 		t.Run("remove it", func(t *testing.T) {
 			t.Log("try to remove ", id)
-			err := dbal.DeleteTask(ctx, id)
+			err := dbal.DeleteTaskByID(ctx, id)
 			assert.NoError(t, err)
 		})
 	}
@@ -56,29 +56,6 @@ var task1 = Task{
 	Job: Job{
 		DockerImage: "docker-img1",
 		Dataset:     "data_set",
-	},
-}
-
-var tasks = []Task{
-	{
-		ID:        "id3",
-		UserId:    "user3",
-		CreatedAt: now,
-		Status:    StatusNotStarted,
-		Job: Job{
-			DockerImage: "docker-img3",
-			Dataset:     "data_set3",
-		},
-	},
-	{
-		ID:        "id2",
-		UserId:    "user2",
-		CreatedAt: now,
-		Status:    StatusNotStarted,
-		Job: Job{
-			DockerImage: "docker-img2",
-			Dataset:     "data_set",
-		},
 	},
 }
 

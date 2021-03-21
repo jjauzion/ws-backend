@@ -16,7 +16,7 @@ type Configuration struct {
 	WS_GRPC_PORT    string
 }
 
-func GetConfig(log *logger.Logger) (Configuration, error) {
+func GetConfig(log logger.Logger) (Configuration, error) {
 	cf := Configuration{}
 	err := viper.Unmarshal(&cf)
 	if err != nil {

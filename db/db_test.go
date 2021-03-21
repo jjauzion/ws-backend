@@ -28,7 +28,7 @@ func TestMain(m *testing.M) {
 
 	dbal = &esHandler{
 		conf:    conf.Configuration{},
-		log:     &logger.Logger{Logger: lg},
+		log:     logger.Logger{Logger: lg},
 		elastic: elst,
 	}
 	code := m.Run()
