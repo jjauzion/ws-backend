@@ -8,8 +8,8 @@ import (
 type Dbal interface {
 	// newConnection create a connection and store it
 	newConnection(address string) error
-	// Info
-	Info() string
+	// Ping try to get info from the nodes and return an error if it failed
+	Ping() error
 	// CreateIndexes initialize needed indexes
 	CreateIndexes(ctx context.Context) error
 

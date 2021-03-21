@@ -33,6 +33,11 @@ func NewDatabaseAbstractedLayerImplemented(log logger.Logger, cf conf.Configurat
 		return nil, fmt.Errorf("cannot create new connection: %w", err)
 	}
 
+	err = dbal.Ping()
+	if err != nil {
+		return nil, fmt.Errorf("elastic cluster is offline: %w", err)
+	}
+
 	return dbal, nil
 }
 
@@ -50,9 +55,9 @@ func (es *esHandler) newConnection(url string) error {
 	return nil
 }
 
-func (es *esHandler) Info() string {
-
-	return ""
+func (es *esHandler) Ping() error {
+	_, err := es.elastic.NodesInfo().Do(context.Background())
+	return err
 }
 
 func (es *esHandler) CreateIndexes(ctx context.Context) error {

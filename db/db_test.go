@@ -36,3 +36,10 @@ func TestMain(m *testing.M) {
 		os.Exit(code)
 	}
 }
+
+func TestEsHandler_Info(t *testing.T) {
+	err := dbal.Ping()
+	if err != nil {
+		t.Error(err)
+	}
+}
