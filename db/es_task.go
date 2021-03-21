@@ -33,13 +33,13 @@ func (es *esHandler) GetTasksByUserID(ctx context.Context, id string) ([]Task, e
 	return tasks, nil
 }
 
-func (es *esHandler) GetOldestTask(ctx context.Context) (*Task, error) {
+func (es *esHandler) GetNextTask(ctx context.Context) (*Task, error) {
 	es.log.Debug("searching most recent task")
 	q := elastic.NewMatchQuery(taskFieldStatus, StatusNotStarted)
 	s := elastic.NewSearchSource()
 	s = s.Query(q)
 	s = s.Sort(taskFieldCreatedAt, true)
-	s = s.Size(2)
+	s = s.Size(1)
 	tasks, err := es.searchTasks(ctx, s)
 	if err != nil {
 		return nil, err

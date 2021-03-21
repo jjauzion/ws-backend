@@ -30,7 +30,7 @@ func (s *grpcServer) StartTask(ctx context.Context, req *pb.StartTaskReq) (*pb.S
 	log.Info("starting StartTask")
 	start := time.Now()
 
-	t, err := s.dbal.GetOldestTask(ctx)
+	t, err := s.dbal.GetNextTask(ctx)
 	if err != nil {
 		log.Error("", zap.Error(err))
 	}
