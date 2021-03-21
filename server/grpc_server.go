@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"github.com/google/uuid"
+	"github.com/jjauzion/ws-backend/conf"
 	"github.com/jjauzion/ws-backend/db"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
@@ -16,21 +17,36 @@ import (
 
 type grpcServer struct {
 	pb.UnimplementedApiServer
+	conf conf.Configuration
+	dbal db.Dbal
+}
+
+func (srv *grpcServer) RegisterServer(s *grpc.Server) {
+	pb.RegisterApiServer(s, srv)
 }
 
 func (s *grpcServer) StartTask(ctx context.Context, req *pb.StartTaskReq) (*pb.StartTaskRep, error) {
 	log := logger.ProvideLogger()
 	log.Info("starting StartTask")
 	start := time.Now()
-	var err error
+
+	t, err := s.dbal.GetOldestTask(ctx)
+	if err != nil {
+		log.Error("", zap.Error(err))
+	}
+	if t == nil {
+		log.Info("no task in queue")
+		return nil, errNoTasksInQueue
+	}
+	log.Info("oldest task is", zap.Any("task", t))
+	err = s.dbal.UpdateTaskStatus(ctx, t.ID, db.StatusRunning)
+	if err != nil {
+		return nil, err
+	}
 	var rep *pb.StartTaskRep
-	if req.WithGPU {
-		rep = &pb.StartTaskRep{
-			Job:    &pb.Job{Dataset: "s3://test-dataset", DockerImage: "docker.io/jjauzion/ws-mock-container"},
-			TaskId: uuid.New().String(),
-		}
-	} else {
-		err = errNoTasksInQueue
+	rep = &pb.StartTaskRep{
+		Job:    &pb.Job{Dataset: t.Job.Dataset, DockerImage: t.Job.DockerImage},
+		TaskId: uuid.New().String(),
 	}
 	log.Info("ended StartTask", zap.Duration("in", time.Since(start)))
 	return rep, err
@@ -53,16 +69,8 @@ func RunGRPC(bootstrap bool) {
 			return
 		}
 	}
-	t, err := dbal.GetOldestTask(ctx)
-	if err != nil {
-		lg.Error("", zap.Error(err))
-	}
-	if t == nil {
-		lg.Info("no task in queue")
-	} else {
-		lg.Info("oldest task is", zap.Any("task", t))
-		dbal.UpdateTaskStatus(ctx, t.ID, db.StatusRunning)
-	}
+
+	var srv = grpcServer{conf: cf, dbal: dbal}
 
 	port := ":" + cf.WS_GRPC_PORT
 	lis, err := net.Listen("tcp", port)
@@ -71,7 +79,8 @@ func RunGRPC(bootstrap bool) {
 	}
 	lg.Info("grpc server listening on", zap.String("port", port))
 	s := grpc.NewServer()
-	pb.RegisterApiServer(s, &grpcServer{})
+	defer s.Stop()
+	srv.RegisterServer(s)
 	if err := s.Serve(lis); err != nil {
 		lg.Fatal("failed to serve", zap.Error(err))
 	}

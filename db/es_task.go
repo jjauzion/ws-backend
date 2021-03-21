@@ -35,7 +35,7 @@ func (es *esHandler) GetTasksByUserID(ctx context.Context, id string) ([]Task, e
 
 func (es *esHandler) GetOldestTask(ctx context.Context) (*Task, error) {
 	es.log.Debug("searching most recent task")
-	q := elastic.NewMatchAllQuery()
+	q := elastic.NewMatchQuery(taskFieldStatus, StatusNotStarted)
 	s := elastic.NewSearchSource()
 	s = s.Query(q)
 	s = s.Sort(taskFieldCreatedAt, true)
@@ -83,7 +83,7 @@ func (es *esHandler) UpdateTaskStatus(ctx context.Context, taskID string, status
 	case StatusNotStarted:
 		{
 			doc[taskFieldStartedAt] = time.Unix(0, 0)
-			doc[taskFieldEndedAt] =  time.Unix(0, 0)
+			doc[taskFieldEndedAt] = time.Unix(0, 0)
 		}
 	}
 	update, err := es.client.Update().Index(taskIndex).Id(taskID).Doc(doc).Do(ctx)
