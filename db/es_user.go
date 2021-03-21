@@ -33,9 +33,10 @@ func (es *esHandler) CreateUser(ctx context.Context, user User) (err error) {
 func (es *esHandler) GetUserByID(ctx context.Context, id string) (User, error) {
 	es.log.Debug("searching user by id...")
 	query := elastic.NewMatchQuery("id", id)
+	s := elastic.NewSearchSource().Query(query)
 	var user User
 
-	hit, err := es.elasticSearchOne(ctx, userIndex, query)
+	hit, err := es.elasticSearchOne(ctx, userIndex, s)
 	if err != nil {
 		return user, err
 	}
@@ -53,9 +54,10 @@ func (es *esHandler) GetUserByID(ctx context.Context, id string) (User, error) {
 func (es *esHandler) GetUserByEmail(ctx context.Context, email string) (User, error) {
 	es.log.Debug("searching user by email...")
 	query := elastic.NewMatchQuery("email", email)
+	s := elastic.NewSearchSource().Query(query)
 	var user User
 
-	hit, err := es.elasticSearchOne(ctx, userIndex, query)
+	hit, err := es.elasticSearchOne(ctx, userIndex, s)
 	if err != nil {
 		return user, err
 	}

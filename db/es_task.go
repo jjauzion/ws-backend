@@ -23,7 +23,8 @@ func (es *esHandler) CreateTask(ctx context.Context, task Task) error {
 func (es *esHandler) GetTasksByUserID(ctx context.Context, id string) ([]Task, error) {
 	es.log.Debug("get tasks for user", zap.String("user_id", id))
 	query := elastic.NewMatchQuery("user_id", id)
-	tasks, err := es.searchTasks(ctx, query)
+	s := elastic.NewSearchSource().Query(query)
+	tasks, err := es.searchTasks(ctx, s)
 	if err != nil {
 		return nil, err
 	}
@@ -53,10 +54,10 @@ func (es *esHandler) DeleteUserTasks(ctx context.Context, userID string) error {
 	return nil
 }
 
-func (es *esHandler) searchTasks(ctx context.Context, query *elastic.MatchQuery) ([]Task, error) {
+func (es *esHandler) searchTasks(ctx context.Context, source *elastic.SearchSource) ([]Task, error) {
 	var tasks []Task
 
-	_, err := es.elasticSearch(ctx, taskIndex, query, func(hit *elastic.SearchHit) error {
+	_, err := es.elasticSearch(ctx, taskIndex, source, func(hit *elastic.SearchHit) error {
 		var task Task
 		err := json.Unmarshal(hit.Source, &task)
 		if err != nil {
