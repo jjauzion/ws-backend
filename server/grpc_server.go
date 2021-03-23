@@ -58,7 +58,7 @@ func (s *grpcServer) EndTask(context.Context, *pb.EndTaskReq) (*pb.EndTaskRep, e
 
 func RunGRPC(bootstrap bool) {
 	ctx := context.Background()
-	app, err := buildApplication()
+	app, _, err := buildApplication()
 	if err != nil {
 		return
 	}

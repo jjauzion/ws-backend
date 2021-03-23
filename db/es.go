@@ -89,9 +89,14 @@ func (es *esHandler) elasticSearchOne(ctx context.Context, index string, source 
 	}
 
 	if searchResult.TotalHits() <= 0 {
+		es.log.Debug(ErrNotFound.Error(), zap.Int64("hits", searchResult.TotalHits()))
 		return nil, ErrNotFound
 	}
 	if searchResult.TotalHits() > 1 {
+		es.log.Debug(ErrTooManyHits.Error(), zap.Int64("hits", searchResult.TotalHits()))
+		for i, hit := range searchResult.Hits.Hits {
+			es.log.Debug("hit", zap.Any(fmt.Sprintf("%d", i), hit.Source))
+		}
 		return nil, ErrTooManyHits
 	}
 	return searchResult.Hits.Hits[0], nil

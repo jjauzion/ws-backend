@@ -9,6 +9,17 @@ import (
 	"time"
 )
 
+type LoginRes interface {
+	IsLoginRes()
+}
+
+type Error struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+}
+
+func (Error) IsLoginRes() {}
+
 type Job struct {
 	DockerImage string  `json:"docker_image"`
 	Dataset     *string `json:"dataset"`
@@ -23,6 +34,14 @@ type Task struct {
 	Status    Status    `json:"status"`
 	Job       *Job      `json:"job"`
 }
+
+type Token struct {
+	Username string `json:"username"`
+	Token    string `json:"token"`
+	UserID   string `json:"userId"`
+}
+
+func (Token) IsLoginRes() {}
 
 type User struct {
 	ID        string    `json:"id"`

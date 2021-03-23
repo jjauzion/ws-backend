@@ -15,6 +15,7 @@ const (
 	userCtxKey    = "user"
 	userIDClaim   = "user_id"
 	notAuthorized = "not authorized"
+	authHeader    = "auth"
 )
 
 type Auth interface {
@@ -41,19 +42,21 @@ func NewAuth(dbal db.Dbal, log logger.Logger, signinKey string) (Auth, error) {
 func (m *auth) Middleware() func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			m.log.Debug("start middleware...")
 			forbidden := func(fields ...zap.Field) {
 				m.log.Warn("access denied: ", fields...)
 				http.Error(w, notAuthorized, http.StatusForbidden)
 				return
 			}
 
-			tokenHeader := r.Header.Get("auth")
+			tokenHeader := r.Header.Get(authHeader)
 			if tokenHeader == "" {
-				forbidden(zap.String("reason", "'auth' header empty"))
+				next.ServeHTTP(w, r)
 				return
 			}
 
-			token, err := jwt.Parse(tokenHeader, func(token *jwt.Token) (interface{}, error) {
+			claims := jwt.MapClaims{}
+			token, err := jwt.ParseWithClaims(tokenHeader, claims, func(token *jwt.Token) (interface{}, error) {
 				_, ok := token.Method.(*jwt.SigningMethodHMAC)
 				if !ok {
 					return nil, fmt.Errorf("wrong signin method")
@@ -75,7 +78,7 @@ func (m *auth) Middleware() func(http.Handler) http.Handler {
 				return
 			}
 
-			userID, ok := token.Header[userIDClaim].(string)
+			userID, ok := claims[userIDClaim].(string)
 			if !ok {
 				forbidden(
 					zap.String("reason", "token user_id claim is not a string"),
@@ -94,6 +97,7 @@ func (m *auth) Middleware() func(http.Handler) http.Handler {
 				return
 			}
 
+			m.log.Debug("...end middleware", zap.String("user_email", user.Email))
 			ctx := context.WithValue(r.Context(), userCtxKey, user)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
@@ -117,5 +121,11 @@ func (m *auth) GenerateToken(userID string) (string, error) {
 	claims[userIDClaim] = userID
 	claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
 
-	return token.SignedString(m.signinKey)
+	ret, err := token.SignedString(m.signinKey)
+	if err != nil {
+		m.log.Error("cannot generate token", zap.Error(err))
+		return "", err
+	}
+
+	return ret, nil
 }

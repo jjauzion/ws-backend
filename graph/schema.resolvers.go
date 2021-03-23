@@ -6,6 +6,7 @@ package graph
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/google/uuid"
@@ -33,12 +34,13 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input NewUser) (*User
 }
 
 func (r *mutationResolver) CreateTask(ctx context.Context, input NewTask) (*Task, error) {
-	mu, err := r.Dbal.GetUserByID(ctx, input.UserID)
+	dbu, err := r.Auth.UserFromContext(ctx)
 	if err != nil {
-		return nil, err
+		r.Log.Warn("auth failed", zap.Any("user", dbu))
+		return nil, fmt.Errorf("%d", http.StatusForbidden)
 	}
 
-	user := UserFromDBModel(mu)
+	user := UserFromDBModel(dbu)
 	newJob := db.Job{
 		DockerImage: input.DockerImage,
 		Dataset:     *input.Dataset,
@@ -60,6 +62,16 @@ func (r *mutationResolver) CreateTask(ctx context.Context, input NewTask) (*Task
 }
 
 func (r *queryResolver) ListTasks(ctx context.Context, userID string) ([]*Task, error) {
+	r.Log.Debug("list tasks...", zap.String("user_id", userID))
+
+	user, err := r.Auth.UserFromContext(ctx)
+	if err != nil {
+		r.Log.Warn("auth failed", zap.Any("user", user))
+		return nil, fmt.Errorf("%d", http.StatusForbidden)
+	}
+
+	r.Log.Debug("user authenticated", zap.String("user_email", user.Email))
+
 	res, err := r.Dbal.GetTasksByUserID(ctx, userID)
 	if err != nil {
 		r.Log.Warn("cannot get tasks", zap.String("user_id", userID), zap.Error(err))
@@ -74,6 +86,33 @@ func (r *queryResolver) ListTasks(ctx context.Context, userID string) ([]*Task, 
 	r.Log.Debug("list tasks success", zap.Array("tasks", tasks))
 
 	return tasks, nil
+}
+
+func (r *queryResolver) Login(ctx context.Context, id string, pwd string) (LoginRes, error) {
+	r.Log.Debug("login...", zap.String("id", id))
+
+	user, err := r.Dbal.GetUserByEmail(ctx, id)
+	if err != nil {
+		r.Log.Debug("")
+		return Error{
+			Code:    403,
+			Message: "wrong username or/and password",
+		}, err
+	}
+
+	token, err := r.Auth.GenerateToken(user.ID)
+	if err != nil {
+		return Error{
+			Code:    13,
+			Message: "internal error",
+		}, err
+	}
+
+	return Token{
+		Username: user.Email,
+		Token:    token,
+		UserID:   user.ID,
+	}, nil
 }
 
 // Mutation returns MutationResolver implementation.

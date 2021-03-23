@@ -3,6 +3,7 @@ package graph
 import (
 	"github.com/jjauzion/ws-backend/conf"
 	"github.com/jjauzion/ws-backend/db"
+	"github.com/jjauzion/ws-backend/internal/auth"
 	"github.com/jjauzion/ws-backend/internal/logger"
 )
 
@@ -15,4 +16,5 @@ type Resolver struct {
 	Dbal    db.Dbal
 	Config  conf.Configuration
 	ApiPort string
+	Auth    auth.Auth
 }

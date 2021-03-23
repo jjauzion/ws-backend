@@ -17,16 +17,9 @@ import (
 
 func RunGraphQL(bootstrap bool) {
 	ctx := context.Background()
-	app, err := buildApplication()
+	app, resolver, err := buildApplication()
 	if err != nil {
 		log.Fatal(err)
-	}
-
-	resolver := &graph.Resolver{
-		Log:     app.log,
-		Dbal:    app.dbal,
-		Config:  app.conf,
-		ApiPort: app.conf.WS_API_PORT,
 	}
 
 	if bootstrap {
@@ -43,9 +36,9 @@ func RunGraphQL(bootstrap bool) {
 
 	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: resolver}))
 
-	http.Handle("/playground", playground.Handler("GraphQL playground", "/query"))
+	router.Handle("/playground", playground.Handler("GraphQL playground", "/query"))
 	router.Handle("/query", srv)
 
 	resolver.Log.Info(fmt.Sprintf("connect to http://localhost:%s/playground for GraphQL playground", resolver.ApiPort))
-	resolver.Log.Error("", zap.Error(http.ListenAndServe(":"+resolver.ApiPort, nil)))
+	resolver.Log.Error("", zap.Error(http.ListenAndServe(":"+resolver.ApiPort, router)))
 }
