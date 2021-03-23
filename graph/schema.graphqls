@@ -54,3 +54,7 @@ type Mutation {
   create_user(input: newUser!): User!
   create_task(input: newTask!): Task!
 }
+
+type PublicQuery {
+  login(userId: String!): String!
+}

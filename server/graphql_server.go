@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"fmt"
+	"github.com/go-chi/chi"
 	"github.com/jjauzion/ws-backend/db"
 	"log"
 	"net/http"
@@ -16,30 +17,34 @@ import (
 
 func RunGraphQL(bootstrap bool) {
 	ctx := context.Background()
-	lg, conf, dbal, err := buildDependencies()
+	app, err := buildApplication()
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	resolver := &graph.Resolver{
-		Log:     lg,
-		Dbal:    dbal,
-		Config:  conf,
-		ApiPort: conf.WS_API_PORT,
+		Log:     app.log,
+		Dbal:    app.dbal,
+		Config:  app.conf,
+		ApiPort: app.conf.WS_API_PORT,
 	}
 
 	if bootstrap {
-		err := db.Bootstrap(ctx, dbal)
+		err := db.Bootstrap(ctx, app.dbal)
 		if err != nil {
 			resolver.Log.Error("bootstrap failed", zap.Error(err))
 			return
 		}
 	}
 
+	router := chi.NewRouter()
+
+	router.Use(app.auth.Middleware())
+
 	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: resolver}))
 
 	http.Handle("/playground", playground.Handler("GraphQL playground", "/query"))
-	http.Handle("/query", srv)
+	router.Handle("/query", srv)
 
 	resolver.Log.Info(fmt.Sprintf("connect to http://localhost:%s/playground for GraphQL playground", resolver.ApiPort))
 	resolver.Log.Error("", zap.Error(http.ListenAndServe(":"+resolver.ApiPort, nil)))

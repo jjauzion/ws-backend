@@ -58,26 +58,26 @@ func (s *grpcServer) EndTask(context.Context, *pb.EndTaskReq) (*pb.EndTaskRep, e
 
 func RunGRPC(bootstrap bool) {
 	ctx := context.Background()
-	lg, cf, dbal, err := buildDependencies()
+	app, err := buildApplication()
 	if err != nil {
 		return
 	}
 
 	if bootstrap {
-		if err := db.Bootstrap(ctx, dbal); err != nil {
-			lg.Error("bootstrap failed", zap.Error(err))
+		if err := db.Bootstrap(ctx, app.dbal); err != nil {
+			app.log.Error("bootstrap failed", zap.Error(err))
 			return
 		}
 	}
 
 	var srv = grpcServer{conf: cf, dbal: dbal}
 
-	port := ":" + cf.WS_GRPC_PORT
+	port := ":" + app.conf.WS_GRPC_PORT
 	lis, err := net.Listen("tcp", port)
 	if err != nil {
 		lg.Fatal("failed to listen", zap.Error(err))
 	}
-	lg.Info("grpc server listening on", zap.String("port", port))
+	app.log.Info("grpc server listening on", zap.String("port", port))
 	s := grpc.NewServer()
 	defer s.Stop()
 	srv.RegisterServer(s)
