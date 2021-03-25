@@ -25,16 +25,19 @@ type Auth interface {
 }
 
 type auth struct {
-	signinKey []byte
-	log       logger.Logger
-	dbal      db.Dbal
+	log  logger.Logger
+	dbal db.Dbal
+
+	signKey  []byte
+	duration int
 }
 
-func NewAuth(dbal db.Dbal, log logger.Logger, signinKey string) (Auth, error) {
+func NewAuth(dbal db.Dbal, log logger.Logger, signKey string, tokenDuration int) (Auth, error) {
 	return &auth{
-		signinKey: []byte(signinKey),
-		log:       log,
-		dbal:      dbal,
+		signKey:  []byte(signKey),
+		log:      log,
+		dbal:     dbal,
+		duration: tokenDuration,
 	}, nil
 }
 
@@ -44,13 +47,14 @@ func (m *auth) Middleware() func(http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			m.log.Debug("start middleware...")
 			forbidden := func(fields ...zap.Field) {
-				m.log.Warn("access denied: ", fields...)
+				m.log.Debug("access denied: ", fields...)
 				http.Error(w, notAuthorized, http.StatusForbidden)
 				return
 			}
 
 			tokenHeader := r.Header.Get(authHeader)
 			if tokenHeader == "" {
+				m.log.Debug("unauthenticated user")
 				next.ServeHTTP(w, r)
 				return
 			}
@@ -62,14 +66,22 @@ func (m *auth) Middleware() func(http.Handler) http.Handler {
 					return nil, fmt.Errorf("wrong signin method")
 				}
 
-				return m.signinKey, nil
+				return m.signKey, nil
 			})
 			if err != nil {
-				forbidden(
-					zap.String("reason", "cannot parse jwt token"),
-					zap.String("jwt", tokenHeader),
-					zap.Error(err),
-				)
+				switch err.(type) {
+				case *jwt.ValidationError:
+					forbidden(
+						zap.String("reason", "invalid token"),
+						zap.Error(err),
+					)
+				default:
+					forbidden(
+						zap.String("reason", "cannot parse jwt token"),
+						zap.String("jwt", tokenHeader),
+						zap.Error(err),
+					)
+				}
 				return
 			}
 
@@ -97,7 +109,7 @@ func (m *auth) Middleware() func(http.Handler) http.Handler {
 				return
 			}
 
-			m.log.Debug("...end middleware", zap.String("user_email", user.Email))
+			m.log.Debug("authenticated user", zap.String("user_email", user.Email))
 			ctx := context.WithValue(r.Context(), userCtxKey, user)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
@@ -119,11 +131,11 @@ func (m *auth) GenerateToken(userID string) (string, error) {
 	claims := token.Claims.(jwt.MapClaims)
 	claims["authorized"] = true
 	claims[userIDClaim] = userID
-	claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
+	duration := time.Now().Add(time.Hour * time.Duration(m.duration)).Unix()
+	claims["exp"] = duration
 
-	ret, err := token.SignedString(m.signinKey)
+	ret, err := token.SignedString(m.signKey)
 	if err != nil {
-		m.log.Error("cannot generate token", zap.Error(err))
 		return "", err
 	}
 

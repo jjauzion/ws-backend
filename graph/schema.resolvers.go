@@ -83,7 +83,10 @@ func (r *queryResolver) ListTasks(ctx context.Context, userID string) ([]*Task, 
 		tasks = append(tasks, TaskFromDBModel(re).Ptr())
 	}
 
-	r.Log.Debug("list tasks success", zap.Array("tasks", tasks))
+	r.Log.Info("list tasks success",
+		zap.Int("tasks found", len(tasks)),
+		zap.String("user_email", user.Email))
+	r.Log.Debug("list tasks returned details", zap.Array("tasks", tasks))
 
 	return tasks, nil
 }
@@ -102,11 +105,14 @@ func (r *queryResolver) Login(ctx context.Context, id string, pwd string) (Login
 
 	token, err := r.Auth.GenerateToken(user.ID)
 	if err != nil {
+		r.Log.Error("cannot generate token", zap.String("user_id", user.ID), zap.Error(err))
 		return Error{
 			Code:    13,
 			Message: "internal error",
 		}, err
 	}
+
+	r.Log.Info("user successfully authenticated, token returned", zap.String("email", user.Email))
 
 	return Token{
 		Username: user.Email,

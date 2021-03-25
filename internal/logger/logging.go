@@ -16,7 +16,7 @@ func ProvideLogger(dev bool) (Logger, error) {
 	if dev {
 		config := zap.NewDevelopmentConfig()
 		config.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
-		config.EncoderConfig.EncodeTime = zapcore.TimeEncoderOfLayout("Mon 02 Jan 2006 15:04:05 MST")
+		config.EncoderConfig.EncodeTime = zapcore.TimeEncoderOfLayout("Mon 02 Jan 15:04:05 MST")
 		logger.Logger, err = config.Build(zap.AddCaller())
 		if err != nil {
 			return Logger{}, err

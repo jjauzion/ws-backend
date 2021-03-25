@@ -20,7 +20,8 @@ type Configuration struct {
 	WS_ES_PORT string
 
 	// JWT
-	JWT_SIGNIN_KEY string
+	JWT_SIGNIN_KEY       string
+	TOKEN_DURATION_HOURS int
 
 	Dev bool `json:"dev"`
 }

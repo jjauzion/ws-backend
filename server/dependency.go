@@ -35,7 +35,7 @@ func buildApplication() (application, *graph.Resolver, error) {
 		return app, nil, fmt.Errorf("cannot create dbal: %w", err)
 	}
 
-	app.auth, err = auth.NewAuth(app.dbal, app.log, app.conf.JWT_SIGNIN_KEY)
+	app.auth, err = auth.NewAuth(app.dbal, app.log, app.conf.JWT_SIGNIN_KEY, app.conf.TOKEN_DURATION_HOURS)
 	if err != nil {
 		return app, nil, fmt.Errorf("cannot initialize auth: %w", err)
 	}
