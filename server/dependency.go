@@ -20,14 +20,14 @@ func buildApplication() (application, *graph.Resolver, error) {
 	app := application{}
 	var err error
 
-	app.log, err = logger.ProvideLogger()
-	if err != nil {
-		return app, nil, fmt.Errorf("cannot create logger: %w", err)
-	}
-
-	app.conf, err = conf.GetConfig(app.log)
+	app.conf, err = conf.GetConfig()
 	if err != nil {
 		return app, nil, fmt.Errorf("cannot get config: %w", err)
+	}
+
+	app.log, err = logger.ProvideLogger(app.conf.Dev)
+	if err != nil {
+		return app, nil, fmt.Errorf("cannot create logger: %w", err)
 	}
 
 	app.dbal, err = db.NewDatabaseAbstractedLayerImplemented(app.log, app.conf)

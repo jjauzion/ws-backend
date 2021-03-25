@@ -55,7 +55,10 @@ func (es *esHandler) newConnection(url string) error {
 }
 
 func (es *esHandler) Ping() error {
-	_, err := es.client.NodesInfo().Do(context.Background())
+	res, err := es.client.NodesInfo().Do(context.Background())
+	if err == nil {
+		es.log.Info("connected to ES cluster", zap.String("cluster_name", res.ClusterName))
+	}
 	return err
 }
 

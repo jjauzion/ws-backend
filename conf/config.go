@@ -1,7 +1,6 @@
 package conf
 
 import (
-	"github.com/jjauzion/ws-backend/internal/logger"
 	"github.com/spf13/viper"
 )
 
@@ -22,14 +21,15 @@ type Configuration struct {
 
 	// JWT
 	JWT_SIGNIN_KEY string
+
+	Dev bool `json:"dev"`
 }
 
-func GetConfig(log logger.Logger) (Configuration, error) {
+func GetConfig() (Configuration, error) {
 	cf := Configuration{}
 	err := viper.Unmarshal(&cf)
 	if err != nil {
 		return cf, err
 	}
-	log.Info("configuration loaded")
 	return cf, nil
 }

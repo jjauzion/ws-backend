@@ -23,7 +23,7 @@ func RunGraphQL(bootstrap bool) {
 	}
 
 	if bootstrap {
-		err := db.Bootstrap(ctx, app.dbal)
+		err = db.Bootstrap(ctx, app.dbal)
 		if err != nil {
 			resolver.Log.Error("bootstrap failed", zap.Error(err))
 			return
@@ -31,7 +31,6 @@ func RunGraphQL(bootstrap bool) {
 	}
 
 	router := chi.NewRouter()
-
 	router.Use(app.auth.Middleware())
 
 	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: resolver}))
