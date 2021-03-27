@@ -26,6 +26,13 @@ type Task struct {
 	Job       Job       `json:"job"`
 }
 
+const (
+	taskFieldCreatedAt = "created_at"
+	taskFieldStartedAt = "started_at"
+	taskFieldEndedAt   = "ended_at"
+	taskFieldStatus    = "status"
+)
+
 func (t Task) Ptr() *Task {
 	return &t
 }

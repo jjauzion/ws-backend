@@ -3,31 +3,52 @@ package server
 import (
 	"context"
 	"github.com/google/uuid"
+	"github.com/jjauzion/ws-backend/conf"
 	"github.com/jjauzion/ws-backend/db"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
-	"log"
 	"net"
+	"time"
 
+	"github.com/jjauzion/ws-backend/internal/logger"
 	pb "github.com/jjauzion/ws-backend/proto"
 )
 
 type grpcServer struct {
 	pb.UnimplementedApiServer
+	conf conf.Configuration
+	dbal db.Dbal
+}
+
+func (srv *grpcServer) RegisterServer(s *grpc.Server) {
+	pb.RegisterApiServer(s, srv)
 }
 
 func (s *grpcServer) StartTask(ctx context.Context, req *pb.StartTaskReq) (*pb.StartTaskRep, error) {
-	var err error
-	var rep *pb.StartTaskRep
-	if req.WithGPU {
-		rep = &pb.StartTaskRep{
-			Job:    &pb.Job{Dataset: "s3://test-dataset", DockerImage: "docker.io/jjauzion/ws-mock-container"},
-			TaskId: uuid.New().String(),
-		}
-	} else {
-		err = errNoTasksInQueue
+	log := logger.ProvideLogger()
+	log.Info("starting StartTask")
+	start := time.Now()
+
+	t, err := s.dbal.GetNextTask(ctx)
+	if err != nil {
+		log.Error("", zap.Error(err))
 	}
+	if t == nil {
+		log.Info("no task in queue")
+		return nil, errNoTasksInQueue
+	}
+	log.Info("oldest task is", zap.Any("task", t))
+	err = s.dbal.UpdateTaskStatus(ctx, t.ID, db.StatusRunning)
+	if err != nil {
+		return nil, err
+	}
+	var rep *pb.StartTaskRep
+	rep = &pb.StartTaskRep{
+		Job:    &pb.Job{Dataset: t.Job.Dataset, DockerImage: t.Job.DockerImage},
+		TaskId: uuid.New().String(),
+	}
+	log.Info("ended StartTask", zap.Duration("in", time.Since(start)))
 	return rep, err
 }
 
@@ -49,15 +70,18 @@ func RunGRPC(bootstrap bool) {
 		}
 	}
 
+	var srv = grpcServer{conf: cf, dbal: dbal}
+
 	port := ":" + cf.WS_GRPC_PORT
 	lis, err := net.Listen("tcp", port)
 	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+		lg.Fatal("failed to listen", zap.Error(err))
 	}
 	lg.Info("grpc server listening on", zap.String("port", port))
 	s := grpc.NewServer()
-	pb.RegisterApiServer(s, &grpcServer{})
+	defer s.Stop()
+	srv.RegisterServer(s)
 	if err := s.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
+		lg.Fatal("failed to serve", zap.Error(err))
 	}
 }

@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"encoding/json"
+	"time"
 
 	"github.com/olivere/elastic/v7"
 	"go.uber.org/zap"
@@ -10,7 +11,7 @@ import (
 
 func (es *esHandler) CreateTask(ctx context.Context, task Task) error {
 	es.log.Debug("creating new task...")
-	_, err := es.client.Index().Index(taskIndex).BodyJson(task).Do(ctx)
+	_, err := es.client.Index().Index(taskIndex).Id(task.ID).BodyJson(task).Do(ctx)
 	if err != nil {
 		es.log.Error("failed to create task", zap.Error(err))
 		return err
@@ -30,6 +31,67 @@ func (es *esHandler) GetTasksByUserID(ctx context.Context, id string) ([]Task, e
 	}
 
 	return tasks, nil
+}
+
+func (es *esHandler) GetNextTask(ctx context.Context) (*Task, error) {
+	es.log.Debug("searching most recent task")
+	q := elastic.NewMatchQuery(taskFieldStatus, StatusNotStarted)
+	s := elastic.NewSearchSource()
+	s = s.Query(q)
+	s = s.Sort(taskFieldCreatedAt, true)
+	s = s.Size(1)
+	tasks, err := es.searchTasks(ctx, s)
+	if err != nil {
+		return nil, err
+	}
+	if len(tasks) <= 0 {
+		return nil, nil
+	}
+	es.log.Info("search successfully completed")
+	return &tasks[0], err
+}
+
+func (es *esHandler) UpdateTaskTime(ctx context.Context, taskID string, status Status) error {
+	es.log.Info("updating status", zap.String("task_id", taskID), zap.String("status", status.String()))
+	if !status.IsValid() {
+		panic("'" + status + "' is not a valid status.")
+	}
+	update, err := es.client.Update().Index(taskIndex).Id(taskID).Doc(map[string]string{taskFieldStatus: status.String()}).Do(ctx)
+	if err != nil {
+		return err
+	}
+	es.log.Info("status updated", zap.String("task_id", update.Id))
+	return nil
+}
+
+func (es *esHandler) UpdateTaskStatus(ctx context.Context, taskID string, status Status) error {
+	es.log.Info("updating status", zap.String("task_id", taskID), zap.String("status", status.String()))
+	if !status.IsValid() {
+		panic("'" + status + "' is not a valid status.")
+	}
+	var doc = map[string]interface{}{}
+	doc[taskFieldStatus] = status.String()
+	switch status {
+	case StatusRunning:
+		{
+			doc[taskFieldStartedAt] = time.Now()
+		}
+	case StatusEnded:
+		{
+			doc[taskFieldEndedAt] = time.Now()
+		}
+	case StatusNotStarted:
+		{
+			doc[taskFieldStartedAt] = time.Unix(0, 0)
+			doc[taskFieldEndedAt] = time.Unix(0, 0)
+		}
+	}
+	update, err := es.client.Update().Index(taskIndex).Id(taskID).Doc(doc).Do(ctx)
+	if err != nil {
+		return err
+	}
+	es.log.Info("status updated", zap.String("task_id", update.Id))
+	return nil
 }
 
 func (es *esHandler) DeleteTaskByID(ctx context.Context, id string) error {
