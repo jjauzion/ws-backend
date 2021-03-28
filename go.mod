@@ -4,7 +4,9 @@ go 1.15
 
 require (
 	github.com/99designs/gqlgen v0.13.0
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/elastic/go-elasticsearch/v7 v7.10.0
+	github.com/go-chi/chi v4.1.2+incompatible
 	github.com/google/uuid v1.2.0
 	github.com/mitchellh/mapstructure v1.4.1
 	github.com/olivere/elastic/v7 v7.0.22

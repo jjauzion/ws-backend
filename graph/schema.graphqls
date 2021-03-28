@@ -5,6 +5,33 @@ schema {
 
 scalar Time
 
+type Error {
+  code: Int!
+  message: String!
+}
+
+type Token {
+  username: String!
+  token: String!
+  userId: String!
+}
+
+union LoginRes = Token | Error
+# query union types:
+#query login{
+#  login(id:"simple-user@email.com", pwd: "a-password") {
+#    ... on Token {
+#      username
+#      token
+#    }
+#
+#    ... on Error {
+#      code
+#      message
+#    }
+#  }
+#}
+
 type Task {
   id: ID!
   user_id: String!
@@ -47,7 +74,8 @@ input newUser {
 }
 
 type Query {
-    list_tasks(userId: String!): [Task]
+  list_tasks(userId: String!): [Task]
+  login(id: String!, pwd: String!): LoginRes!
 }
 
 type Mutation {

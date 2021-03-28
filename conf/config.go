@@ -1,27 +1,36 @@
 package conf
 
 import (
-	"github.com/jjauzion/ws-backend/internal/logger"
 	"github.com/spf13/viper"
 )
 
 type Configuration struct {
-	WS_ES_HOST      string
-	WS_ES_PORT      string
+	// ElasticSearch
 	ES_USER_MAPPING string
 	ES_TASK_MAPPING string
 	BOOTSTRAP_FILE  string
-	WS_API_PORT     string
-	WS_GRPC_HOST    string
-	WS_GRPC_PORT    string
+
+	// WorkStation
+	WS_API_PORT  string
+	WS_GRPC_HOST string
+	WS_GRPC_PORT string
+
+	// WorkStation_ElasticSearch
+	WS_ES_HOST string
+	WS_ES_PORT string
+
+	// JWT
+	JWT_SIGNIN_KEY       string
+	TOKEN_DURATION_HOURS int
+
+	Dev bool `json:"dev"`
 }
 
-func GetConfig(log logger.Logger) (Configuration, error) {
+func GetConfig() (Configuration, error) {
 	cf := Configuration{}
 	err := viper.Unmarshal(&cf)
 	if err != nil {
 		return cf, err
 	}
-	log.Info("configuration loaded")
 	return cf, nil
 }

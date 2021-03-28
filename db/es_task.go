@@ -114,7 +114,7 @@ func (es *esHandler) searchTasks(ctx context.Context, source *elastic.SearchSour
 			return err
 		}
 
-		es.log.Debug("task found", zap.String(task.UserId, "ok"))
+		es.log.Debug("task found", zap.String(task.Job.DockerImage, "docker_image"))
 
 		tasks = append(tasks, task)
 		return nil
