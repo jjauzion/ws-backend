@@ -19,6 +19,7 @@ type grpcServer struct {
 	pb.UnimplementedApiServer
 	conf conf.Configuration
 	dbal db.Dbal
+	log  logger.Logger
 }
 
 func (srv *grpcServer) RegisterServer(s *grpc.Server) {
@@ -26,19 +27,18 @@ func (srv *grpcServer) RegisterServer(s *grpc.Server) {
 }
 
 func (s *grpcServer) StartTask(ctx context.Context, req *pb.StartTaskReq) (*pb.StartTaskRep, error) {
-	log := logger.ProvideLogger()
-	log.Info("starting StartTask")
+	s.log.Info("starting StartTask")
 	start := time.Now()
 
 	t, err := s.dbal.GetNextTask(ctx)
 	if err != nil {
-		log.Error("", zap.Error(err))
+		s.log.Error("", zap.Error(err))
 	}
 	if t == nil {
-		log.Info("no task in queue")
+		s.log.Info("no task in queue")
 		return nil, errNoTasksInQueue
 	}
-	log.Info("oldest task is", zap.Any("task", t))
+	s.log.Info("oldest task is", zap.Any("task", t))
 	err = s.dbal.UpdateTaskStatus(ctx, t.ID, db.StatusRunning)
 	if err != nil {
 		return nil, err
@@ -48,7 +48,7 @@ func (s *grpcServer) StartTask(ctx context.Context, req *pb.StartTaskReq) (*pb.S
 		Job:    &pb.Job{Dataset: t.Job.Dataset, DockerImage: t.Job.DockerImage},
 		TaskId: uuid.New().String(),
 	}
-	log.Info("ended StartTask", zap.Duration("in", time.Since(start)))
+	s.log.Info("ended StartTask", zap.Duration("in", time.Since(start)))
 	return rep, err
 }
 
@@ -70,18 +70,18 @@ func RunGRPC(bootstrap bool) {
 		}
 	}
 
-	var srv = grpcServer{conf: cf, dbal: dbal}
+	var srv = grpcServer{conf: app.conf, dbal: app.dbal}
 
 	port := ":" + app.conf.WS_GRPC_PORT
 	lis, err := net.Listen("tcp", port)
 	if err != nil {
-		lg.Fatal("failed to listen", zap.Error(err))
+		app.log.Fatal("failed to listen", zap.Error(err))
 	}
 	app.log.Info("grpc server listening on", zap.String("port", port))
 	s := grpc.NewServer()
 	defer s.Stop()
 	srv.RegisterServer(s)
 	if err := s.Serve(lis); err != nil {
-		lg.Fatal("failed to serve", zap.Error(err))
+		app.log.Fatal("failed to serve", zap.Error(err))
 	}
 }
