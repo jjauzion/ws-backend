@@ -12,10 +12,9 @@ import (
 )
 
 const (
-	userCtxKey    = "user"
-	userIDClaim   = "user_id"
-	notAuthorized = "not authorized"
-	authHeader    = "auth"
+	userCtxKey  = "user"
+	userIDClaim = "user_id"
+	authHeader  = "auth"
 )
 
 type Auth interface {
@@ -48,7 +47,7 @@ func (m *auth) Middleware() func(http.Handler) http.Handler {
 			m.log.Debug("start middleware...")
 			forbidden := func(fields ...zap.Field) {
 				m.log.Debug("access denied: ", fields...)
-				http.Error(w, notAuthorized, http.StatusForbidden)
+				next.ServeHTTP(w, r)
 				return
 			}
 

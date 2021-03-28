@@ -33,3 +33,7 @@ func ProvideLogger(dev bool) (Logger, error) {
 
 	return logger, nil
 }
+
+func MockLogger() Logger {
+	return Logger{zap.NewNop()}
+}

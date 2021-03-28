@@ -3,7 +3,6 @@ package db
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/olivere/elastic/v7"
 	"go.uber.org/zap"
@@ -18,7 +17,7 @@ func (es *esHandler) CreateUser(ctx context.Context, user User) (err error) {
 		return fmt.Errorf("cannot create user: %w", err)
 	} else if err == nil {
 		es.log.Info("can't create user, user already exists", zap.String("email", user.Email))
-		return errors.New("user already exists")
+		return ErrAlreadyExist("user already exist")
 	}
 	_, err = es.client.Index().Index(userIndex).BodyJson(user).Do(ctx)
 	if err != nil {

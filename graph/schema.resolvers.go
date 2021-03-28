@@ -36,7 +36,7 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input NewUser) (*User
 func (r *mutationResolver) CreateTask(ctx context.Context, input NewTask) (*Task, error) {
 	dbu, err := r.Auth.UserFromContext(ctx)
 	if err != nil {
-		r.Log.Warn("auth failed", zap.Any("user", dbu))
+		r.Log.Info("auth failed", zap.Any("user", dbu))
 		return nil, fmt.Errorf("%d", http.StatusForbidden)
 	}
 
@@ -66,7 +66,7 @@ func (r *queryResolver) ListTasks(ctx context.Context, userID string) ([]*Task, 
 
 	user, err := r.Auth.UserFromContext(ctx)
 	if err != nil {
-		r.Log.Warn("auth failed", zap.Any("user", user))
+		r.Log.Info("auth failed", zap.Any("user", user))
 		return nil, fmt.Errorf("%d", http.StatusForbidden)
 	}
 
