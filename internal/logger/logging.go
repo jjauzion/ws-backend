@@ -24,7 +24,7 @@ func ProvideLogger(dev bool) (Logger, error) {
 		logger.Info("logger initialized in development mode")
 	} else {
 		config := zap.NewProductionConfig()
-		config.EncoderConfig.EncodeTime = zapcore.EpochTimeEncoder
+		config.EncoderConfig.EncodeTime = zapcore.TimeEncoderOfLayout("Mon 02 Jan 2006 15:04:05 MST")
 		logger.Logger, err = config.Build()
 		if err != nil {
 			return Logger{}, err
