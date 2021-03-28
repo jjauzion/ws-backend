@@ -27,12 +27,9 @@ jobs:
       with:
         go-version: 1.15
         
-    - name: Build the docker-compose stack
+    - name: Build elastic search
       run: docker-compose up -d
-      env:
-        WS_ES_PORT: 9200
-        WS_KIBANA_PORT: 5601
-      
+
     - name: Build
       run: go build -v ./...
 
