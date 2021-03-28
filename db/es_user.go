@@ -53,7 +53,7 @@ func (es *esHandler) GetUserByID(ctx context.Context, id string) (User, error) {
 
 func (es *esHandler) GetUserByEmail(ctx context.Context, email string) (User, error) {
 	es.log.Debug("searching user by email...")
-	query := elastic.NewMatchQuery("email", email)
+	query := elastic.NewMatchQuery("email.keyword", email)
 	s := elastic.NewSearchSource().Query(query)
 	var user User
 
