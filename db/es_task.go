@@ -23,7 +23,7 @@ func (es *esHandler) CreateTask(ctx context.Context, task Task) error {
 
 func (es *esHandler) GetTasksByUserID(ctx context.Context, id string) ([]Task, error) {
 	es.log.Debug("get tasks for user", zap.String("user_id", id))
-	query := elastic.NewMatchPhraseQuery("user_id", id)
+	query := elastic.NewMatchQuery("user_id", id)
 	s := elastic.NewSearchSource().Query(query)
 	tasks, err := es.searchTasks(ctx, s)
 	if err != nil {
