@@ -45,7 +45,6 @@ func TestMain(m *testing.M) {
 func TestEsHandler_Info(t *testing.T) {
 	err := dbal.CreateIndexes(ctx)
 	if err != nil {
-		t.Error(err)
 	}
 
 	err = dbal.Ping()

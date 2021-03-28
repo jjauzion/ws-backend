@@ -28,7 +28,7 @@ func NewDatabaseAbstractedLayerImplemented(log logger.Logger, cf conf.Configurat
 		conf: cf,
 	}
 
-	err := dbal.newConnection(cf.WS_ES_HOST + ":" + cf.WS_ES_PORT)
+	err := dbal.NewConnection(cf.WS_ES_HOST + ":" + cf.WS_ES_PORT)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create new connection: %w", err)
 	}
@@ -41,7 +41,7 @@ func NewDatabaseAbstractedLayerImplemented(log logger.Logger, cf conf.Configurat
 	return dbal, nil
 }
 
-func (es *esHandler) newConnection(url string) error {
+func (es *esHandler) NewConnection(url string) error {
 	es.log.Info("connexion to ES cluster...")
 	var err error
 	es.client, err = elastic.NewClient(elastic.SetURL(url),
