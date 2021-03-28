@@ -16,7 +16,7 @@ import (
 func (r *mutationResolver) CreateUser(ctx context.Context, input NewUser) (*User, error) {
 	newUser := db.User{
 		ID:        uuid.New().String(),
-		Admin:     true,
+		Admin:     false,
 		Email:     input.Email,
 		CreatedAt: time.Now(),
 	}

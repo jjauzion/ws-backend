@@ -51,19 +51,6 @@ func (es *esHandler) GetNextTask(ctx context.Context) (*Task, error) {
 	return &tasks[0], err
 }
 
-func (es *esHandler) UpdateTaskTime(ctx context.Context, taskID string, status Status) error {
-	es.log.Info("updating status", zap.String("task_id", taskID), zap.String("status", status.String()))
-	if !status.IsValid() {
-		panic("'" + status + "' is not a valid status.")
-	}
-	update, err := es.client.Update().Index(taskIndex).Id(taskID).Doc(map[string]string{taskFieldStatus: status.String()}).Do(ctx)
-	if err != nil {
-		return err
-	}
-	es.log.Info("status updated", zap.String("task_id", update.Id))
-	return nil
-}
-
 func (es *esHandler) UpdateTaskStatus(ctx context.Context, taskID string, status Status) error {
 	es.log.Info("updating status", zap.String("task_id", taskID), zap.String("status", status.String()))
 	if !status.IsValid() {
