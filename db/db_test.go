@@ -32,7 +32,11 @@ func TestMain(m *testing.M) {
 		client: elst,
 	}
 
-	Bootstrap(ctx, dbal)
+	err = dbal.CreateIndexes(ctx)
+	//if err != nil {
+	//
+	//}
+
 	code := m.Run()
 	if code != 0 {
 		os.Exit(code)
