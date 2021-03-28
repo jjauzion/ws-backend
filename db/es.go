@@ -64,14 +64,24 @@ func (es *esHandler) Ping() error {
 
 func (es *esHandler) CreateIndexes(ctx context.Context) error {
 	es.log.Info("Initializing Elasticsearch...")
-	_, err := es.client.CreateIndex(taskIndex).Body(es.readMappingFile(es.conf.ES_TASK_MAPPING)).Do(ctx)
+	mappingBody, err := es.readMappingFile(es.conf.ES_TASK_MAPPING)
+	if err != nil {
+		return fmt.Errorf("cannot read mapping file: %w", err)
+	}
+
+	_, err = es.client.CreateIndex(taskIndex).Body(mappingBody).Do(ctx)
 	if err != nil {
 		es.log.Error("failed to create '"+taskIndex+"' index", zap.Error(err))
 		return err
 	}
 
+	mappingBody, err = es.readMappingFile(es.conf.ES_USER_MAPPING)
+	if err != nil {
+		return fmt.Errorf("cannot read mapping file: %w", err)
+	}
+
 	es.log.Info("'" + taskIndex + "' index created")
-	_, err = es.client.CreateIndex(userIndex).Body(es.readMappingFile(es.conf.ES_USER_MAPPING)).Do(ctx)
+	_, err = es.client.CreateIndex(userIndex).Body(mappingBody).Do(ctx)
 	if err != nil {
 		es.log.Error("failed to create '"+userIndex+" index", zap.Error(err))
 		return err
@@ -122,12 +132,12 @@ func (es *esHandler) elasticSearch(ctx context.Context, index string, source *el
 	return searchResult, nil
 }
 
-func (es *esHandler) readMappingFile(file string) string {
+func (es *esHandler) readMappingFile(file string) (string, error) {
 	content, err := ioutil.ReadFile(file)
 	if err != nil {
-		es.log.Fatal("cannot read mapping", zap.String("file", file), zap.Error(err))
-		return ""
+		es.log.Error("cannot read mapping", zap.String("file", file), zap.Error(err))
+		return "", err
 	}
 
-	return string(content)
+	return string(content), nil
 }
