@@ -31,6 +31,8 @@ func TestMain(m *testing.M) {
 		log:    logger.Logger{Logger: lg},
 		client: elst,
 	}
+
+	Bootstrap(ctx, dbal)
 	code := m.Run()
 	if code != 0 {
 		os.Exit(code)
