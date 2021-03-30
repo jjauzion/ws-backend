@@ -23,7 +23,8 @@ type Configuration struct {
 	JWT_SIGNIN_KEY       string
 	TOKEN_DURATION_HOURS int
 
-	Dev bool `json:"dev"`
+	// dev or prod
+	ENV string
 }
 
 func GetConfig() (Configuration, error) {

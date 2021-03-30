@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/go-chi/chi"
 	"github.com/jjauzion/ws-backend/db"
-	"log"
 	"net/http"
 
 	"github.com/99designs/gqlgen/graphql/handler"
@@ -19,7 +18,7 @@ func RunGraphQL(bootstrap bool) {
 	ctx := context.Background()
 	app, resolver, err := buildApplication()
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 
 	if bootstrap {
