@@ -48,10 +48,6 @@ func init() {
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is conf/config.yaml)")
 	rootCmd.PersistentFlags().Bool("dev", false, "development mode")
-	err := viper.BindPFlag("dev", rootCmd.PersistentFlags().Lookup("dev"))
-	if err != nil {
-		panic(err)
-	}
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
