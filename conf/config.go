@@ -8,7 +8,6 @@ type Configuration struct {
 	// ElasticSearch
 	ES_USER_MAPPING string
 	ES_TASK_MAPPING string
-	BOOTSTRAP_FILE  string
 
 	// WorkStation
 	WS_API_PORT  string

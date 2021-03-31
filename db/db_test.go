@@ -30,7 +30,6 @@ func TestMain(m *testing.M) {
 		conf: conf.Configuration{
 			ES_USER_MAPPING: "Elasticsearch/user_mapping.json",
 			ES_TASK_MAPPING: "Elasticsearch/task_mapping.json",
-			BOOTSTRAP_FILE:  "Elasticsearch/bootstrap.bulk",
 		},
 		log:    logger.Logger{Logger: lg},
 		client: elst,
@@ -45,6 +44,7 @@ func TestMain(m *testing.M) {
 func TestEsHandler_Info(t *testing.T) {
 	err := dbal.CreateIndexes(ctx)
 	if err != nil {
+		t.Error(err)
 	}
 
 	err = dbal.Ping()
