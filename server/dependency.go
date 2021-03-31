@@ -26,7 +26,7 @@ func buildApplication() (application, *graph.Resolver, error) {
 		panic("cannot get config: " + err.Error())
 	}
 
-	app.log, err = logger.ProvideLogger(app.conf.ENV == "dev")
+	app.log, err = logger.ProvideLogger(app.conf.IS_DEV_ENV)
 	if err != nil {
 		panic("cannot create logger: " + err.Error())
 	}
