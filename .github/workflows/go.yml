@@ -1,0 +1,37 @@
+name: Go
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    env:
+      WS_ES_HOST: http://localhost
+      WS_ES_PORT: 9200
+      WS_API_PORT: 8080
+      WS_KIBANA_PORT: 5601
+      WS_GRPC_HOST: localhost
+      WS_GRPC_PORT: 8090
+      JWT_SIGNIN_KEY: a_pure_bullshit_key
+      TOKEN_DURATION_HOURS: 24
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.15
+        
+    - name: Build elastic search
+      run: docker-compose up -d
+
+    - name: Build
+      run: go build -v ./...
+
+    - name: Test
+      run: go test -v ./...

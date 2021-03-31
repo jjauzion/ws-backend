@@ -1,15 +1,15 @@
 package auth
 
 import (
-	"context"
+	"github.com/golang/mock/gomock"
 	conf2 "github.com/jjauzion/ws-backend/conf"
 	"github.com/jjauzion/ws-backend/db"
+	"github.com/jjauzion/ws-backend/db/mock_db"
 	"github.com/jjauzion/ws-backend/internal/logger"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"time"
 )
 
 const (
@@ -19,11 +19,12 @@ const (
 
 func Test_Scene1(t *testing.T) {
 	var testAuth Auth
-	var ctx = context.Background()
 	var log logger.Logger
 	var conf conf2.Configuration
 	var err error
-	var dbal db.Dbal
+
+	ctrl := gomock.NewController(t)
+	dbal := mock_db.NewMockDbal(ctrl)
 
 	t.Run("config...", func(t *testing.T) {
 		conf, err = conf2.GetConfig()
@@ -32,22 +33,6 @@ func Test_Scene1(t *testing.T) {
 		conf.WS_ES_HOST = "http://localhost"
 		conf.WS_ES_PORT = "9200"
 		log = logger.MockLogger()
-	})
-
-	t.Run("dbal", func(t *testing.T) {
-		dbal, err = db.NewDatabaseAbstractedLayerImplemented(log, conf)
-		assert.NoError(t, err)
-	})
-
-	t.Run("hydrate db with basic user", func(t *testing.T) {
-		err = dbal.CreateUser(ctx, db.User{
-			ID:        userID,
-			Email:     "email@email.com",
-			CreatedAt: time.Now(),
-		})
-		if err != nil {
-			assert.ErrorAs(t, err, db.ErrAlreadyExist("").Ptr())
-		}
 	})
 
 	t.Run("NewAuth", func(t *testing.T) {
@@ -63,6 +48,7 @@ func Test_Scene1(t *testing.T) {
 	})
 
 	t.Run("Middleware", func(t *testing.T) {
+		dbal.EXPECT().GetUserByID(gomock.Any(), userID).Return(db.User{ID: userID}, nil)
 		mw := testAuth.Middleware()
 
 		req := httptest.NewRequest("POST", "http://testing", nil)

@@ -4,10 +4,12 @@ import (
 	"context"
 )
 
+//go:generate mockgen -source=db.go -destination=mock_db/mock_db.go -package=mock_db
+
 // Dbal for DataBase Abstracted Layer
 type Dbal interface {
 	// newConnection create a connection and store it
-	newConnection(address string) error
+	NewConnection(address string) error
 	// Ping try to get info from the nodes and return an error if it failed
 	Ping() error
 	// CreateIndexes initialize needed indexes
