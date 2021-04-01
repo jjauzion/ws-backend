@@ -38,6 +38,8 @@ WS_KIBANA_PORT=5601
 WS_API_PORT=8080
 WS_GRPC_HOST=localhost
 WS_GRPC_PORT=8090
+IS_DEV_ENV=true
+TOKEN_DURATION_HOURS=24
 ```
 - Start the elastic and kibana cluster: `make elastic`
 - Check kibana container logs: `docker logs ws-backend_kibana_1 -f`   
@@ -77,11 +79,49 @@ GET user/_search
   You could also create or delete task and user manually from here but it is better to use the
   GraphQL API.
   
-## Create a user and a task
+
+## Login
+Before being able to create user and task you will need to login. As we started the GraphQL server
+with bootstrap option, two default users have been created in the DB.  
+We will login with the admin user using the GraphQL API.
+- open the GraphQL playground: http://localhost:8080/playground
+- you can find the doc and schema of our API thanks to the "DOCS" and "SCHEMA" tabs on the right side
+  of the screen. This will help you later to build your own request
+- copy / paste the following request to log in as the admin user:
+```graphql
+query login {
+  login (id: "admin-user@email.com", pwd: "") {
+    ... on Token {
+      token
+      userId
+      username
+    }
+    ... on Error {
+      code
+      message
+    }
+  }
+}
+```
+You should get a response similar to this:
+```json
+{
+  "data": {
+    "login": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE2MTczODMzNDksInVzZXJfaWQiOiJkZjljNDYzZC00ZmIwLTRmYzAtYTU5OC00YmQ3NzEzMzg2ZDAifQ.Xj_rUGIB7l90kiXD_U12ni2kf9U-afARaCZKbEao-oU",
+      "userId": "df9c463d-4fb0-4fc0-a598-4bd7713386d0",
+      "username": "admin-user@email.com"
+    }
+  }
+}
+```
+As you can see the server successfully authenticated your request and have generated a JWT token 
+that you can use for further request to prove that you are authenticated.  
+
+Copy the `token` value and `userId` somewhere as you will need those later.
+  
+## Create a user
 We will now see how to create user and task with the GraphQL API.
-- Open the GraphQL playground: http://localhost:8080/playground
-- You can find the doc and schema of our API thanks to the "DOCS" and "SCHEMA" tabs on the right side
-  of the screen
 - To create a new user, paste the following in the console:
 ```graphql
 mutation tuto_create_user {
@@ -91,8 +131,16 @@ mutation tuto_create_user {
   }
 }
 ```
-You should have a response like this:
-```graphql
+- if you send the request like this you will get a `403` error which means you are not authenticated (WIP at the moment only create task requires authentication)
+- you need to pass the token we generated in the chapter before. On the bottom of the console, 
+  click on `HTTP HEADERS` and paste the following (replacing the token value with yours):
+```json
+{
+  "auth": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE2MTczODMwNTUsInVzZXJfaWQiOiI0MzVmNTA3OC02NjFlLTRkOGMtODJjZS0zNDJhZTQ1ZTQ4MzcifQ.RTzseF7mSjR8aop-9CCiNt1-IkqFGem9nNWymaJKBRo"
+}
+```
+- you can now send the request. You should have a response like this:
+```json
 {
   "data": {
     "create_user": {
@@ -102,8 +150,8 @@ You should have a response like this:
   }
 }
 ```
-- Copy the id of the user you've just created
-- Now let's create a task. Run the following command (replace the id with yours):
+## Create a task
+- now let's create a task. Run the following command (replace the user id with yours):
 ```graphql
 mutation createTask {
   create_task(input:{user_id:"65941391-733a-430c-a3bd-2bdd853af7be", docker_image:"jjauzion/ws-mock-container", dataset:"s3//"}) {
@@ -117,6 +165,8 @@ mutation createTask {
   }
 }
 ```
+- if you got a `403` it's because you forgot to add the `auth` Header to your request (see previous chapter)
+
 Congratulations !! You have created a user and a new jobs :) You can go to the kibana console and run 
 the search to see your creations.
 
@@ -128,15 +178,8 @@ But before starting a worker node, we need to start the gRPC server:
 Now let's run the worker:  
 - Clone the worker repository: `git clone https://github.com/jjauzion/ws-worker.git`
 - go in the `ws-worker` repo: `cd ws-worker`  
-- Create the `.env` file. For a dev environment use this:
-```dotenv
-WS_ES_HOST=http://localhost
-WS_ES_PORT=9200
-WS_KIBANA_PORT=5601
-WS_API_PORT=8080
-WS_GRPC_HOST=localhost
-WS_GRPC_PORT=8090
-```
+- Create the `.env` file with the same values as the `.env` file created for the `ws-backend`
+  (you can create a simlink to the `.env` of the ws-backend file)
 - Start the worker: `make run`  
 
 This will start the worker and it will automatically pull the task you have created in the 
