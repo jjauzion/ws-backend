@@ -390,7 +390,6 @@ type Job {
 }
 
 input newTask {
-  user_id: ID!
   docker_image: String!
   dataset: String
 }
@@ -2478,14 +2477,6 @@ func (ec *executionContext) unmarshalInputnewTask(ctx context.Context, obj inter
 
 	for k, v := range asMap {
 		switch k {
-		case "user_id":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("user_id"))
-			it.UserID, err = ec.unmarshalNID2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "docker_image":
 			var err error
 

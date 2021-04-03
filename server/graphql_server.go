@@ -8,7 +8,6 @@ import (
 	"net/http"
 
 	"github.com/99designs/gqlgen/graphql/handler"
-	"github.com/99designs/gqlgen/graphql/playground"
 	"go.uber.org/zap"
 
 	"github.com/jjauzion/ws-backend/graph"
@@ -34,7 +33,6 @@ func RunGraphQL(bootstrap bool) {
 
 	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: resolver}))
 
-	router.Handle("/playground", playground.Handler("GraphQL playground", "/query"))
 	router.Handle("/query", srv)
 
 	resolver.Log.Info(fmt.Sprintf("connect to http://localhost:%s/playground for GraphQL playground", resolver.ApiPort))

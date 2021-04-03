@@ -122,6 +122,9 @@ Copy the `token` value and `userId` somewhere as you will need those later.
   
 ## Create a user
 We will now see how to create user and task with the GraphQL API.
+- Install the [GraphQL IDE](https://github.com/graphql/graphiql)
+- You can find the documentation of our API thanks to the "DOCS" tab on the right side
+  of the screen
 - To create a new user, paste the following in the console:
 ```graphql
 mutation tuto_create_user {
@@ -151,10 +154,10 @@ mutation tuto_create_user {
 }
 ```
 ## Create a task
-- now let's create a task. Run the following command (replace the user id with yours):
+- Now let's create a task. Run the following command:
 ```graphql
 mutation createTask {
-  create_task(input:{user_id:"65941391-733a-430c-a3bd-2bdd853af7be", docker_image:"jjauzion/ws-mock-container", dataset:"s3//"}) {
+  create_task(input:{docker_image:"jjauzion/ws-mock-container", dataset:"s3//"}) {
     id
     user_id
   	created_at

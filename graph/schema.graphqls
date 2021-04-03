@@ -43,7 +43,6 @@ type Job {
 }
 
 input newTask {
-  user_id: ID!
   docker_image: String!
   dataset: String
 }
