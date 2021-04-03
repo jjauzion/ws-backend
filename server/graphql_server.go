@@ -3,9 +3,9 @@ package server
 import (
 	"context"
 	"fmt"
-	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/go-chi/chi"
 	"github.com/jjauzion/ws-backend/db"
+	"github.com/jjauzion/ws-backend/graph/playground"
 	"net/http"
 
 	"github.com/99designs/gqlgen/graphql/handler"
