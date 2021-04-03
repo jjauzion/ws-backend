@@ -62,6 +62,8 @@ func (s *grpcServer) EndTask(ctx context.Context, req *pb.EndTaskReq) (*pb.EndTa
 			s.log.Error("cannot update task status", zap.String("id", req.TaskId), zap.Error(err))
 			return nil, status.Error(codes.Internal, "cannot update task status")
 		}
+
+		return &pb.EndTaskRep{}, nil
 	}
 
 	err := s.dbal.UpdateTaskStatus(ctx, req.TaskId, db.StatusEnded)
