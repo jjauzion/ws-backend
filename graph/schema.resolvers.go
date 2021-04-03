@@ -61,20 +61,18 @@ func (r *mutationResolver) CreateTask(ctx context.Context, input NewTask) (*Task
 	return TaskFromDBModel(newTask).Ptr(), nil
 }
 
-func (r *queryResolver) ListTasks(ctx context.Context, userID string) ([]*Task, error) {
-	r.Log.Debug("list tasks...", zap.String("user_id", userID))
-
+func (r *queryResolver) ListTasks(ctx context.Context) ([]*Task, error) {
 	user, err := r.Auth.UserFromContext(ctx)
 	if err != nil {
 		r.Log.Info("auth failed", zap.Any("user", user))
 		return nil, fmt.Errorf("%d", http.StatusForbidden)
 	}
 
+	r.Log.Debug("list tasks...", zap.String("user_id", user.ID))
 	r.Log.Debug("user authenticated", zap.String("user_email", user.Email))
-
-	res, err := r.Dbal.GetTasksByUserID(ctx, userID)
+	res, err := r.Dbal.GetTasksByUserID(ctx, user.ID)
 	if err != nil {
-		r.Log.Warn("cannot get tasks", zap.String("user_id", userID), zap.Error(err))
+		r.Log.Warn("cannot get tasks", zap.String("user_id", user.ID), zap.Error(err))
 		return nil, err
 	}
 

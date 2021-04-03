@@ -5,9 +5,10 @@ import (
 	"github.com/google/uuid"
 	"github.com/jjauzion/ws-backend/conf"
 	"github.com/jjauzion/ws-backend/db"
-	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"net"
 	"time"
 
@@ -26,7 +27,7 @@ func (srv *grpcServer) RegisterServer(s *grpc.Server) {
 	pb.RegisterApiServer(s, srv)
 }
 
-func (s *grpcServer) StartTask(ctx context.Context, req *pb.StartTaskReq) (*pb.StartTaskRep, error) {
+func (s *grpcServer) StartTask(ctx context.Context, _ *pb.StartTaskReq) (*pb.StartTaskRep, error) {
 	s.log.Info("starting StartTask")
 	start := time.Now()
 
@@ -52,8 +53,26 @@ func (s *grpcServer) StartTask(ctx context.Context, req *pb.StartTaskReq) (*pb.S
 	return rep, err
 }
 
-func (s *grpcServer) EndTask(context.Context, *pb.EndTaskReq) (*pb.EndTaskRep, error) {
-	return nil, errors.New("NOT IMPLEMENTED")
+func (s *grpcServer) EndTask(ctx context.Context, req *pb.EndTaskReq) (*pb.EndTaskRep, error) {
+	s.log.Info("ending task", zap.String("id", req.TaskId))
+
+	if req.Error != nil && len(req.Error) > 0 {
+		err := s.dbal.UpdateTaskStatus(ctx, req.TaskId, db.StatusFailed)
+		if err != nil {
+			s.log.Error("cannot update task status", zap.String("id", req.TaskId), zap.Error(err))
+			return nil, status.Error(codes.Internal, "cannot update task status")
+		}
+
+		return &pb.EndTaskRep{}, nil
+	}
+
+	err := s.dbal.UpdateTaskStatus(ctx, req.TaskId, db.StatusEnded)
+	if err != nil {
+		s.log.Error("cannot update task status", zap.String("id", req.TaskId), zap.Error(err))
+		return nil, status.Error(codes.Internal, "cannot update task status")
+	}
+
+	return &pb.EndTaskRep{}, err
 }
 
 func RunGRPC(bootstrap bool) {

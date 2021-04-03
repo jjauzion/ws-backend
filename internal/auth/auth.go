@@ -45,6 +45,7 @@ func (m *auth) Middleware() func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			m.log.Debug("start middleware...")
+
 			forbidden := func(fields ...zap.Field) {
 				m.log.Debug("access denied: ", fields...)
 				next.ServeHTTP(w, r)
@@ -108,8 +109,8 @@ func (m *auth) Middleware() func(http.Handler) http.Handler {
 				return
 			}
 
-			m.log.Debug("authenticated user", zap.String("user_email", user.Email))
 			ctx := context.WithValue(r.Context(), userCtxKey, user)
+			m.log.Debug("authenticated user", zap.String("user_email", user.Email))
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}

@@ -51,7 +51,6 @@ type User struct {
 }
 
 type NewTask struct {
-	UserID      string  `json:"user_id"`
 	DockerImage string  `json:"docker_image"`
 	Dataset     *string `json:"dataset"`
 }
