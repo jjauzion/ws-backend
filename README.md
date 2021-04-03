@@ -122,9 +122,10 @@ Copy the `token` value and `userId` somewhere as you will need those later.
   
 ## Create a user
 We will now see how to create user and task with the GraphQL API.
-- Install the [GraphQL IDE](https://github.com/graphql/graphiql)
-- You can find the documentation of our API thanks to the "DOCS" tab on the right side
-  of the screen
+open the GraphQL playground: http://localhost:8080/playground
+- you can find the doc and schema of our API thanks to the "DOCS" and "SCHEMA"
+  tabs on the right side of the screen. 
+  This will help you later to build your own request
 - To create a new user, paste the following in the console:
 ```graphql
 mutation tuto_create_user {
