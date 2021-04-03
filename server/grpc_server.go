@@ -70,7 +70,7 @@ func RunGRPC(bootstrap bool) {
 		}
 	}
 
-	var srv = grpcServer{conf: app.conf, dbal: app.dbal}
+	var srv = grpcServer{conf: app.conf, dbal: app.dbal, log: app.log}
 
 	port := ":" + app.conf.WS_GRPC_PORT
 	lis, err := net.Listen("tcp", port)
