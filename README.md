@@ -165,7 +165,7 @@ mutation createTask {
   }
 }
 ```
-- if you got a `403` it's because you forgot to add the `auth` Header to your request (see previous chapter)
+- if you got a `403` error, check you didn't forget the `auth` Header in your request (see previous chapter)
 
 Congratulations !! You have created a user and a new jobs :) You can go to the kibana console and run 
 the search to see your creations.
