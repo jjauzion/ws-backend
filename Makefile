@@ -21,7 +21,7 @@ $(GRAPHQL_FILES): graph/schema.graphqls
 
 proto/%.pb.go: proto.lock proto/%.proto
 	$(PROTOLOCK) commit
-	$(PROTOC) -I=./proto --go_out=plugins=grpc:proto proto/$*.proto
+	$(PROTOC) -I=./proto --go_out=plugins=grpc:. proto/$*.proto
 
 proto.lock:
 	$(PROTOLOCK) init

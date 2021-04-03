@@ -40,7 +40,6 @@ func (s *grpcServer) StartTask(ctx context.Context, _ *pb.StartTaskReq) (*pb.Sta
 		return nil, errNoTasksInQueue
 	}
 	s.log.Info("oldest task is", zap.Any("task", t))
-	err = s.dbal.UpdateTaskStatus(ctx, t.ID, db.StatusRunning)
 	if err != nil {
 		return nil, err
 	}
@@ -49,6 +48,7 @@ func (s *grpcServer) StartTask(ctx context.Context, _ *pb.StartTaskReq) (*pb.Sta
 		Job:    &pb.Job{Dataset: t.Job.Dataset, DockerImage: t.Job.DockerImage},
 		TaskId: uuid.New().String(),
 	}
+	err = s.dbal.UpdateTaskStatus(ctx, t.ID, db.StatusRunning)
 	s.log.Info("ended StartTask", zap.Duration("in", time.Since(start)))
 	return rep, err
 }

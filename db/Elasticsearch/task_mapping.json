@@ -35,6 +35,10 @@
           "docker_image" : {
             "type" : "keyword",
             "ignore_above" : 256
+          },
+          "env" : {
+            "type" : "keyword",
+            "ignore_above" : 256
           }
         }
       },

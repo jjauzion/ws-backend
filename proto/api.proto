@@ -28,4 +28,5 @@ message EndTaskRep {
 message Job {
   string dockerImage = 1;
   string dataset = 2;
+  repeated string env = 3;
 }
