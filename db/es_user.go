@@ -30,7 +30,6 @@ func (es *esHandler) CreateUser(ctx context.Context, user User) (err error) {
 }
 
 func (es *esHandler) GetUserByID(ctx context.Context, id string) (User, error) {
-	es.log.Debug("searching user by id...")
 	query := elastic.NewMatchQuery("id", id)
 	s := elastic.NewSearchSource().Query(query)
 	var user User
@@ -46,7 +45,6 @@ func (es *esHandler) GetUserByID(ctx context.Context, id string) (User, error) {
 		return user, err
 	}
 
-	es.log.Info("search successfully completed")
 	return user, err
 }
 

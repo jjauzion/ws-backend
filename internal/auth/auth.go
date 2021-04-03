@@ -106,7 +106,6 @@ func (m *auth) Middleware() func(http.Handler) http.Handler {
 				return
 			}
 
-			m.log.Debug("authenticated user", zap.String("user_email", user.Email))
 			ctx := context.WithValue(r.Context(), userCtxKey, user)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})

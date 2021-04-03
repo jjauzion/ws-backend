@@ -60,7 +60,7 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		ListTasks func(childComplexity int, userID string) int
+		ListTasks func(childComplexity int) int
 		Login     func(childComplexity int, id string, pwd string) int
 	}
 
@@ -93,7 +93,7 @@ type MutationResolver interface {
 	CreateTask(ctx context.Context, input NewTask) (*Task, error)
 }
 type QueryResolver interface {
-	ListTasks(ctx context.Context, userID string) ([]*Task, error)
+	ListTasks(ctx context.Context) ([]*Task, error)
 	Login(ctx context.Context, id string, pwd string) (LoginRes, error)
 }
 
@@ -169,12 +169,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		args, err := ec.field_Query_list_tasks_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Query.ListTasks(childComplexity, args["userId"].(string)), true
+		return e.complexity.Query.ListTasks(childComplexity), true
 
 	case "Query.login":
 		if e.complexity.Query.Login == nil {
@@ -369,20 +364,6 @@ type Token {
 }
 
 union LoginRes = Token | Error
-# query union types:
-#query login{
-#  login(id:"simple-user@email.com", pwd: "a-password") {
-#    ... on Token {
-#      username
-#      token
-#    }
-#
-#    ... on Error {
-#      code
-#      message
-#    }
-#  }
-#}
 
 type Task {
   id: ID!
@@ -426,7 +407,7 @@ input newUser {
 }
 
 type Query {
-  list_tasks(userId: String!): [Task]
+  list_tasks: [Task]
   login(id: String!, pwd: String!): LoginRes!
 }
 
@@ -483,21 +464,6 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 		}
 	}
 	args["name"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_Query_list_tasks_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["userId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userId"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["userId"] = arg0
 	return args, nil
 }
 
@@ -800,16 +766,9 @@ func (ec *executionContext) _Query_list_tasks(ctx context.Context, field graphql
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Query_list_tasks_args(ctx, rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().ListTasks(rctx, args["userId"].(string))
+		return ec.resolvers.Query().ListTasks(rctx)
 	})
 	if err != nil {
 		ec.Error(ctx, err)

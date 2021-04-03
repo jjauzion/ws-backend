@@ -17,20 +17,6 @@ type Token {
 }
 
 union LoginRes = Token | Error
-# query union types:
-#query login{
-#  login(id:"simple-user@email.com", pwd: "a-password") {
-#    ... on Token {
-#      username
-#      token
-#    }
-#
-#    ... on Error {
-#      code
-#      message
-#    }
-#  }
-#}
 
 type Task {
   id: ID!
@@ -74,7 +60,7 @@ input newUser {
 }
 
 type Query {
-  list_tasks(userId: String!): [Task]
+  list_tasks: [Task]
   login(id: String!, pwd: String!): LoginRes!
 }
 
