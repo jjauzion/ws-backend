@@ -191,8 +191,10 @@ You can go to kibana and check your task, you will see the status going from "NO
 to "RUNNING" and "ENDED"
 
 ## Create a Machine Learning task
-Let's create a real job: running a ML jobs and tracking your jobs parameters while it is running. 
+Let's create a real job: running a ML jobs and tracking your jobs parameters while it is running.  
+
 For this we will use wandb (https://wandb.ai/site) so you must create a user and copy your private key.
+
 Then paste the following in the playground console and put your wandb key in the env variable. 
 Your key will be encrypted on the server and will never be stored in clear (WIP, not done yet)
 
@@ -209,6 +211,8 @@ mutation createTask {
   }
 }
 ```
+Wait until the task status is updated to "RUNNING" (can take up to 30sec), then log to wandb. 
+You should see your work ongoing.
 
 
 
