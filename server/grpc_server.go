@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"github.com/google/uuid"
 	"github.com/jjauzion/ws-backend/conf"
 	"github.com/jjauzion/ws-backend/db"
 	"go.uber.org/zap"
@@ -45,8 +44,8 @@ func (s *grpcServer) StartTask(ctx context.Context, _ *pb.StartTaskReq) (*pb.Sta
 	}
 	var rep *pb.StartTaskRep
 	rep = &pb.StartTaskRep{
-		Job:    &pb.Job{Dataset: t.Job.Dataset, DockerImage: t.Job.DockerImage},
-		TaskId: uuid.New().String(),
+		Job:    &pb.Job{Env: t.Job.Env, Dataset: t.Job.Dataset, DockerImage: t.Job.DockerImage},
+		TaskId: t.ID,
 	}
 	err = s.dbal.UpdateTaskStatus(ctx, t.ID, db.StatusRunning)
 	s.log.Info("ended StartTask", zap.Duration("in", time.Since(start)))
