@@ -41,6 +41,11 @@
                 "id": 2,
                 "name": "error",
                 "type": "string"
+              },
+              {
+                "id": 3,
+                "name": "logs",
+                "type": "string"
               }
             ]
           },
