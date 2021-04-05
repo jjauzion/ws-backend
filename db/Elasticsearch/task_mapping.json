@@ -23,7 +23,7 @@
         "format" : "date_optional_time"
       },
       "status" : {
-        "type" : "keyword",
+        "type" : "  keyword",
         "ignore_above" : 256
       },
       "job" : {
@@ -45,6 +45,9 @@
       "started_at" : {
         "type" : "date",
         "format" : "date_optional_time"
+      },
+      "logs" : {
+        "type" : "text"
       }
     }
   }
