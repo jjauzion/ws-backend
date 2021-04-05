@@ -24,6 +24,7 @@ type Dbal interface {
 	// Task index methods:
 	GetNextTask(ctx context.Context) (*Task, error)
 	GetTasksByUserID(ctx context.Context, id string) ([]Task, error)
+	UpdateTaskLogs(ctx context.Context, taskID string, logs string) error
 	UpdateTaskStatus(ctx context.Context, taskID string, status Status) error
 	DeleteTaskByID(ctx context.Context, id string) error
 	DeleteTasksBysUserID(ctx context.Context, userId string) error
