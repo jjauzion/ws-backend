@@ -1,5 +1,3 @@
----> **WORK IN PROGRESS (missing auth)** <---
-
 # Workstation
 The workstation project is machine learning job management system.  
 
