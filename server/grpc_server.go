@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"fmt"
 	"github.com/jjauzion/ws-backend/conf"
 	"github.com/jjauzion/ws-backend/db"
 	"go.uber.org/zap"
@@ -56,7 +55,6 @@ func (s *grpcServer) StartTask(ctx context.Context, _ *pb.StartTaskReq) (*pb.Sta
 func (s *grpcServer) EndTask(ctx context.Context, req *pb.EndTaskReq) (*pb.EndTaskRep, error) {
 	s.log.Info("ending task", zap.String("id", req.TaskId))
 
-	fmt.Println(string(req.Logs))
 	err := s.dbal.UpdateTaskLogs(ctx, req.TaskId, string(req.Logs))
 	if err != nil {
 		s.log.Error("cannot update task logs", zap.String("id", req.TaskId), zap.Error(err))
