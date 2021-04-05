@@ -153,7 +153,7 @@ mutation tuto_create_user {
 - now let's create a task. Run the following command (replace the user id with yours):
 ```graphql
 mutation createTask {
-  create_task(input:{user_id:"65941391-733a-430c-a3bd-2bdd853af7be", docker_image:"jjauzion/ws-mock-container", dataset:"s3//"}) {
+  create_task(input:{docker_image:"jjauzion/ws-mock-container", dataset:"s3//"}) {
     id
     user_id
   	created_at
