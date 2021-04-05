@@ -23,7 +23,7 @@
         "format" : "date_optional_time"
       },
       "status" : {
-        "type" : "  keyword",
+        "type" : "keyword",
         "ignore_above" : 256
       },
       "job" : {

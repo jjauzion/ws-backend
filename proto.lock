@@ -45,7 +45,7 @@
               {
                 "id": 3,
                 "name": "logs",
-                "type": "string"
+                "type": "bytes"
               }
             ]
           },

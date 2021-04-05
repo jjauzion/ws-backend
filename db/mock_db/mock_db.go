@@ -207,6 +207,14 @@ func (mr *MockDbalMockRecorder) Ping() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Ping", reflect.TypeOf((*MockDbal)(nil).Ping))
 }
 
+// UpdateTaskLogs mocks base method.
+func (m *MockDbal) UpdateTaskLogs(ctx context.Context, taskID string, logs string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateTaskLogs", ctx, taskID, logs)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
 // UpdateTaskStatus mocks base method.
 func (m *MockDbal) UpdateTaskStatus(ctx context.Context, taskID string, status db.Status) error {
 	m.ctrl.T.Helper()
