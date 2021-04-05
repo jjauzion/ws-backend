@@ -13,7 +13,7 @@ FLAG ?= ""
 
 all: $(GRAPHQL_FILES) $(PB_FILES) lint $(EXE)
 
-$(EXE):
+$(EXE): $(SRC_FILES)
 	go build -o $(EXE)
 
 $(GRAPHQL_FILES): graph/schema.graphqls
