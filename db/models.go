@@ -8,8 +8,9 @@ import (
 )
 
 type Job struct {
-	DockerImage string `json:"docker_image"`
-	Dataset     string `json:"dataset"`
+	DockerImage string   `json:"docker_image"`
+	Dataset     string   `json:"dataset"`
+	Env         []string `json:"env"`
 }
 
 func (j Job) Ptr() *Job {

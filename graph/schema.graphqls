@@ -40,11 +40,13 @@ enum Status {
 type Job {
   docker_image: String!
   dataset: String
+  env: [String!]
 }
 
 input newTask {
   docker_image: String!
   dataset: String
+  env: [String!]
 }
 
 type User {

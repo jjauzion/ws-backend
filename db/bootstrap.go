@@ -31,35 +31,5 @@ func Bootstrap(ctx context.Context, dbal Dbal) error {
 	if err != nil {
 		return err
 	}
-	dataset := "s3://task1"
-	dockerImage := "jjauzion/ws-mock-container"
-	task := Task{
-		ID:        uuid.New().String(),
-		CreatedAt: time.Now(),
-		StartedAt: time.Unix(0, 0),
-		EndedAt:   time.Unix(0, 0),
-		Status:    StatusNotStarted,
-		UserId:    userAdmin.ID,
-		Job:       Job{DockerImage: dockerImage, Dataset: dataset},
-	}
-	err = dbal.CreateTask(ctx, task)
-	if err != nil {
-		return err
-	}
-	dataset = "s3://task2"
-	dockerImage = "jjauzion/ws-mock-container"
-	task = Task{
-		ID:        uuid.New().String(),
-		CreatedAt: time.Now(),
-		StartedAt: time.Unix(0, 0),
-		EndedAt:   time.Unix(0, 0),
-		Status:    StatusNotStarted,
-		UserId:    userAdmin.ID,
-		Job:       Job{DockerImage: dockerImage, Dataset: dataset},
-	}
-	err = dbal.CreateTask(ctx, task)
-	if err != nil {
-		return err
-	}
 	return err
 }

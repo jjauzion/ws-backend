@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"github.com/google/uuid"
 	"github.com/jjauzion/ws-backend/conf"
 	"github.com/jjauzion/ws-backend/db"
 	"go.uber.org/zap"
@@ -40,15 +39,15 @@ func (s *grpcServer) StartTask(ctx context.Context, _ *pb.StartTaskReq) (*pb.Sta
 		return nil, errNoTasksInQueue
 	}
 	s.log.Info("oldest task is", zap.Any("task", t))
-	err = s.dbal.UpdateTaskStatus(ctx, t.ID, db.StatusRunning)
 	if err != nil {
 		return nil, err
 	}
 	var rep *pb.StartTaskRep
 	rep = &pb.StartTaskRep{
-		Job:    &pb.Job{Dataset: t.Job.Dataset, DockerImage: t.Job.DockerImage},
-		TaskId: uuid.New().String(),
+		Job:    &pb.Job{Env: t.Job.Env, Dataset: t.Job.Dataset, DockerImage: t.Job.DockerImage},
+		TaskId: t.ID,
 	}
+	err = s.dbal.UpdateTaskStatus(ctx, t.ID, db.StatusRunning)
 	s.log.Info("ended StartTask", zap.Duration("in", time.Since(start)))
 	return rep, err
 }
@@ -56,7 +55,7 @@ func (s *grpcServer) StartTask(ctx context.Context, _ *pb.StartTaskReq) (*pb.Sta
 func (s *grpcServer) EndTask(ctx context.Context, req *pb.EndTaskReq) (*pb.EndTaskRep, error) {
 	s.log.Info("ending task", zap.String("id", req.TaskId))
 
-	if req.Error != nil && len(req.Error) > 0 {
+	if req.Error != "" {
 		err := s.dbal.UpdateTaskStatus(ctx, req.TaskId, db.StatusFailed)
 		if err != nil {
 			s.log.Error("cannot update task status", zap.String("id", req.TaskId), zap.Error(err))

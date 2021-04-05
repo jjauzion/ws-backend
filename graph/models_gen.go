@@ -21,8 +21,9 @@ type Error struct {
 func (Error) IsLoginRes() {}
 
 type Job struct {
-	DockerImage string  `json:"docker_image"`
-	Dataset     *string `json:"dataset"`
+	DockerImage string   `json:"docker_image"`
+	Dataset     *string  `json:"dataset"`
+	Env         []string `json:"env"`
 }
 
 type Task struct {
@@ -51,8 +52,9 @@ type User struct {
 }
 
 type NewTask struct {
-	DockerImage string  `json:"docker_image"`
-	Dataset     *string `json:"dataset"`
+	DockerImage string   `json:"docker_image"`
+	Dataset     *string  `json:"dataset"`
+	Env         []string `json:"env"`
 }
 
 type NewUser struct {

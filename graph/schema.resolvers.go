@@ -44,6 +44,7 @@ func (r *mutationResolver) CreateTask(ctx context.Context, input NewTask) (*Task
 	newJob := db.Job{
 		DockerImage: input.DockerImage,
 		Dataset:     *input.Dataset,
+		Env:         input.Env,
 	}
 	newTask := db.Task{
 		ID:        uuid.New().String(),

@@ -20,6 +20,7 @@ func JobFromDBModel(j db.Job) *Job {
 	return &Job{
 		DockerImage: j.DockerImage,
 		Dataset:     &j.Dataset,
+		Env:         j.Env,
 	}
 }
 
@@ -48,6 +49,7 @@ func JobToDBModel(j Job) db.Job {
 	return db.Job{
 		DockerImage: j.DockerImage,
 		Dataset:     *j.Dataset,
+		Env:         j.Env,
 	}
 }
 

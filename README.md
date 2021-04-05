@@ -9,7 +9,7 @@ It consists of a task queue where user can create new jobs and one or more worke
 The jobs are submitted via a Docker image that shall be available on a public container registry.
 
 The project is made of three repositories:
-- the worker node: *the current repo*
+- the worker node: https://github.com/jjauzion/ws-worker
 - the backend server: https://github.com/jjauzion/ws-backend
 - the frontend: *not yet implemented*
 
@@ -23,7 +23,6 @@ This tutorial will guide you through running the whole project.
 - Docker-compose installed
 - go installed
 - makefile support
-- clone the project repositories to your machine
 
 ## Start the backend
 Here we will run the entire project on your local machine from scratch, including the database.
@@ -65,7 +64,7 @@ database:
 - Copy / Paste the following in the console and run it: `GET _cat/indices?v`  
   This list all the index existing in the DB. You should see an index called `task` and one
   called `user`. Index starting with a dot `.` are system index.
-- Now run the following to list all the users existing:
+- Now run the following to list all the existing users:
 ```
 GET user/_search
 {
@@ -132,8 +131,8 @@ mutation tuto_create_user {
 }
 ```
 - if you send the request like this you will get a `403` error because you are not authenticated (WIP at the moment only create task requires authentication)
-- you need to pass the token we generated in the chapter before. On the bottom of the console, 
-  click on `HTTP HEADERS` and paste the following (replacing the token value with yours):
+- you need to pass the token we generated in the chapter before: on the bottom of the console, 
+  click on `HTTP HEADERS` and paste the following (replace the token value with yours):
 ```json
 {
   "auth": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE2MTczODMwNTUsInVzZXJfaWQiOiI0MzVmNTA3OC02NjFlLTRkOGMtODJjZS0zNDJhZTQ1ZTQ4MzcifQ.RTzseF7mSjR8aop-9CCiNt1-IkqFGem9nNWymaJKBRo"
@@ -151,7 +150,7 @@ mutation tuto_create_user {
 }
 ```
 ## Create a task
-- Now let's create a task. Run the following command:
+- now let's create a task. Run the following command (replace the user id with yours):
 ```graphql
 mutation createTask {
   create_task(input:{docker_image:"jjauzion/ws-mock-container", dataset:"s3//"}) {
@@ -187,6 +186,30 @@ This will start the worker and it will automatically pull the task you have crea
 
 You can go to kibana and check your task, you will see the status going from "NOT_STARTED" 
 to "RUNNING" and "ENDED"
+
+## Create a Machine Learning task
+Let's create a real job: running a ML jobs and tracking your jobs parameters while it is running.
+
+For this we will use wandb (https://wandb.ai/site) so you must create a user and copy your private key.
+
+Then paste the following in the playground console and put your wandb key in the env variable.
+Your key will be encrypted on the server and will never be stored in clear (WIP, not done yet)
+
+```graphql
+mutation createTask {
+  create_task(input:{env:"WANDB_API_KEY=putYourKeyHere", docker_image:"jjauzion/wandb-test", dataset:"s3//"}) {
+    id
+    user_id
+        created_at
+        started_at
+        ended_at
+        status
+    job { dataset, docker_image, env }
+  }
+}
+```
+Wait until the task status is updated to "RUNNING" (can take up to 30sec), then log to wandb.
+You should see your work ongoing.
 
 When you are done, go in the ws-backend repo and run `make down` to stop and the elastic containers
 
