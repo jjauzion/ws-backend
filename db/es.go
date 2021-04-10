@@ -11,8 +11,8 @@ import (
 )
 
 const (
-	userIndex = "user"
-	taskIndex = "task"
+	userIndex = "ws_user" // Prefix all index with "ws_" as the workstation user have only access to those index
+	taskIndex = "ws_task"
 )
 
 type esHandler struct {

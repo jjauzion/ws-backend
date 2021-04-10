@@ -15,10 +15,10 @@ type Configuration struct {
 	WS_GRPC_PORT string
 
 	// WorkStation_ElasticSearch
-	WS_ES_HOST		string
-	WS_ES_PORT		string
-	WS_ES_USERNAME	string
-	WS_ES_PWD		string
+	WS_ES_HOST     string
+	WS_ES_PORT     string
+	WS_ES_USERNAME string
+	WS_ES_PWD      string
 
 	// JWT
 	JWT_SIGNIN_KEY       string
