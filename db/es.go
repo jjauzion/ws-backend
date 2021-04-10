@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	userIndex = "ws_user" // Prefix all index with "ws_" as the workstation user have only access to those index
+	userIndex = "ws_user" // Prefix all index with "ws_" as the WS user have only access to ws_ prefixed index
 	taskIndex = "ws_task"
 )
 
