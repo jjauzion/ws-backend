@@ -46,7 +46,8 @@ func (es *esHandler) NewConnection(url string) error {
 	var err error
 	es.client, err = elastic.NewClient(elastic.SetURL(url),
 		elastic.SetSniff(false),
-		elastic.SetHealthcheck(false))
+		elastic.SetHealthcheck(false),
+		elastic.SetBasicAuth(es.conf.WS_ES_USERNAME, es.conf.WS_ES_PWD))
 	if err != nil {
 		return err
 	}
