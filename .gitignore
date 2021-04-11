@@ -2,7 +2,7 @@
 ws-backend
 
 # Environment
-.env
+*.env
 
 # Binaries for programs and plugins
 *.exe

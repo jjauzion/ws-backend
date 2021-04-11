@@ -11,8 +11,8 @@ import (
 )
 
 const (
-	userIndex = "user"
-	taskIndex = "task"
+	userIndex = "ws_user" // Prefix all index with "ws_" as the WS user have only access to ws_ prefixed index
+	taskIndex = "ws_task"
 )
 
 type esHandler struct {
@@ -46,7 +46,8 @@ func (es *esHandler) NewConnection(url string) error {
 	var err error
 	es.client, err = elastic.NewClient(elastic.SetURL(url),
 		elastic.SetSniff(false),
-		elastic.SetHealthcheck(false))
+		elastic.SetHealthcheck(false),
+		elastic.SetBasicAuth(es.conf.WS_ES_USERNAME, es.conf.WS_ES_PWD))
 	if err != nil {
 		return err
 	}

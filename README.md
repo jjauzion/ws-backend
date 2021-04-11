@@ -37,6 +37,8 @@ WS_GRPC_HOST=localhost
 WS_GRPC_PORT=8090
 IS_DEV_ENV=true
 TOKEN_DURATION_HOURS=24
+WS_ES_USERNAME=""
+WS_ES_PWD=""
 ```
 - Start the elastic and kibana cluster: `make elastic`
 - Check kibana container logs: `docker logs ws-backend_kibana_1 -f`   
