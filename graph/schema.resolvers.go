@@ -6,6 +6,7 @@ package graph
 import (
 	"context"
 	"fmt"
+	"github.com/jjauzion/ws-backend/internal/auth"
 	"net/http"
 	"time"
 
@@ -15,13 +16,17 @@ import (
 )
 
 func (r *mutationResolver) CreateUser(ctx context.Context, input NewUser) (*User, error) {
+	_, err := r.Auth.UserFromContext(ctx, auth.OptOnlyAdmin)
+	if err != nil {
+		return nil, err
+	}
 	newUser := db.User{
 		ID:        uuid.New().String(),
 		Admin:     false,
 		Email:     input.Email,
 		CreatedAt: time.Now(),
 	}
-	err := r.Dbal.CreateUser(ctx, newUser)
+	err = r.Dbal.CreateUser(ctx, newUser)
 	if err != nil {
 		if err == db.ErrTooManyHits {
 			return nil, fmt.Errorf("user already exist")
@@ -34,10 +39,9 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input NewUser) (*User
 }
 
 func (r *mutationResolver) CreateTask(ctx context.Context, input NewTask) (*Task, error) {
-	dbu, err := r.Auth.UserFromContext(ctx)
+	dbu, err := r.Auth.UserFromContext(ctx, auth.OptValidUser)
 	if err != nil {
-		r.Log.Info("auth failed", zap.Any("user", dbu))
-		return nil, fmt.Errorf("%d", http.StatusForbidden)
+		return nil, err
 	}
 
 	user := UserFromDBModel(dbu)
@@ -63,7 +67,7 @@ func (r *mutationResolver) CreateTask(ctx context.Context, input NewTask) (*Task
 }
 
 func (r *queryResolver) ListTasks(ctx context.Context) ([]*Task, error) {
-	user, err := r.Auth.UserFromContext(ctx)
+	user, err := r.Auth.UserFromContext(ctx, auth.OptValidUser)
 	if err != nil {
 		r.Log.Info("auth failed", zap.Any("user", user))
 		return nil, fmt.Errorf("%d", http.StatusForbidden)
@@ -91,9 +95,9 @@ func (r *queryResolver) ListTasks(ctx context.Context) ([]*Task, error) {
 }
 
 func (r *queryResolver) Login(ctx context.Context, id string, pwd string) (LoginRes, error) {
+	user, err := r.Auth.UserFromContext(ctx, auth.OptAllowAll)
 	r.Log.Debug("login...", zap.String("id", id))
-
-	user, err := r.Dbal.GetUserByEmail(ctx, id)
+	user, err = r.Dbal.GetUserByEmail(ctx, id)
 	if err != nil {
 		r.Log.Debug("")
 		return Error{
