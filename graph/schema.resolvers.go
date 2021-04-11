@@ -40,7 +40,7 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input NewUser) (*User
 }
 
 func (r *mutationResolver) CreateTask(ctx context.Context, input NewTask) (*Task, error) {
-	dbu, err := r.Auth.UserFromContext(ctx, auth.OptValidUser)
+	dbu, err := r.Auth.UserFromContext(ctx, auth.OptAuthenticatedUser)
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +69,7 @@ func (r *mutationResolver) CreateTask(ctx context.Context, input NewTask) (*Task
 }
 
 func (r *queryResolver) ListTasks(ctx context.Context) ([]*Task, error) {
-	user, err := r.Auth.UserFromContext(ctx, auth.OptValidUser)
+	user, err := r.Auth.UserFromContext(ctx, auth.OptAuthenticatedUser)
 	if err != nil {
 		return nil, err
 	}

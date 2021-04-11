@@ -21,7 +21,7 @@ type authOption int
 
 const (
 	OptAllowAll authOption = iota
-	OptValidUser
+	OptAuthenticatedUser
 	OptOnlyAdmin
 )
 
