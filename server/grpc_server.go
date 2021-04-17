@@ -102,12 +102,14 @@ func RunGRPC(bootstrap bool) {
 	if err != nil {
 		app.log.Fatal("failed to listen", zap.Error(err))
 	}
-	app.log.Info("grpc server listening on", zap.String("port", port))
+
 	creds, err := credentials.NewServerTLSFromFile(app.conf.CERT_FILE, app.conf.KEY_FILE)
 	if err != nil {
 		app.log.Fatal("failed to generate credential", zap.Error(err))
 	}
 	s := grpc.NewServer(grpc.Creds(creds))
+	app.log.Info("grpc server listening on", zap.String("port", port))
+
 	defer s.Stop()
 	srv.RegisterServer(s)
 	if err := s.Serve(lis); err != nil {

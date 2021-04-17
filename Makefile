@@ -10,7 +10,8 @@ SRC_FILES = $(wildcard *.go) \
 PB_FILES = $(patsubst proto/%.proto,proto/%.pb.go,$(wildcard proto/*.proto))
 
 # SSL Certificate info
-SSL_INFO = "/C=FR/ST=./L=Paris/O=42ai/CN=www.backend.workstation.42ai.com"
+SSL_INFO = "/CN=localhost"
+#SSL_INFO = "/C=FR/ST=./L=Paris/O=42ai/CN=localhost"
 
 FLAG ?= ""
 
@@ -57,8 +58,10 @@ down:
 ssl:
 	openssl req -new -newkey rsa:4096 -days 365 -nodes -x509 \
 		-subj $(SSL_INFO) \
+		-addext "subjectAltName = DNS:localhost" \
 		-keyout server.key  -out server.cert
 	openssl req -new -sha256 -key server.key -out server.csr \
+		-addext "subjectAltName = DNS:localhost" \
 		-subj $(SSL_INFO)
 	openssl x509 -req -sha256 -in server.csr -signkey server.key \
 				   -out server.crt -days 365
