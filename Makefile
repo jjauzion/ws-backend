@@ -58,10 +58,8 @@ down:
 ssl:
 	openssl req -new -newkey rsa:4096 -days 365 -nodes -x509 \
 		-subj $(SSL_INFO) \
-		-addext "subjectAltName = DNS:localhost" \
 		-keyout server.key  -out server.cert
 	openssl req -new -sha256 -key server.key -out server.csr \
-		-addext "subjectAltName = DNS:localhost" \
 		-subj $(SSL_INFO)
 	openssl x509 -req -sha256 -in server.csr -signkey server.key \
-				   -out server.crt -days 365
+				   -out server.crt -days 365 -extfile v3.ext
