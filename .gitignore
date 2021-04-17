@@ -5,10 +5,10 @@ ws-backend
 *.env
 
 # SSL/TLS
-.cert
-.key
-.csr
-.crt
+*.cert
+*.key
+*.csr
+*.crt
 
 # Binaries for programs and plugins
 *.exe
