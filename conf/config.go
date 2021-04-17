@@ -28,8 +28,8 @@ type Configuration struct {
 	IS_DEV_ENV bool
 
 	// SSL/TLS
-	CERT_FILE		string
-	KEY_FILE		string
+	CERT_FILE string
+	KEY_FILE  string
 }
 
 func GetConfig() (Configuration, error) {
