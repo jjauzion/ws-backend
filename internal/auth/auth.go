@@ -17,10 +17,18 @@ const (
 	authHeader  = "auth"
 )
 
+type option int
+
+const (
+	OptAllowAll option = iota
+	OptAuthenticatedUser
+	OptOnlyAdmin
+)
+
 type Auth interface {
 	Middleware() func(http.Handler) http.Handler
 	GenerateToken(userID string) (string, error)
-	UserFromContext(ctx context.Context) (db.User, error)
+	UserFromContext(ctx context.Context, authOpt option) (db.User, error)
 }
 
 type auth struct {
@@ -116,12 +124,16 @@ func (m *auth) Middleware() func(http.Handler) http.Handler {
 	}
 }
 
-func (m *auth) UserFromContext(ctx context.Context) (db.User, error) {
+func (m *auth) UserFromContext(ctx context.Context, authOpt option) (db.User, error) {
 	user, ok := ctx.Value(userCtxKey).(db.User)
-	if !ok {
-		return db.User{}, fmt.Errorf("wrong value on context")
+	if !ok && authOpt != OptAllowAll {
+		m.log.Error("auth failed: wrong user value on context")
+		return db.User{}, fmt.Errorf("%d", http.StatusUnauthorized)
 	}
-
+	if authOpt == OptOnlyAdmin && !user.Admin {
+		m.log.Error("auth failed: non admin user")
+		return db.User{}, fmt.Errorf("%d", http.StatusForbidden)
+	}
 	return user, nil
 }
 

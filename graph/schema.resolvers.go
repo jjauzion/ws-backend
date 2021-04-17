@@ -6,7 +6,7 @@ package graph
 import (
 	"context"
 	"fmt"
-	"net/http"
+	"github.com/jjauzion/ws-backend/internal/auth"
 	"time"
 
 	"github.com/google/uuid"
@@ -15,13 +15,19 @@ import (
 )
 
 func (r *mutationResolver) CreateUser(ctx context.Context, input NewUser) (*User, error) {
+	dbu, err := r.Auth.UserFromContext(ctx, auth.OptOnlyAdmin)
+	if err != nil {
+		return nil, err
+	}
+
+	r.Log.Debug("create user...", zap.String("user_id", dbu.ID))
 	newUser := db.User{
 		ID:        uuid.New().String(),
 		Admin:     false,
 		Email:     input.Email,
 		CreatedAt: time.Now(),
 	}
-	err := r.Dbal.CreateUser(ctx, newUser)
+	err = r.Dbal.CreateUser(ctx, newUser)
 	if err != nil {
 		if err == db.ErrTooManyHits {
 			return nil, fmt.Errorf("user already exist")
@@ -34,12 +40,12 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input NewUser) (*User
 }
 
 func (r *mutationResolver) CreateTask(ctx context.Context, input NewTask) (*Task, error) {
-	dbu, err := r.Auth.UserFromContext(ctx)
+	dbu, err := r.Auth.UserFromContext(ctx, auth.OptAuthenticatedUser)
 	if err != nil {
-		r.Log.Info("auth failed", zap.Any("user", dbu))
-		return nil, fmt.Errorf("%d", http.StatusForbidden)
+		return nil, err
 	}
 
+	r.Log.Debug("create tasks...", zap.String("user_id", dbu.ID))
 	user := UserFromDBModel(dbu)
 	newJob := db.Job{
 		DockerImage: input.DockerImage,
@@ -63,10 +69,9 @@ func (r *mutationResolver) CreateTask(ctx context.Context, input NewTask) (*Task
 }
 
 func (r *queryResolver) ListTasks(ctx context.Context) ([]*Task, error) {
-	user, err := r.Auth.UserFromContext(ctx)
+	user, err := r.Auth.UserFromContext(ctx, auth.OptAuthenticatedUser)
 	if err != nil {
-		r.Log.Info("auth failed", zap.Any("user", user))
-		return nil, fmt.Errorf("%d", http.StatusForbidden)
+		return nil, err
 	}
 
 	r.Log.Debug("list tasks...", zap.String("user_id", user.ID))
@@ -91,9 +96,13 @@ func (r *queryResolver) ListTasks(ctx context.Context) ([]*Task, error) {
 }
 
 func (r *queryResolver) Login(ctx context.Context, id string, pwd string) (LoginRes, error) {
-	r.Log.Debug("login...", zap.String("id", id))
+	user, err := r.Auth.UserFromContext(ctx, auth.OptAllowAll)
+	if err != nil {
+		return nil, err
+	}
 
-	user, err := r.Dbal.GetUserByEmail(ctx, id)
+	r.Log.Debug("login...", zap.String("id", id))
+	user, err = r.Dbal.GetUserByEmail(ctx, id)
 	if err != nil {
 		r.Log.Debug("")
 		return Error{

@@ -56,7 +56,7 @@ func Test_Scene1(t *testing.T) {
 
 		nextHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			t.Run("UserFromContext", func(t *testing.T) {
-				res, err := testAuth.UserFromContext(r.Context())
+				res, err := testAuth.UserFromContext(r.Context(), OptAllowAll)
 				assert.NoError(t, err)
 				assert.Equal(t, userID, res.ID)
 			})
