@@ -3,3 +3,5 @@
 #  task-mapping-file: "Elasticsearch/task_mapping.json"
 ES_USER_MAPPING: "db/Elasticsearch/user_mapping.json"
 ES_TASK_MAPPING: "db/Elasticsearch/task_mapping.json"
+CERT_FILE: "server.crt"
+KEY_FILE: "server.key"

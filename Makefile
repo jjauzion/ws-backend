@@ -9,6 +9,9 @@ SRC_FILES = $(wildcard *.go) \
 # PROTO_FILES = $(wildcard proto/*.proto)
 PB_FILES = $(patsubst proto/%.proto,proto/%.pb.go,$(wildcard proto/*.proto))
 
+# SSL Certificate info
+SSL_INFO = "/C=FR/ST=./L=Paris/O=42ai/CN=www.backend.workstation.42ai.com"
+
 FLAG ?= ""
 
 all: $(GRAPHQL_FILES) $(PB_FILES) lint $(EXE)
@@ -49,3 +52,13 @@ elastic:
 down:
 	docker-compose down
 	docker-compose rm -svf
+
+.PHONY: ssl
+ssl:
+	openssl req -new -newkey rsa:4096 -days 365 -nodes -x509 \
+		-subj $(SSL_INFO) \
+		-keyout server.key  -out server.cert
+	openssl req -new -sha256 -key server.key -out server.csr \
+		-subj $(SSL_INFO)
+	openssl x509 -req -sha256 -in server.csr -signkey server.key \
+				   -out server.crt -days 365
