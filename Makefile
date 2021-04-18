@@ -10,8 +10,8 @@ SRC_FILES = $(wildcard *.go) \
 PB_FILES = $(patsubst proto/%.proto,proto/%.pb.go,$(wildcard proto/*.proto))
 
 # SSL Certificate info
-SSL_INFO = "/CN=localhost"
-#SSL_INFO = "/C=FR/ST=./L=Paris/O=42ai/CN=localhost"
+#SSL_INFO = "/CN=localhost"
+SSL_INFO = "/C=FR/ST=./L=Paris/O=42ai/CN=local domain"
 
 FLAG ?= ""
 
@@ -36,11 +36,11 @@ lint:
 	go vet ./...
 
 .PHONY: gql
-gql: all
+gql: ssl all
 	$(EXE) run gql $(FLAG)
 
 .PHONY: grpc
-grpc: all
+grpc: ssl all
 	$(EXE) run grpc $(FLAG)
 
 .PHONY: elastic
@@ -55,11 +55,17 @@ down:
 	docker-compose rm -svf
 
 .PHONY: ssl
-ssl:
+ssl: server.cert server.csr server.crt
+
+server.cert: v3.ext makefile
 	openssl req -new -newkey rsa:4096 -days 365 -nodes -x509 \
 		-subj $(SSL_INFO) \
 		-keyout server.key  -out server.cert
+
+server.csr: v3.ext makefile
 	openssl req -new -sha256 -key server.key -out server.csr \
 		-subj $(SSL_INFO)
+
+server.crt: v3.ext makefile
 	openssl x509 -req -sha256 -in server.csr -signkey server.key \
 				   -out server.crt -days 365 -extfile v3.ext
