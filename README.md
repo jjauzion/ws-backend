@@ -32,6 +32,7 @@ Here we will run the entire project on your local machine from scratch, includin
 WS_ES_HOST=http://localhost
 WS_ES_PORT=9200
 WS_KIBANA_PORT=5601
+WS_API_HOST=localhost
 WS_API_PORT=8080
 WS_GRPC_HOST=localhost
 WS_GRPC_PORT=8090
