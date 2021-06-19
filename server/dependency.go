@@ -47,6 +47,7 @@ func buildApplication() (application, *graph.Resolver, error) {
 		Log:     app.log,
 		Dbal:    app.dbal,
 		Config:  app.conf,
+		ApiHost: app.conf.WS_API_HOST,
 		ApiPort: app.conf.WS_API_PORT,
 		Auth:    app.auth,
 	}, nil
