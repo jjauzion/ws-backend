@@ -63,18 +63,18 @@ database:
 - Open Kibana: http://localhost:5601  
 - Click on the burger menu in the top left corner and go to the `Dev Tools`
 - Copy / Paste the following in the console and run it: `GET _cat/indices?v`  
-  This list all the index existing in the DB. You should see an index called `task` and one
-  called `user`. Index starting with a dot `.` are system index.
+  This list all the index existing in the DB. You should see an index called `ws_task` and one
+  called `ws_user`. Index starting with a dot `.` are system index.
 - Now run the following to list all the existing users:
 ```
-GET user/_search
+GET ws_user/_search
 {
   "query": {
     "match_all": {}
   }
 }
 ```
-- To get all the task, replace in the previous query `user` by `task`
+- To get all the task, replace in the previous query `ws_user` by `ws_task`
 - You can use this console for debug purpose if you need to check the content of your database.
   You could also create or delete task and user manually from here but it is better to use the
   GraphQL API.
