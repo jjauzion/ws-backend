@@ -27,7 +27,8 @@ Here we will run the entire project on your local machine from scratch, includin
  The database will be boostrapped with default users.
 - Clone the backend repository: `git clone https://github.com/jjauzion/ws-backend`
 - Open the repo: `cd ws-backend`
-- Create the `.env` file. For a dev environment use this:
+- Create the `.env` file in the project root folder.
+  For a dev environment running in localhost, use this:
 ```dotenv
 WS_ES_HOST=http://localhost
 WS_ES_PORT=9200
@@ -178,8 +179,12 @@ But before starting a worker node, we need to start the gRPC server:
 Now let's run the worker:  
 - Clone the worker repository: `git clone https://github.com/jjauzion/ws-worker.git`
 - go in the `ws-worker` repo: `cd ws-worker`  
-- Create the `.env` file with the same values as the `.env` file created for the `ws-backend`
-  (you can create a simlink to the `.env` of the ws-backend file)
+- Create a `.env` file at the project root. 
+  For a dev environment running in localhost with the following values:
+```dotenv
+WS_GRPC_HOST=localhost
+WS_GRPC_PORT=8090
+```  
 - Start the worker: `make run`  
 
 This will start the worker and it will automatically pull the task you have created in the 
