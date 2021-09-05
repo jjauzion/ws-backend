@@ -27,11 +27,13 @@ Here we will run the entire project on your local machine from scratch, includin
  The database will be boostrapped with default users.
 - Clone the backend repository: `git clone https://github.com/jjauzion/ws-backend`
 - Open the repo: `cd ws-backend`
-- Create the `.env` file. For a dev environment use this:
+- Create the `.env` file in the project root folder.
+  For a dev environment running in localhost, use this:
 ```dotenv
 WS_ES_HOST=http://localhost
 WS_ES_PORT=9200
 WS_KIBANA_PORT=5601
+WS_API_HOST=localhost
 WS_API_PORT=8080
 WS_GRPC_HOST=localhost
 WS_GRPC_PORT=8090
@@ -62,18 +64,18 @@ database:
 - Open Kibana: http://localhost:5601  
 - Click on the burger menu in the top left corner and go to the `Dev Tools`
 - Copy / Paste the following in the console and run it: `GET _cat/indices?v`  
-  This list all the index existing in the DB. You should see an index called `task` and one
-  called `user`. Index starting with a dot `.` are system index.
+  This list all the index existing in the DB. You should see an index called `ws_task` and one
+  called `ws_user`. Index starting with a dot `.` are system index.
 - Now run the following to list all the existing users:
 ```
-GET user/_search
+GET ws_user/_search
 {
   "query": {
     "match_all": {}
   }
 }
 ```
-- To get all the task, replace in the previous query `user` by `task`
+- To get all the task, replace in the previous query `ws_user` by `ws_task`
 - You can use this console for debug purpose if you need to check the content of your database.
   You could also create or delete task and user manually from here but it is better to use the
   GraphQL API.
@@ -177,8 +179,12 @@ But before starting a worker node, we need to start the gRPC server:
 Now let's run the worker:  
 - Clone the worker repository: `git clone https://github.com/jjauzion/ws-worker.git`
 - go in the `ws-worker` repo: `cd ws-worker`  
-- Create the `.env` file with the same values as the `.env` file created for the `ws-backend`
-  (you can create a simlink to the `.env` of the ws-backend file)
+- Create a `.env` file at the project root. 
+  For a dev environment running in localhost with the following values:
+```dotenv
+WS_GRPC_HOST=localhost
+WS_GRPC_PORT=8090
+```  
 - Start the worker: `make run`  
 
 This will start the worker and it will automatically pull the task you have created in the 

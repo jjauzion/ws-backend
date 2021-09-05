@@ -57,15 +57,15 @@ down:
 .PHONY: ssl
 ssl: server.cert server.csr server.crt
 
-server.cert: v3.ext makefile
+server.cert: v3.ext Makefile
 	openssl req -new -newkey rsa:4096 -days 365 -nodes -x509 \
 		-subj $(SSL_INFO) \
 		-keyout server.key  -out server.cert
 
-server.csr: v3.ext makefile
+server.csr: v3.ext Makefile
 	openssl req -new -sha256 -key server.key -out server.csr \
 		-subj $(SSL_INFO)
 
-server.crt: v3.ext makefile
+server.crt: v3.ext Makefile
 	openssl x509 -req -sha256 -in server.csr -signkey server.key \
 				   -out server.crt -days 365 -extfile v3.ext

@@ -15,6 +15,7 @@ type Resolver struct {
 	Log     logger.Logger
 	Dbal    db.Dbal
 	Config  conf.Configuration
+	ApiHost string
 	ApiPort string
 	Auth    auth.Auth
 }

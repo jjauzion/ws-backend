@@ -39,6 +39,7 @@ func RunGraphQL(bootstrap bool) {
 		router.Handle("/playground", playground.Handler("GraphQL playground", "/query"))
 	}
 
-	resolver.Log.Info(fmt.Sprintf("connect to http://localhost:%s/playground for GraphQL playground", resolver.ApiPort))
-	resolver.Log.Error("", zap.Error(http.ListenAndServe(":"+resolver.ApiPort, router)))
+	hostIp := resolver.ApiHost + ":" + resolver.ApiPort
+	resolver.Log.Info(fmt.Sprintf("connect to http://%s/playground for GraphQL playground", hostIp))
+	resolver.Log.Error("", zap.Error(http.ListenAndServe(hostIp, router)))
 }
