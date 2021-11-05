@@ -1,5 +1,5 @@
 [Unit]
-Description=Workstation API Service
+Description=Workstation gql API Service
 
 [Service]
 Type=simple
@@ -7,7 +7,7 @@ Restart=always
 RestartSec=1
 User=ubuntu
 WorkingDirectory=/home/ubuntu/ws-backend
-ExecStart=/usr/bin/make grpc
+ExecStart=/usr/bin/make gql
 
 [Install]
 WantedBy=multi-user.target

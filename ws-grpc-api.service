@@ -1,0 +1,13 @@
+[Unit]
+Description=Workstation gRPC API Service
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=ubuntu
+WorkingDirectory=/home/ubuntu/ws-backend
+ExecStart=/usr/bin/make grpc
+
+[Install]
+WantedBy=multi-user.target
