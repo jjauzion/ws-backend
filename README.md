@@ -132,7 +132,7 @@ mutation tuto_create_user {
   }
 }
 ```
-- if you send the request like this you will get a `403` error because you are not authenticated
+- if you send the request like this you will get a `401` error because you are not authenticated
 - you need to pass the token we generated in the chapter before: on the bottom of the console, 
   click on `HTTP HEADERS` and paste the following (replace the token value with yours):
 ```json
@@ -152,7 +152,7 @@ mutation tuto_create_user {
 }
 ```
 ## Create a task
-- now let's create a task. Run the following command (replace the user id with yours):
+- now let's create a task. Run the following command :
 ```graphql
 mutation createTask {
   create_task(input:{docker_image:"jjauzion/ws-mock-container", dataset:"s3//"}) {
@@ -166,7 +166,7 @@ mutation createTask {
   }
 }
 ```
-- if you got a `403` error, check you didn't forget the `auth` Header in your request (see previous chapter)
+- if you got a `401` error, check you didn't forget the `auth` Header in your request (see previous chapter)
 
 Congratulations !! You have created a user and a new jobs :) You can go to the kibana console and run 
 the search to see your creations.
