@@ -2,8 +2,8 @@ package db
 
 import (
 	"context"
-	"github.com/jjauzion/ws-backend/conf"
-	"github.com/jjauzion/ws-backend/internal/logger"
+	"github.com/42-AI/ws-backend/conf"
+	"github.com/42-AI/ws-backend/internal/logger"
 	"github.com/olivere/elastic/v7"
 	"go.uber.org/zap"
 	"os"

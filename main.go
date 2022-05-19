@@ -16,7 +16,7 @@ limitations under the License.
 
 package main
 
-import "github.com/jjauzion/ws-backend/cmd"
+import "github.com/42-AI/ws-backend/cmd"
 
 func main() {
 	cmd.Execute()

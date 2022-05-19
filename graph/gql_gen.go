@@ -437,7 +437,7 @@ func (ec *executionContext) field_Mutation_create_task_args(ctx context.Context,
 	var arg0 NewTask
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNnewTask2githubᚗcomᚋjjauzionᚋwsᚑbackendᚋgraphᚐNewTask(ctx, tmp)
+		arg0, err = ec.unmarshalNnewTask2githubᚗcomᚋ42-AIᚋwsᚑbackendᚋgraphᚐNewTask(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -452,7 +452,7 @@ func (ec *executionContext) field_Mutation_create_user_args(ctx context.Context,
 	var arg0 NewUser
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNnewUser2githubᚗcomᚋjjauzionᚋwsᚑbackendᚋgraphᚐNewUser(ctx, tmp)
+		arg0, err = ec.unmarshalNnewUser2githubᚗcomᚋ42-AIᚋwsᚑbackendᚋgraphᚐNewUser(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -746,7 +746,7 @@ func (ec *executionContext) _Mutation_create_user(ctx context.Context, field gra
 	}
 	res := resTmp.(*User)
 	fc.Result = res
-	return ec.marshalNUser2ᚖgithubᚗcomᚋjjauzionᚋwsᚑbackendᚋgraphᚐUser(ctx, field.Selections, res)
+	return ec.marshalNUser2ᚖgithubᚗcomᚋ42-AIᚋwsᚑbackendᚋgraphᚐUser(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_create_task(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -788,7 +788,7 @@ func (ec *executionContext) _Mutation_create_task(ctx context.Context, field gra
 	}
 	res := resTmp.(*Task)
 	fc.Result = res
-	return ec.marshalNTask2ᚖgithubᚗcomᚋjjauzionᚋwsᚑbackendᚋgraphᚐTask(ctx, field.Selections, res)
+	return ec.marshalNTask2ᚖgithubᚗcomᚋ42-AIᚋwsᚑbackendᚋgraphᚐTask(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_list_tasks(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -820,7 +820,7 @@ func (ec *executionContext) _Query_list_tasks(ctx context.Context, field graphql
 	}
 	res := resTmp.([]*Task)
 	fc.Result = res
-	return ec.marshalOTask2ᚕᚖgithubᚗcomᚋjjauzionᚋwsᚑbackendᚋgraphᚐTask(ctx, field.Selections, res)
+	return ec.marshalOTask2ᚕᚖgithubᚗcomᚋ42-AIᚋwsᚑbackendᚋgraphᚐTask(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_login(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -862,7 +862,7 @@ func (ec *executionContext) _Query_login(ctx context.Context, field graphql.Coll
 	}
 	res := resTmp.(LoginRes)
 	fc.Result = res
-	return ec.marshalNLoginRes2githubᚗcomᚋjjauzionᚋwsᚑbackendᚋgraphᚐLoginRes(ctx, field.Selections, res)
+	return ec.marshalNLoginRes2githubᚗcomᚋ42-AIᚋwsᚑbackendᚋgraphᚐLoginRes(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -1143,7 +1143,7 @@ func (ec *executionContext) _Task_status(ctx context.Context, field graphql.Coll
 	}
 	res := resTmp.(Status)
 	fc.Result = res
-	return ec.marshalNStatus2githubᚗcomᚋjjauzionᚋwsᚑbackendᚋgraphᚐStatus(ctx, field.Selections, res)
+	return ec.marshalNStatus2githubᚗcomᚋ42-AIᚋwsᚑbackendᚋgraphᚐStatus(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Task_job(ctx context.Context, field graphql.CollectedField, obj *Task) (ret graphql.Marshaler) {
@@ -1178,7 +1178,7 @@ func (ec *executionContext) _Task_job(ctx context.Context, field graphql.Collect
 	}
 	res := resTmp.(*Job)
 	fc.Result = res
-	return ec.marshalNJob2ᚖgithubᚗcomᚋjjauzionᚋwsᚑbackendᚋgraphᚐJob(ctx, field.Selections, res)
+	return ec.marshalNJob2ᚖgithubᚗcomᚋ42-AIᚋwsᚑbackendᚋgraphᚐJob(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Token_username(ctx context.Context, field graphql.CollectedField, obj *Token) (ret graphql.Marshaler) {
@@ -3180,7 +3180,7 @@ func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.Selecti
 	return res
 }
 
-func (ec *executionContext) marshalNJob2ᚖgithubᚗcomᚋjjauzionᚋwsᚑbackendᚋgraphᚐJob(ctx context.Context, sel ast.SelectionSet, v *Job) graphql.Marshaler {
+func (ec *executionContext) marshalNJob2ᚖgithubᚗcomᚋ42-AIᚋwsᚑbackendᚋgraphᚐJob(ctx context.Context, sel ast.SelectionSet, v *Job) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -3190,7 +3190,7 @@ func (ec *executionContext) marshalNJob2ᚖgithubᚗcomᚋjjauzionᚋwsᚑbacken
 	return ec._Job(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNLoginRes2githubᚗcomᚋjjauzionᚋwsᚑbackendᚋgraphᚐLoginRes(ctx context.Context, sel ast.SelectionSet, v LoginRes) graphql.Marshaler {
+func (ec *executionContext) marshalNLoginRes2githubᚗcomᚋ42-AIᚋwsᚑbackendᚋgraphᚐLoginRes(ctx context.Context, sel ast.SelectionSet, v LoginRes) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -3200,13 +3200,13 @@ func (ec *executionContext) marshalNLoginRes2githubᚗcomᚋjjauzionᚋwsᚑback
 	return ec._LoginRes(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNStatus2githubᚗcomᚋjjauzionᚋwsᚑbackendᚋgraphᚐStatus(ctx context.Context, v interface{}) (Status, error) {
+func (ec *executionContext) unmarshalNStatus2githubᚗcomᚋ42-AIᚋwsᚑbackendᚋgraphᚐStatus(ctx context.Context, v interface{}) (Status, error) {
 	var res Status
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNStatus2githubᚗcomᚋjjauzionᚋwsᚑbackendᚋgraphᚐStatus(ctx context.Context, sel ast.SelectionSet, v Status) graphql.Marshaler {
+func (ec *executionContext) marshalNStatus2githubᚗcomᚋ42-AIᚋwsᚑbackendᚋgraphᚐStatus(ctx context.Context, sel ast.SelectionSet, v Status) graphql.Marshaler {
 	return v
 }
 
@@ -3225,11 +3225,11 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 	return res
 }
 
-func (ec *executionContext) marshalNTask2githubᚗcomᚋjjauzionᚋwsᚑbackendᚋgraphᚐTask(ctx context.Context, sel ast.SelectionSet, v Task) graphql.Marshaler {
+func (ec *executionContext) marshalNTask2githubᚗcomᚋ42-AIᚋwsᚑbackendᚋgraphᚐTask(ctx context.Context, sel ast.SelectionSet, v Task) graphql.Marshaler {
 	return ec._Task(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNTask2ᚖgithubᚗcomᚋjjauzionᚋwsᚑbackendᚋgraphᚐTask(ctx context.Context, sel ast.SelectionSet, v *Task) graphql.Marshaler {
+func (ec *executionContext) marshalNTask2ᚖgithubᚗcomᚋ42-AIᚋwsᚑbackendᚋgraphᚐTask(ctx context.Context, sel ast.SelectionSet, v *Task) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -3254,11 +3254,11 @@ func (ec *executionContext) marshalNTime2timeᚐTime(ctx context.Context, sel as
 	return res
 }
 
-func (ec *executionContext) marshalNUser2githubᚗcomᚋjjauzionᚋwsᚑbackendᚋgraphᚐUser(ctx context.Context, sel ast.SelectionSet, v User) graphql.Marshaler {
+func (ec *executionContext) marshalNUser2githubᚗcomᚋ42-AIᚋwsᚑbackendᚋgraphᚐUser(ctx context.Context, sel ast.SelectionSet, v User) graphql.Marshaler {
 	return ec._User(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNUser2ᚖgithubᚗcomᚋjjauzionᚋwsᚑbackendᚋgraphᚐUser(ctx context.Context, sel ast.SelectionSet, v *User) graphql.Marshaler {
+func (ec *executionContext) marshalNUser2ᚖgithubᚗcomᚋ42-AIᚋwsᚑbackendᚋgraphᚐUser(ctx context.Context, sel ast.SelectionSet, v *User) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -3497,12 +3497,12 @@ func (ec *executionContext) marshalN__TypeKind2string(ctx context.Context, sel a
 	return res
 }
 
-func (ec *executionContext) unmarshalNnewTask2githubᚗcomᚋjjauzionᚋwsᚑbackendᚋgraphᚐNewTask(ctx context.Context, v interface{}) (NewTask, error) {
+func (ec *executionContext) unmarshalNnewTask2githubᚗcomᚋ42-AIᚋwsᚑbackendᚋgraphᚐNewTask(ctx context.Context, v interface{}) (NewTask, error) {
 	res, err := ec.unmarshalInputnewTask(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNnewUser2githubᚗcomᚋjjauzionᚋwsᚑbackendᚋgraphᚐNewUser(ctx context.Context, v interface{}) (NewUser, error) {
+func (ec *executionContext) unmarshalNnewUser2githubᚗcomᚋ42-AIᚋwsᚑbackendᚋgraphᚐNewUser(ctx context.Context, v interface{}) (NewUser, error) {
 	res, err := ec.unmarshalInputnewUser(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -3591,7 +3591,7 @@ func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel as
 	return graphql.MarshalString(*v)
 }
 
-func (ec *executionContext) marshalOTask2ᚕᚖgithubᚗcomᚋjjauzionᚋwsᚑbackendᚋgraphᚐTask(ctx context.Context, sel ast.SelectionSet, v []*Task) graphql.Marshaler {
+func (ec *executionContext) marshalOTask2ᚕᚖgithubᚗcomᚋ42-AIᚋwsᚑbackendᚋgraphᚐTask(ctx context.Context, sel ast.SelectionSet, v []*Task) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -3618,7 +3618,7 @@ func (ec *executionContext) marshalOTask2ᚕᚖgithubᚗcomᚋjjauzionᚋwsᚑba
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalOTask2ᚖgithubᚗcomᚋjjauzionᚋwsᚑbackendᚋgraphᚐTask(ctx, sel, v[i])
+			ret[i] = ec.marshalOTask2ᚖgithubᚗcomᚋ42-AIᚋwsᚑbackendᚋgraphᚐTask(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -3631,7 +3631,7 @@ func (ec *executionContext) marshalOTask2ᚕᚖgithubᚗcomᚋjjauzionᚋwsᚑba
 	return ret
 }
 
-func (ec *executionContext) marshalOTask2ᚖgithubᚗcomᚋjjauzionᚋwsᚑbackendᚋgraphᚐTask(ctx context.Context, sel ast.SelectionSet, v *Task) graphql.Marshaler {
+func (ec *executionContext) marshalOTask2ᚖgithubᚗcomᚋ42-AIᚋwsᚑbackendᚋgraphᚐTask(ctx context.Context, sel ast.SelectionSet, v *Task) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}

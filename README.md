@@ -7,8 +7,8 @@ It consists of a task queue where user can create new jobs and one or more worke
 The jobs are submitted via a Docker image that shall be available on a public container registry.
 
 The project is made of three repositories:
-- the worker node: https://github.com/jjauzion/ws-worker
-- the backend server: https://github.com/jjauzion/ws-backend
+- the worker node: https://github.com/42-AI/ws-worker
+- the backend server: https://github.com/42-AI/ws-backend
 - the frontend: *not yet implemented*
 
 # How to run
@@ -25,7 +25,7 @@ This tutorial will guide you through running the whole project.
 ## Start the backend
 Here we will run the entire project on your local machine from scratch, including the database.
  The database will be boostrapped with default users.
-- Clone the backend repository: `git clone https://github.com/jjauzion/ws-backend`
+- Clone the backend repository: `git clone https://github.com/42-AI/ws-backend`
 - Open the repo: `cd ws-backend`
 - Create the `.env` file in the project root folder.
   For a dev environment running in localhost, use this:
@@ -155,7 +155,7 @@ mutation tuto_create_user {
 - now let's create a task. Run the following command (replace the user id with yours):
 ```graphql
 mutation createTask {
-  create_task(input:{docker_image:"jjauzion/ws-mock-container", dataset:"s3//"}) {
+  create_task(input:{docker_image:"42-AI/ws-mock-container", dataset:"s3//"}) {
     id
     user_id
   	created_at
@@ -177,7 +177,7 @@ But before starting a worker node, we need to start the gRPC server:
 - Go in the `ws-backend` repository and run: `make grpc`  
 
 Now let's run the worker:  
-- Clone the worker repository: `git clone https://github.com/jjauzion/ws-worker.git`
+- Clone the worker repository: `git clone https://github.com/42-AI/ws-worker.git`
 - go in the `ws-worker` repo: `cd ws-worker`  
 - Create a `.env` file at the project root. 
   For a dev environment running in localhost with the following values:

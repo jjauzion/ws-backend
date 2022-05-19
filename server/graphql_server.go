@@ -4,14 +4,14 @@ import (
 	"context"
 	"fmt"
 	"github.com/go-chi/chi"
-	"github.com/jjauzion/ws-backend/db"
-	"github.com/jjauzion/ws-backend/graph/playground"
+	"github.com/42-AI/ws-backend/db"
+	"github.com/42-AI/ws-backend/graph/playground"
 	"net/http"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"go.uber.org/zap"
 
-	"github.com/jjauzion/ws-backend/graph"
+	"github.com/42-AI/ws-backend/graph"
 )
 
 func RunGraphQL(bootstrap bool) {

@@ -18,7 +18,7 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/jjauzion/ws-backend/server"
+	"github.com/42-AI/ws-backend/server"
 )
 
 var runGRPCCmd = &cobra.Command{

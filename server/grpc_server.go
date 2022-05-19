@@ -2,8 +2,8 @@ package server
 
 import (
 	"context"
-	"github.com/jjauzion/ws-backend/conf"
-	"github.com/jjauzion/ws-backend/db"
+	"github.com/42-AI/ws-backend/conf"
+	"github.com/42-AI/ws-backend/db"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -12,8 +12,8 @@ import (
 	"net"
 	"time"
 
-	"github.com/jjauzion/ws-backend/internal/logger"
-	pb "github.com/jjauzion/ws-backend/proto"
+	"github.com/42-AI/ws-backend/internal/logger"
+	pb "github.com/42-AI/ws-backend/proto"
 )
 
 type grpcServer struct {

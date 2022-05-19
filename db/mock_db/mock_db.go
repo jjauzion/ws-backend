@@ -9,7 +9,7 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	db "github.com/jjauzion/ws-backend/db"
+	db "github.com/42-AI/ws-backend/db"
 )
 
 // MockDbal is a mock of Dbal interface.
