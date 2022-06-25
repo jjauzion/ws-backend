@@ -24,7 +24,8 @@ func (es *esHandler) CreateTask(ctx context.Context, task Task) error {
 func (es *esHandler) GetTasksByUserID(ctx context.Context, id string) ([]Task, error) {
 	es.log.Debug("get tasks for user", zap.String("user_id", id))
 	query := elastic.NewMatchQuery("user_id", id)
-	s := elastic.NewSearchSource().Query(query)
+	// TODO we should implement pagination in case there is more than 10000 results
+	s := elastic.NewSearchSource().Query(query).Size(10000).Sort("created_at", false)
 	tasks, err := es.searchTasks(ctx, s)
 	if err != nil {
 		return nil, err
