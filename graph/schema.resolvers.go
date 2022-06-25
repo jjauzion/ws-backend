@@ -6,11 +6,11 @@ package graph
 import (
 	"context"
 	"fmt"
-	"github.com/42-AI/ws-backend/internal/auth"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/42-AI/ws-backend/db"
+	"github.com/42-AI/ws-backend/internal/auth"
+	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
 

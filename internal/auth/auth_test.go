@@ -1,11 +1,11 @@
 package auth
 
 import (
-	"github.com/golang/mock/gomock"
 	conf2 "github.com/42-AI/ws-backend/conf"
 	"github.com/42-AI/ws-backend/db"
 	"github.com/42-AI/ws-backend/db/mock_db"
 	"github.com/42-AI/ws-backend/internal/logger"
+	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
