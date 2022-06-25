@@ -1,10 +1,10 @@
 package graph
 
 import (
-	"github.com/jjauzion/ws-backend/conf"
-	"github.com/jjauzion/ws-backend/db"
-	"github.com/jjauzion/ws-backend/internal/auth"
-	"github.com/jjauzion/ws-backend/internal/logger"
+	"github.com/42-AI/ws-backend/conf"
+	"github.com/42-AI/ws-backend/db"
+	"github.com/42-AI/ws-backend/internal/auth"
+	"github.com/42-AI/ws-backend/internal/logger"
 )
 
 // This file will not be regenerated automatically.

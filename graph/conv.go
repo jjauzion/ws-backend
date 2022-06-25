@@ -1,7 +1,7 @@
 package graph
 
 import (
-	"github.com/jjauzion/ws-backend/db"
+	"github.com/42-AI/ws-backend/db"
 )
 
 func TaskFromDBModel(m db.Task) Task {

@@ -8,8 +8,8 @@ import (
 	context "context"
 	reflect "reflect"
 
+	db "github.com/42-AI/ws-backend/db"
 	gomock "github.com/golang/mock/gomock"
-	db "github.com/jjauzion/ws-backend/db"
 )
 
 // MockDbal is a mock of Dbal interface.

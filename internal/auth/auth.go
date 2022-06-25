@@ -3,9 +3,9 @@ package auth
 import (
 	"context"
 	"fmt"
+	"github.com/42-AI/ws-backend/db"
+	"github.com/42-AI/ws-backend/internal/logger"
 	"github.com/dgrijalva/jwt-go"
-	"github.com/jjauzion/ws-backend/db"
-	"github.com/jjauzion/ws-backend/internal/logger"
 	"go.uber.org/zap"
 	"net/http"
 	"time"

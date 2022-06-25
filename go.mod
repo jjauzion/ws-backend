@@ -1,4 +1,4 @@
-module github.com/jjauzion/ws-backend
+module github.com/42-AI/ws-backend
 
 go 1.15
 

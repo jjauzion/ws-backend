@@ -3,8 +3,8 @@ package db
 import (
 	"context"
 	"fmt"
-	"github.com/jjauzion/ws-backend/conf"
-	logger "github.com/jjauzion/ws-backend/internal/logger"
+	"github.com/42-AI/ws-backend/conf"
+	logger "github.com/42-AI/ws-backend/internal/logger"
 	"github.com/olivere/elastic/v7"
 	"go.uber.org/zap"
 	"io/ioutil"
